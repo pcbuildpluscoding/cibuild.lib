@@ -18,15 +18,6 @@
 # Licensed under the Apache License, Version 2.0
 # -----------------------------------------------------------------------------
 
-GO ?= go
-GOOS ?= $(shell go env GOOS)
-ifeq ($(GOOS),windows)
-	BIN_EXT := .exe
-endif
-
-PACKAGE := github.com/pcbuildpluscoding/mpproxy
-BINDIR ?= /usr/local/bin
-
 ARCHIVE_PATH=$(shell cat git_archive_path.txt | xargs)
 VERSION=$(shell git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
 VERSION_TRIMMED := $(VERSION:v%=%)
@@ -48,16 +39,6 @@ help:
 clean:
 	rm -f release/* 
 
-install:
-	install -D -m 755 $(CURDIR)/bin/mpproxy $(DESTDIR)$(BINDIR)/mpproxy
-	install -D -m 755 $(CURDIR)/extras/rootless/containerd-rootless.sh $(DESTDIR)$(BINDIR)/containerd-rootless.sh
-	install -D -m 755 $(CURDIR)/extras/rootless/containerd-rootless-setuptool.sh $(DESTDIR)$(BINDIR)/containerd-rootless-setuptool.sh
-
-define make_artifact_full_linux
-	DOCKER_BUILDKIT=1 docker build --output type=tar,dest=$(CURDIR)/release/mpproxy-full-$(VERSION_TRIMMED)-linux-$(1).tar --target out-full --platform $(1) $(CURDIR)
-	gzip -9 $(CURDIR)/release/mpproxy-full-$(VERSION_TRIMMED)-linux-$(1).tar
-endef
-
 TAR_OWNER0_FLAGS=--owner=0 --group=0
 TAR_FLATTEN_FLAGS=--transform 's/.*\///g'
 
@@ -67,5 +48,4 @@ artifacts: clean
 .PHONY: \
 	help \
 	clean \
-	install \
 	artifacts
