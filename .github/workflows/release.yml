@@ -10,16 +10,12 @@ jobs:
   release:
     runs-on: ubuntu-22.04
     env:
-      GOPRIVATE: github.com/pcbuildpluscoding
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     timeout-minutes: 40
     steps:
-    - uses: actions/setup-go@v3
-      with:
-        go-version: 1.18.x
     - run: git config --global url.https://$GH_TOKEN@github.com/.insteadOf https://github.com/
     - uses: actions/checkout@v3.0.2
-    - name: "Compile binaries"
+    - name: "create artifacts archive"
       run: make artifacts
     - name: "SHA256SUMS"
       run: |
