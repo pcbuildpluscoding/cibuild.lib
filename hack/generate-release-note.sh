@@ -40,6 +40,6 @@ $(tar tzvf ${amd64tgz_pathName})
 The binaries were built automatically on GitHub Actions.
 The build log is available for 90 days: https://github.com/${1}/actions/runs/${2}
 
-The sha256sum of the release tar file is : ${3}
+The sha256sum of the SHA256SUMS file itself is \`${3}\` .
 
 EOX

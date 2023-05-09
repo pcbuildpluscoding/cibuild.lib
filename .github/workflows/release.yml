@@ -27,12 +27,12 @@ jobs:
       run: |
         tag="${GITHUB_REF##*/}"
         shasha=$(sha256sum release/SHA256SUMS | awk '{print $1}')
-        "RELEASE_NOTES=$(cat <<-EOF
+        cat <<-EOF | tee /tmp/release-notes.txt
         ${tag}
 
         $(hack/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
         EOF
-        )" >> $GITHUB_OUTPUT
+        "RELEASE_NOTES=$(</tmp/release-notes.txt)" >> $GITHUB_OUTPUT
     - name: create release
       id: create-release
       uses: actions/create-release@v1
