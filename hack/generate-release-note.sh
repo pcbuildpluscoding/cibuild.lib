@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-amd64tgz_pathName="$(find release -name '*linux-amd64.tar.gz*')"
+amd64tgz_pathName="$(find release -name content-*)"
 
 amd64tgz_fileName="$(basename ${amd64tgz_pathName})"
 
