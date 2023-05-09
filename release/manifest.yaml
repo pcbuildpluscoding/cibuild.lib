@@ -1,0 +1,5 @@
+---
+cmd/container/run:
+  cmd/server
+lib/container/run:
+  lib/container/run
