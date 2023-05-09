@@ -32,7 +32,7 @@ jobs:
 
         $(hack/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
         EOF
-        "RELEASE_NOTES=$(</tmp/release-notes.txt)" >> $GITHUB_OUTPUT
+        echo "RELEASE_NOTES=$(</tmp/release-notes.txt)" >> $GITHUB_OUTPUT
     - name: create release
       id: create-release
       uses: actions/create-release@v1
