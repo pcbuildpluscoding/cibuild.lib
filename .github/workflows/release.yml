@@ -18,11 +18,11 @@ jobs:
       run: make artifacts
     - name: "SHA256SUMS"
       run: |
-        ( cd release; sha256sum content-* ) | tee /tmp/SHA256SUMS
+        ( cd release; sha256sum cibuild-* ) | tee /tmp/SHA256SUMS
         mv /tmp/SHA256SUMS release/SHA256SUMS
     - name: the sha256sum of the SHA256SUMS file
       run: (cd release; sha256sum SHA256SUMS)
-    - name: prepare the release note
+    - name: prepare release notes
       id: release-note-setter
       run: |
         tag="${GITHUB_REF##*/}"
@@ -30,9 +30,9 @@ jobs:
         cat <<-EOF | tee /tmp/release-note.txt
         ${tag}
 
-        $(hack/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
+        $(releaseAsset/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
         EOF
-    - name: "Create release"
+    - name: create release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |

@@ -14,16 +14,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-amd64tgz_pathName="$(find release -name content-*)"
+amd64tgz_pathName="$(find release -name cibuild-*)"
 
 amd64tgz_fileName="$(basename ${amd64tgz_pathName})"
 
 cat <<-EOX
 ## Changes
-(To be documented)
+$(<releaseAsset/changes.txt)
 
 ## About the tar archive
-- ${amd64tgz_fileName} : mpproxy binary with golang source files
+- ${amd64tgz_fileName} : $(<releaseAsset/about.txt)
 
 ### How to Use
 Extract the archive to a path like \`/usr/local/bin\` or \`~/bin\` .
@@ -37,7 +37,7 @@ $(tar tzvf ${amd64tgz_pathName})
 </details>
 
 - - -
-The binaries were built automatically on GitHub Actions.
+The release was built automatically on GitHub Actions.
 The build log is available for 90 days: https://github.com/${1}/actions/runs/${2}
 
 The sha256sum of the SHA256SUMS file itself is \`${3}\` .

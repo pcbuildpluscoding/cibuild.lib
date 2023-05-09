@@ -1,4 +1,0 @@
-this is a multiline
-test - content
-will be assigned to
-a variable
