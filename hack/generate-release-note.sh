@@ -19,13 +19,13 @@ amd64tgz_pathName="$(find release -name content-*)"
 amd64tgz_fileName="$(basename ${amd64tgz_pathName})"
 
 cat <<-EOX
-Changes
+## Changes
 (To be documented)
 
-About the tar archive
+## About the tar archive
 - ${amd64tgz_fileName} : mpproxy binary with golang source files
 
-How to Use
+### How to Use
 Extract the archive to a path like \`/usr/local/bin\` or \`~/bin\` .
 <details><summary>tar Cxzvvf /usr/local/bin ${amd64tgz_fileName}</summary>
 <p>
