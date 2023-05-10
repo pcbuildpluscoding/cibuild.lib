@@ -23,7 +23,6 @@ jobs:
     - name: the sha256sum of the SHA256SUMS file
       run: (cd release; sha256sum SHA256SUMS)
     - name: prepare release notes
-      id: release-note-setter
       run: |
         tag="${GITHUB_REF##*/}"
         shasha=$(sha256sum release/SHA256SUMS | awk '{print $1}')

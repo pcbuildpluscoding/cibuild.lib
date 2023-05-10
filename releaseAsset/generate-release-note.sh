@@ -13,8 +13,7 @@ $(<releaseAsset/changes.txt)
 ## About the tar archive
 - ${amd64tgz_fileName} : $(<releaseAsset/about.txt)
 
-### How to Use
-Extract the archive to a path like \`/usr/local/bin\` or \`~/bin\` .
+### Contents
 <details><summary>tar Cxzvvf /usr/local/bin ${amd64tgz_fileName}</summary>
 <p>
 

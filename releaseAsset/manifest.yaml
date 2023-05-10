@@ -1,4 +1,5 @@
 ---
+tag: v0.0.1
 cmd/container/run:
   cmd/server
 lib/container/run:
