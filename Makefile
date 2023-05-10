@@ -34,7 +34,7 @@ help:
 	@echo " * 'clean' - Clean artifacts."
 
 clean:
-	rm -f release/* 
+	rm -f release/*
 
 TAR_OWNER0_FLAGS=--owner=0 --group=0
 TAR_FLATTEN_FLAGS=--transform 's/.*\///g'
