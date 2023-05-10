@@ -18,7 +18,7 @@ jobs:
       id : release-tag
       uses: mikefarah/yq@master
       with:
-        cmd: yq '.tag' 'releaseAsset/manifest.yaml'
+        cmd: echo "RELTAG=$(yq '.tag' 'releaseAsset/manifest.yaml')" >> $GITHUB_OUTPUT
     - name: create artifacts archive
       run: make artifacts
     - name: "SHA256SUMS"
@@ -31,7 +31,7 @@ jobs:
       run: |
         shasha=$(sha256sum release/SHA256SUMS | awk '{print $1}')
         cat <<-EOF | tee /tmp/release-note.txt
-        ${{ steps.release-tag.result }}
+        ${{ steps.release-tag.outputs.RELTAG }}
 
         $(releaseAsset/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
         EOF
@@ -41,4 +41,4 @@ jobs:
       run: |
         asset_flags=()
         for f in release/*; do asset_flags+=("-a" "$f"); done
-        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt --draft ${{ steps.release-tag.result }}
+        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt --draft ${{ steps.release-tag.outputs.RELTAG }}
