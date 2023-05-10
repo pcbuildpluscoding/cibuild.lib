@@ -14,22 +14,24 @@ jobs:
     steps:
     - run: git config --global url.https://$GH_TOKEN@github.com/.insteadOf https://github.com/
     - uses: actions/checkout@v3
+    - name: set release tag
+      id : release-tag
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq '.tag' 'releaseAsset/manifest.yaml'
     - name: create artifacts archive
       run: make artifacts
-    - uses: mikefarah/yq@master
     - name: "SHA256SUMS"
-      id: set-release-tag
       run: |
         ( cd release; sha256sum cibuild-* ) | tee /tmp/SHA256SUMS
         mv /tmp/SHA256SUMS release/SHA256SUMS
-        echo "RELTAG=$(yq '.tag' releaseAssets/manifest.yaml)" >> $GITHUB_OUTPUT
     - name: the sha256sum of the SHA256SUMS file
       run: (cd release; sha256sum SHA256SUMS)
     - name: prepare release notes
       run: |
         shasha=$(sha256sum release/SHA256SUMS | awk '{print $1}')
         cat <<-EOF | tee /tmp/release-note.txt
-        ${{ steps.set-release-tag.outputs.RELTAG }}
+        ${{ steps.release-tag.result }}
 
         $(releaseAsset/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }} $shasha)
         EOF
@@ -39,4 +41,4 @@ jobs:
       run: |
         asset_flags=()
         for f in release/*; do asset_flags+=("-a" "$f"); done
-        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt --draft ${{ steps.set-release-tag.outputs.RELTAG }}
+        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt --draft ${{ steps.release-tag.result }}
