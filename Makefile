@@ -34,6 +34,9 @@ help:
 	@echo " * 'clean' - Clean artifacts."
 
 clean:
+	#	release doesn't exist after pushing because github ignores empty directories
+	mkdir -p release
+	# remove contents for local testing
 	rm -f release/*
 
 TAR_OWNER0_FLAGS=--owner=0 --group=0
