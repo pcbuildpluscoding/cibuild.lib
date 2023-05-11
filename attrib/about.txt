@@ -1,0 +1,1 @@
+content generation golang.tpl codes for genware kind codegen/progen/std

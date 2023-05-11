@@ -8,10 +8,10 @@ amd64tgz_fileName="$(basename ${amd64tgz_pathName})"
 
 cat <<-EOX
 ## Changes
-$(<releaseAsset/changes.txt)
+$(<attrib/changes.txt)
 
 ## About the tar archive
-- ${amd64tgz_fileName} : $(<releaseAsset/about.txt)
+- ${amd64tgz_fileName} : $(<attrib/about.txt)
 
 ### Contents
 <details><summary>tar Cxzvvf /usr/local/bin ${amd64tgz_fileName}</summary>

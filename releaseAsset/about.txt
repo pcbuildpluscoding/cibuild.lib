@@ -1,1 +1,0 @@
-content generation golang.tpl codes for branch lib/container/run
