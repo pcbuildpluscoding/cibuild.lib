@@ -18,7 +18,7 @@
 # Licensed under the Apache License, Version 2.0
 # -----------------------------------------------------------------------------
 
-ARCHIVE_PATH=$(shell cat releaseAsset/git_archive_path.txt | xargs)
+ARCHIVE_PATH=$(shell cat attrib/git_archive_path.txt | xargs)
 VERSION=$(shell git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
 VERSION_TRIMMED := $(VERSION:v%=%)
 REVISION=$(shell git rev-parse HEAD)$(shell if ! git diff --no-ext-diff --quiet --exit-code; then echo .m; fi)
@@ -44,7 +44,7 @@ TAR_FLATTEN_FLAGS=--transform 's/.*\///g'
 
 artifacts: clean
 	git archive --output $(CURDIR)/release/cibuild-$(VERSION_TRIMMED).tar.gz HEAD $(ARCHIVE_PATH)
-	cp $(CURDIR)/releaseAsset/manifest.yaml $(CURDIR)/release/
+	cp $(CURDIR)/attrib/manifest.yaml $(CURDIR)/release/
 
 .PHONY: \
 	help \
