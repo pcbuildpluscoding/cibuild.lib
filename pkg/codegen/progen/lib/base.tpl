@@ -1,20 +1,20 @@
 package progen
 
 import (
-	"fmt"
-	"io"
-	"time"
+  "fmt"
+  "io"
+  "time"
 
-	"github.com/pcbuildpluscoding/apibase/loggar"
-	ab "github.com/pcbuildpluscoding/apibase/std"
-	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
-	stx "github.com/pcbuildpluscoding/strucex/std"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	rdt "github.com/pcbuildpluscoding/types/apirecord"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	"github.com/sirupsen/logrus"
+  "github.com/pcbuildpluscoding/apibase/loggar"
+  ab "github.com/pcbuildpluscoding/apibase/std"
+  elm "github.com/pcbuildpluscoding/genware/lib/element"
+  fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
+  han "github.com/pcbuildpluscoding/genware/lib/handler"
+  stx "github.com/pcbuildpluscoding/strucex/std"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  rdt "github.com/pcbuildpluscoding/types/apirecord"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  "github.com/sirupsen/logrus"
 )
 
 type ApiResult = ab.ApiResult
@@ -32,13 +32,17 @@ type Strucex = stx.Strucex
 type ValueA1 = stx.ValueA1
 type XString = elm.XString
 
-var logger = loggar.Get()
+var (
+  logger = loggar.Get()
+  logfd *os.File
+)
 
 // -------------------------------------------------------------- //
 // SetLogger
 // ---------------------------------------------------------------//
-func SetLogger(super *logrus.Logger) {
+func SetLogger(super *logrus.Logger, superfd *os.File) {
   logger = super
+  logfd = superfd
 }
 
 //----------------------------------------------------------------//
