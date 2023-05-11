@@ -1,8 +1,7 @@
-README.md         export-ignore
-.gitignore        export-ignore
-LICENCE           export-ignore
-Makefile          export-ignore
-temp/**           export-ignore
-testing/**        export-ignore
-releaseAsset/**   export-ignore
-.github           export-ignore
+README.md   export-ignore
+.gitignore  export-ignore
+LICENCE     export-ignore
+Makefile    export-ignore
+testing/**  export-ignore
+attrib/**   export-ignore
+.github     export-ignore

@@ -18,7 +18,7 @@ jobs:
       id : release-tag
       uses: mikefarah/yq@master
       with:
-        cmd: echo "RELTAG=$(yq '.tag' 'attrib/manifest.yaml')" >> $GITHUB_OUTPUT
+        cmd: echo "RELTAG=$(yq '.releaseTag' 'attrib/manifest.yaml')" >> $GITHUB_OUTPUT
     - name: create artifacts archive
       run: make artifacts
     - name: prepare release notes
