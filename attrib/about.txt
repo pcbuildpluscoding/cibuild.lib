@@ -1,1 +1,1 @@
-genware kind codegen/progen/std cibuild package content
+genware kind container/run cibuild package content
