@@ -1,12 +1,12 @@
 ---
-releaseTag: v0.2.1
+releaseTag: v0.3.0
 importable: [cmd, lib, genware]
 cmd:
-  copyFrom: pkg/container/run/cmd
+  copyFrom: pkg/defaultValue/container/run/cmd
   copyTo: cmd/server
 lib:
-  copyFrom: pkg/container/run/lib
-  copyTo: lib/container/run
+  copyFrom: pkg/defaultValue/container/run/lib
+  copyTo: lib/defaultValue/container/run
 genware:
-  copyFrom: pkg/container/run/genware
+  copyFrom: pkg/defaultValue/container/run/genware
   copyTo: genware/std
