@@ -1,11 +1,11 @@
 package run
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	spb "google.golang.org/protobuf/types/known/structpb"
+  spb "google.golang.org/protobuf/types/known/structpb"
 )
 
 //================================================================//
@@ -144,6 +144,7 @@ func (p *DVImportPrinter) Print() error {
   if err != nil {
     return err
   }
+  logger.Debugf("dbkey, result : %s, %v", p.dd.GetDbKey(), x)
   p.writer.Write(x...)
   return nil
 }
