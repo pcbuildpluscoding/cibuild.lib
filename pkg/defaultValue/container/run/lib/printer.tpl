@@ -144,7 +144,7 @@ func (p *DVImportPrinter) Print() error {
   if err != nil {
     return err
   }
-  logger.Debugf("dbkey, result : %s, %v", p.dd.GetDbKey(), x)
+  logger.Debugf("dbkey, result : %s, %v", p.dd.GetDbKey(""), x)
   p.writer.Write(x...)
   return nil
 }
