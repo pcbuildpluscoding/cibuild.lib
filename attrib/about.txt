@@ -1,1 +1,2 @@
-genware kind container/run cibuild package content
+cibuild pkg/codegen/progen template package is used to build code generating content 
+using templates designed to accept configuration as code

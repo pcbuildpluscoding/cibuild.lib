@@ -1,12 +1,12 @@
 ---
-releaseTag: v0.0.1
+releaseTag: v0.1.0
 importable: [cmd, lib, genware]
 cmd:
-  copyFrom: pkg/container/run/cmd
+  copyFrom: pkg/codegen/progen/cmd
   copyTo: cmd/server
 lib:
-  copyFrom: pkg/container/run/lib
-  copyTo: lib/container/run
+  copyFrom: pkg/codegen/progen/lib
+  copyTo: lib/codegen/progen
 genware:
-  copyFrom: pkg/container/run/genware
+  copyFrom: pkg/codegen/progen/genware
   copyTo: genware/std
