@@ -34,7 +34,7 @@ type Trovian = tdb.Trovian
 // init - register genware plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "build/container/run"
+  pkey := "cibuild/container/run"
   vendor := NewCRGenVendor(pkey)
   gwt.RegisterGenware(pkey, vendor)
 }
@@ -52,7 +52,7 @@ func NewCRGenVendor(pkey string) GenwareVendor {
     case "ScanVars":
       return crg.NewCRProducer(connex, rw)
     case "Generate":
-      writer, err := elm.NewWriter(connex, "VarDec", action, rw.String("OutputFile"))
+      writer, err := elm.NewWriter(connex, "VarDec", rw.String("OutputFile"))
       if err != nil {
         logger.Error(err)
         return nil, err
