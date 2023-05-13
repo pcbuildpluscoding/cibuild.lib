@@ -1,2 +1,1 @@
-cibuild pkg/codegen/progen template package is used to build code generating content 
-using templates designed to accept configuration as code
+cibuild pkg/container/run is a codegen package for nerdctl/container/run

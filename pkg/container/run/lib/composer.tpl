@@ -217,6 +217,11 @@ func (c *CRComposer) EndOfFile(...string) {
 // Start
 //----------------------------------------------------------------//
 func (c *CRComposer) Run(scanner scanner.Scanner) error {
+  err := c.provider.Start()
+  if err != nil {
+    return err
+  }
+
   c.lineParser = (*CRComposer).composeL0
   c.tokenParser = (*CRComposer).composeT0
 
@@ -235,13 +240,6 @@ func (c *CRComposer) PutLine(line string) {
   if *c.skipLineCount == 0 {
     c.writer.Write(line)
   }
-}
-
-//----------------------------------------------------------------//
-// Start
-//----------------------------------------------------------------//
-func (c *CRComposer) Start() error {
-  return c.provider.Start()
 }
 
 //----------------------------------------------------------------//
