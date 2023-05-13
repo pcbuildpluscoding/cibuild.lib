@@ -1,12 +1,12 @@
 package run
 
 import (
-	"fmt"
-	"text/scanner"
+  "fmt"
+  "text/scanner"
 
-	ab "github.com/pcbuildpluscoding/apibase/std"
-	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
+  ab "github.com/pcbuildpluscoding/apibase/std"
+  elm "github.com/pcbuildpluscoding/genware/lib/element"
+  han "github.com/pcbuildpluscoding/genware/lib/handler"
 )
 
 //================================================================//
@@ -38,7 +38,11 @@ func (p *PrintProvider) Print(kind, sectionName string) error {
       p.cache[kind] = printer
     }
     printer.SetProperty("SectionName", sectionName)
-    return printer.Print()
+    err = printer.Print()
+    if err != nil {
+      logger.Errorf("%s printer errored : %v", kind, err)
+    }
+    return err
   }
 }
 
