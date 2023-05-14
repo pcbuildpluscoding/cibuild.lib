@@ -1,3 +1,3 @@
-temp
+temp/
 *.log
 release/*.tar.gz

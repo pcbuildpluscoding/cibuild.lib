@@ -1,0 +1,12 @@
+---
+releaseTag: v0.1.0
+importable: [cmd, lib, genware]
+cmd:
+  copyFrom: pkg/codegen/progen/cmd
+  copyTo: cmd/server
+lib:
+  copyFrom: pkg/codegen/progen/lib
+  copyTo: lib/codegen/progen
+genware:
+  copyFrom: pkg/codegen/progen/genware
+  copyTo: genware/std

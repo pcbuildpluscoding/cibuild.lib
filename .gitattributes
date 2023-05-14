@@ -6,3 +6,4 @@ Makefile        export-ignore
 README.md       export-ignore
 attrib          export-ignore
 testing         export-ignore
+temp            export-ignore

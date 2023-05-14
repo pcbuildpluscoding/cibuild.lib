@@ -1,0 +1,12 @@
+---
+releaseTag: v0.2.0
+importable: [cmd, lib, genware]
+cmd:
+  copyFrom: pkg/create/container/run/cmd
+  copyTo: cmd/server
+lib:
+  copyFrom: pkg/create/container/run/lib
+  copyTo: lib/create/container/run
+genware:
+  copyFrom: pkg/create/container/run/genware
+  copyTo: genware/std

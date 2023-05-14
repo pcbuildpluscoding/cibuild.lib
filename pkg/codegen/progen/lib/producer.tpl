@@ -1,13 +1,13 @@
 package progen
 
 import (
-	"fmt"
-	"strings"
-	"text/scanner"
+  "fmt"
+  "strings"
+  "text/scanner"
 
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
-	stx "github.com/pcbuildpluscoding/strucex/std"
-	rwt "github.com/pcbuildpluscoding/types/runware"
+  han "github.com/pcbuildpluscoding/genware/lib/handler"
+  stx "github.com/pcbuildpluscoding/strucex/std"
+  rwt "github.com/pcbuildpluscoding/types/runware"
 )
 
 //================================================================//

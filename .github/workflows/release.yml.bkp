@@ -6,30 +6,25 @@ on:
 env:
   GO111MODULE: on
 jobs:
-  preRelease:
-    runs-on: ubuntu-22.04
-    outputs:
-      releaseTag: ${{ steps.releaseTag.outputs.RELEASE_TAG }}
-    steps:
-    - uses: actions/checkout@v3
-    - name: set release tag
-      id : releaseTag
-      run: echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
   release:
-    needs: [preRelease]
-    if: needs.preRelease.outputs.RELEASE_TAG != ""
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    timeout-minutes: 5
+    timeout-minutes: 40
     steps:
     - run: git config --global url.https://$GH_TOKEN@github.com/.insteadOf https://github.com/
+    - uses: actions/checkout@v3
+    - name: set release tag
+      id : release-tag
+      uses: mikefarah/yq@master
+      with:
+        cmd: echo "RELTAG=$(yq '.releaseTag' 'attrib/manifest.yaml')" >> $GITHUB_OUTPUT
     - name: create artifacts archive
       run: make artifacts
     - name: prepare release notes
       run: |
         cat <<-EOF | tee /tmp/release-note.txt
-        ${{ needs.preRelease.outputs.RELEASE_TAG }}
+        ${{ steps.release-tag.outputs.RELTAG }}
 
         $(attrib/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }})
         EOF
@@ -39,4 +34,4 @@ jobs:
       run: |
         asset_flags=()
         for f in release/*; do asset_flags+=("-a" "$f"); done
-        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ needs.preRelease.outputs.RELEASE_TAG }}
+        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ steps.release-tag.outputs.RELTAG }}

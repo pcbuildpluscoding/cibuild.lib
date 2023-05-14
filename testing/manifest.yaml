@@ -1,0 +1,10 @@
+---
+params:
+  fromDir: foo/bar
+  toDir: roo/tar
+  toExt: .go
+run:
+  programArgs:
+    - bin/cigserver
+    - log/cigserver
+  programName: runTerm

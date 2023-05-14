@@ -1,0 +1,23 @@
+---
+fromDir: /home/devapps/enterprise/github/cibuild
+baseDir: /home/devapps/enterprise/github/cibuild.lib/temp/defaultValue/container/run
+baseExt: .tpl
+importable: [cmd, lib, genware]
+cmd:
+  copyFrom: cmd/server
+  copyTo: cmd
+  exclude: '[main.go]'
+lib:
+  copyFrom: lib/defaultValue/container/run
+  copyTo: lib
+  exclude: '[]'
+genware:
+  copyFrom: genware/std
+  copyTo: genware
+  exclude: '[]'
+releaseSpec:
+  fromDir: /home/devapps/enterprise/github/cibuild.lib/pkg/defaultValue/container/run/attrib
+  baseDir: /home/devapps/enterprise/github/cibuild.lib/temp
+  about: about.txt
+  manifest: manifest.yaml
+  assetSpec: git_archive_path.txt
