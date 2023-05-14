@@ -17,7 +17,7 @@ jobs:
       run: echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
   release:
     needs: [preRelease]
-    if: needs.preRelease.outputs.RELEASE_TAG != ""
+    if: needs.preRelease.outputs.RELEASE_TAG != ''
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
