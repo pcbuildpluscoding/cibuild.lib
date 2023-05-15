@@ -11,34 +11,43 @@ jobs:
     outputs:
       releaseTag: ${{ steps.releaseTag.outputs.RELEASE_TAG }}
     steps:
-    - uses: actions/checkout@v3
-    - name: set release tag
-      id : releaseTag
-      run: |
-        echo "release tag : $(<attrib/releaseTag)"
-        echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
-  release:
+      - uses: actions/checkout@v3
+      - name: set release tag
+        id : releaseTag
+        run: |
+          echo "release tag : $(<attrib/releaseTag)"
+          echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
+  checkOutput:
     needs: [preRelease]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: check preRelease job outputs
+        run: |
+          echo "preRelease job output check - release tag : ${{ needs.preRelease.outputs.RELEASE_TAG }}"
+  release:
+    needs: [checkOutput]
     if: needs.preRelease.outputs.RELEASE_TAG != ''
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
-    timeout-minutes: 5
+    timeout-minutes: 30
     steps:
-    - run: git config --global url.https://$GH_TOKEN@github.com/.insteadOf https://github.com/
-    - name: create artifacts archive
-      run: make artifacts
-    - name: prepare release notes
-      run: |
-        cat <<-EOF | tee /tmp/release-note.txt
-        ${{ needs.preRelease.outputs.RELEASE_TAG }}
+      - uses: actions/checkout@v3
+      - run: git config --global url.https://$GH_TOKEN@github.com/.insteadOf https://github.com/
+      - name: create artifacts archive
+        run: make artifacts
+      - name: prepare release notes
+        run: |
+          cat <<-EOF | tee /tmp/release-note.txt
+          ${{ needs.preRelease.outputs.RELEASE_TAG }}
 
-        $(attrib/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }})
-        EOF
-    - name: create release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        asset_flags=()
-        for f in release/*; do asset_flags+=("-a" "$f"); done
-        hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ needs.preRelease.outputs.RELEASE_TAG }}
+          $(attrib/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }})
+          EOF
+      - name: create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          asset_flags=()
+          for f in release/*; do asset_flags+=("-a" "$f"); done
+          hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ needs.preRelease.outputs.RELEASE_TAG }}
