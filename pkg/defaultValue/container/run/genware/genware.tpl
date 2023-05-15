@@ -37,8 +37,8 @@ type Trovian = tdb.Trovian
 // init - register plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "cibuild/container/run"
-  vendorA := NewCRGenVendor(pkey)
+  pkey := "defaultValue/container/run"
+  vendorA := NewDVGenVendor(pkey)
   gwt.RegisterGenware(pkey, vendorA)
   pkey = "cibuild/profile/edit"
   vendorB := NewEditProfileVendor()
