@@ -1,1 +1,1 @@
-.github/release.yaml bugfix
+pkg/codegen/progen/git_archive_path.txt bugfix

@@ -1,3 +1,3 @@
-pkg/codegen/progen/run/cmd
-pkg/codegen/progen/run/genware
-pkg/codegen/progen/run/lib
+pkg/codegen/progen/cmd
+pkg/codegen/progen/genware
+pkg/codegen/progen/lib
