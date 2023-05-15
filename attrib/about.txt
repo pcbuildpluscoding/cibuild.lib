@@ -1,1 +1,1 @@
-cibuild pkg/codegen/progen produces code-generator source code by converting a template using configuration as code.
+cibuild pkg/create/container/run is a code generation module that produces content for cntrize /create/container/run
