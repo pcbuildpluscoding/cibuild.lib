@@ -1,1 +1,1 @@
-first pkg/codegen/progen release-by-manifest build test
+.github/release.yaml adjustment

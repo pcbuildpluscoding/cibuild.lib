@@ -14,7 +14,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: set release tag
       id : releaseTag
-      run: echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
+      run: |
+        echo "release tag : $(<attrib/releaseTag)"
+        echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
   release:
     needs: [preRelease]
     if: needs.preRelease.outputs.RELEASE_TAG != ''
