@@ -1,6 +1,6 @@
 ---
 fromDir: /home/devapps/enterprise/github/cibuild
-basePath: pkg/create/container/run
+basePath: pkg/defaultValue/container/run
 baseExt: .tpl
 importable: []
 cmd:
@@ -12,11 +12,11 @@ genware:
   copyTo: genware
   exclude: '[]'
 lib:
-  copyFrom: lib/create/container/run
+  copyFrom: lib/defaultValue/container/run
   copyTo: lib
   exclude: '[]'
 releaseSpec:
   about: about.txt
   manifest: manifest.yaml
   assetSpec: git_archive_path.txt
-baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/create/container/run
+baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/defaultValue/container/run
