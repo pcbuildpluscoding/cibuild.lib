@@ -9,11 +9,11 @@ jobs:
   preRelease:
     runs-on: ubuntu-22.04
     outputs:
-      releaseTag: ${{ steps.releaseTag.outputs.RELEASE_TAG }}
+      releaseTag: ${{ steps.set-release-tag.outputs.RELEASE_TAG }}
     steps:
       - uses: actions/checkout@v3
       - name: set release tag
-        id : releaseTag
+        id : set-release-tag
         run: |
           echo "release tag : $(<attrib/releaseTag)"
           echo "RELEASE_TAG=$(<attrib/releaseTag)" >> $GITHUB_OUTPUT
@@ -24,10 +24,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: check preRelease job outputs
         run: |
-          echo "preRelease job output check - release tag : ${{ needs.preRelease.outputs.RELEASE_TAG }}"
+          echo "preRelease job output check - release tag : ${{ needs.preRelease.outputs.releaseTag }}"
   release:
-    needs: [checkOutput]
-    if: needs.preRelease.outputs.RELEASE_TAG != ''
+    needs: [preRelease, checkOutput]
+    if: needs.preRelease.outputs.releaseTag != ''
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -40,7 +40,7 @@ jobs:
       - name: prepare release notes
         run: |
           cat <<-EOF | tee /tmp/release-note.txt
-          ${{ needs.preRelease.outputs.RELEASE_TAG }}
+          ${{ needs.preRelease.outputs.releaseTag }}
 
           $(attrib/generate-release-note.sh ${{ github.repository }} ${{ github.run_id }})
           EOF
@@ -50,4 +50,4 @@ jobs:
         run: |
           asset_flags=()
           for f in release/*; do asset_flags+=("-a" "$f"); done
-          hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ needs.preRelease.outputs.RELEASE_TAG }}
+          hub release create "${asset_flags[@]}" -F /tmp/release-note.txt ${{ needs.preRelease.outputs.releaseTag }}

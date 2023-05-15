@@ -1,1 +1,1 @@
-.github/release.yaml adjustment
+.github/release.yaml bugfix
