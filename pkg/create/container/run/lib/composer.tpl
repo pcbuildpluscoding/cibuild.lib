@@ -68,7 +68,11 @@ func (p *PrintProvider) Arrange(spec Runware) error {
 // Start
 //----------------------------------------------------------------//
 func (p *PrintProvider) Start() error {
-  return p.dd.Start()
+  rules := elm.FlowRule{
+    "Sync": true,
+    "UNCLUSTERED": true,
+  }
+  return p.dd.Start(rules)
 }
 
 //----------------------------------------------------------------//

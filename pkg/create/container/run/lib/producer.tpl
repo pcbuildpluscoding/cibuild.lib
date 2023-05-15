@@ -78,7 +78,11 @@ func (p *TCProvider) skipLines(skipLineCount int) {
 // Start
 //----------------------------------------------------------------//
 func (p *TCProvider) Start() error {
-  return p.dd.Start()
+  rules := elm.FlowRule{
+    "Sync": true,
+    "UNCLUSTERED": true,
+  }
+  return p.dd.Start(rules)
 }
 
 //================================================================//
@@ -475,7 +479,10 @@ func (p *CRProducer) startOfSection(sectionName string, kinds ...string) {
 // Start
 //----------------------------------------------------------------//
 func (p *CRProducer) Run(scanner scanner.Scanner) error {
-  p.provider.Start()
+  err := p.provider.Start()
+  if err != nil {
+    return err
+  }
 
   p.lineParser = (*CRProducer).scanL0
   p.tokenParser = (*CRProducer).scanT0
