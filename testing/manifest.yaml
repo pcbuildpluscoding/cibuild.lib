@@ -19,4 +19,4 @@ releaseSpec:
   about: about.txt
   manifest: manifest.yaml
   assetSpec: git_archive_path.txt
-baseDir: /home/devapps/enterprise/github/cibuild.lib/temp/pkg/codegen/progen
+baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/codegen/progen
