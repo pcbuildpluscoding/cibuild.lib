@@ -1,10 +1,22 @@
 ---
-params:
-  fromDir: foo/bar
-  toDir: roo/tar
-  toExt: .go
-run:
-  programArgs:
-    - bin/cigserver
-    - log/cigserver
-  programName: runTerm
+fromDir: /home/devapps/enterprise/github/cibuild
+basePath: pkg/codegen/progen
+baseExt: .tpl
+importable: []
+cmd:
+  copyFrom: cmd/server
+  copyTo: cmd
+  exclude: '[main.go]'
+lib:
+  copyFrom: lib/defaultValue/container/run
+  copyTo: lib
+  exclude: '[]'
+genware:
+  copyFrom: genware/std
+  copyTo: genware
+  exclude: '[]'
+releaseSpec:
+  about: about.txt
+  manifest: manifest.yaml
+  assetSpec: git_archive_path.txt
+baseDir: /home/devapps/enterprise/github/cibuild.lib/temp/pkg/codegen/progen

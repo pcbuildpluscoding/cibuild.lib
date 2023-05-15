@@ -1,5 +1,4 @@
 ---
-releaseTag: v0.3.0
 importable: [cmd, lib, genware]
 cmd:
   copyFrom: pkg/defaultValue/container/run/cmd

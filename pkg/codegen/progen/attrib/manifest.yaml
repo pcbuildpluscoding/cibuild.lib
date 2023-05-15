@@ -1,5 +1,4 @@
 ---
-releaseTag: v0.1.0
 importable: [cmd, lib, genware]
 cmd:
   copyFrom: pkg/codegen/progen/cmd
