@@ -17,10 +17,11 @@ import (
 type ApiRecord = rdt.ApiRecord
 type Component = elm.Component
 type DataDealer = elm.DataDealer
-type ScanData = han.ScanData
+type FlowRule = elm.FlowRule
 type LineWriter = elm.LineWriter
 type Printer = elm.Printer
 type Runware = rwt.Runware
+type ScanData = han.ScanData
 type StdPrinter = elm.StdPrinter
 type TextConsumer = han.TextConsumer
 type Trovian = tdb.Trovian

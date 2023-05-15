@@ -1,12 +1,12 @@
 package run
 
 import (
-  "fmt"
-  "text/scanner"
+	"fmt"
+	"text/scanner"
 
-  ab "github.com/pcbuildpluscoding/apibase/std"
-  elm "github.com/pcbuildpluscoding/genware/lib/element"
-  han "github.com/pcbuildpluscoding/genware/lib/handler"
+	ab "github.com/pcbuildpluscoding/apibase/std"
+	elm "github.com/pcbuildpluscoding/genware/lib/element"
+	han "github.com/pcbuildpluscoding/genware/lib/handler"
 )
 
 //================================================================//
@@ -85,7 +85,11 @@ func (p *PrintProvider) Start() error {
   for _, printer := range p.cache {
     elist.Add(printer.Start())
   }
-  elist.Add(p.dd.Start())
+  rules := elm.FlowRule{
+    "Sync": true,
+    "UNCLUSTERED": true,
+  }
+  elist.Add(p.dd.Start(rules))
   return elist.Unwrap()
 }
 

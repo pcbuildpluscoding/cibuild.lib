@@ -1,11 +1,11 @@
 package run
 
 import (
-  "fmt"
-  "regexp"
-  "strings"
+	"fmt"
+	"regexp"
+	"strings"
 
-  spb "google.golang.org/protobuf/types/known/structpb"
+	spb "google.golang.org/protobuf/types/known/structpb"
 )
 
 //================================================================//
@@ -52,9 +52,9 @@ func rewriteSliceValue(value string) (string, error) {
 func (p *DVContentPrinter) Print() error {
   logger.Debugf("@@@@@@@@@@@ printing section : %s @@@@@@@@@@", p.dd.SectionName)
   content := []interface{}{}
-  p.dd.SetSectionName("content")
+  // p.dd.SetSectionName("content")
   dbkey := p.dd.GetDbKey("/")
-  p.dd.BatchGet("").Use(func(s *spb.Struct) error {
+  p.dd.BatchGetWithRules("", FlowRule{"ClientId": p.Desc}).Use(func(s *spb.Struct) error {
     for varName, svalue := range s.Fields {
       varName = strings.Replace(varName, dbkey, "", 1)
       varType, value, _, err := getProps(svalue.GetListValue().Values)
@@ -105,7 +105,6 @@ func (p *DVContentPrinter) SetProperty(propName string, value interface{}) error
   switch propName {
   case "SectionName":
     if sectionName, ok := value.(string); ok {
-      p.dd.Desc = p.Desc
       p.dd.SetSectionName(sectionName)
     }
   }
@@ -124,6 +123,13 @@ func (p *DVContentPrinter) Start() error {
   return nil
 }
 
+//----------------------------------------------------------------//
+// String
+//----------------------------------------------------------------//
+func (p *DVContentPrinter) String() string {
+  return p.Desc
+}
+
 //================================================================//
 // DVImportPrinter
 //================================================================//
@@ -139,12 +145,11 @@ type DVImportPrinter struct {
 func (p *DVImportPrinter) Print() error {
   logger.Debugf("@@@@@@@@@@@ printing section : %s @@@@@@@@@@", p.dd.SectionName)
   x := []interface{}{}
-  p.dd.SetSectionName("required.imports")
-  err := p.dd.Get("", &x)
+  // p.dd.SetSectionName("required.imports")
+  err := p.dd.GetWithRules("", FlowRule{"ClientId": p.Desc}, &x)
   if err != nil {
     return err
   }
-  logger.Debugf("dbkey, result : %s, %v", p.dd.GetDbKey(""), x)
   p.writer.Write(x...)
   return nil
 }
@@ -156,7 +161,6 @@ func (p *DVImportPrinter) SetProperty(propName string, value interface{}) error 
   switch propName {
   case "SectionName":
     if sectionName, ok := value.(string); ok {
-      p.dd.Desc = p.Desc
       p.dd.SetSectionName(sectionName)
     }
   }
@@ -168,4 +172,11 @@ func (p *DVImportPrinter) SetProperty(propName string, value interface{}) error 
 //----------------------------------------------------------------//
 func (p *DVImportPrinter) Start() error {
   return nil
+}
+
+//----------------------------------------------------------------//
+// String
+//----------------------------------------------------------------//
+func (p *DVImportPrinter) String() string {
+  return p.Desc
 }

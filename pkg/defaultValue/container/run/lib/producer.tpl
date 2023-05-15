@@ -60,6 +60,7 @@ func (p *TCProvider) getEditor(kind string) (TextConsumer, error) {
       p.cache[kind] = editor
     }
   }
+  p.dd.UpdateRules(elm.FlowRule{"ClientId": editor.String()})
   return editor, err
 }
 
@@ -74,7 +75,11 @@ func (p *TCProvider) skipLines(skipLineCount int) {
 // Start
 //----------------------------------------------------------------//
 func (p *TCProvider) Start() error {
-  return p.dd.Start()
+  rules := elm.FlowRule{
+    "Sync": true,
+    "UNCLUSTERED": true,
+  }
+  return p.dd.Start(rules)
 }
 
 //================================================================//
@@ -213,6 +218,11 @@ func (p *DVProducer) startOfSection(sectionName string, kinds ...string) {
 // Run
 //----------------------------------------------------------------//
 func (p *DVProducer) Run(scanner scanner.Scanner) error {
+  err := p.provider.Start()
+  if err != nil {
+    return err
+  }
+  
   p.tokenParser = (*DVProducer).scanT0
 
   handler := han.NewScanHandler(p, p.provider.skipLineCount)
