@@ -27,21 +27,22 @@ func SetLogger(super *logrus.Logger) {
 }
 
 type Genware = gwt.Genware
+type Genwork = gwt.Genwork
 type GenwareVendor = gwt.GenwareVendor
 type GenworkVendor = gwt.GenworkVendor
 type Runware = rwt.Runware
 type Trovian = tdb.Trovian
 
 //------------------------------------------------------------------//
-// init - register genware plugins
+// init - register plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "defaultValue/container/run"
-  vendor := NewDVGenVendor(pkey)
-  gwt.RegisterGenware(pkey, vendor)
-  pkey := "cibuild/profile/edit"
-  vendor := NewEditProfileVendor()
-  gwt.RegisterGenwork(pkey, vendor)
+  pkey := "cibuild/container/run"
+  vendorA := NewCRGenVendor(pkey)
+  gwt.RegisterGenware(pkey, vendorA)
+  pkey = "cibuild/profile/edit"
+  vendorB := NewEditProfileVendor()
+  gwt.RegisterGenwork(pkey, vendorB)
 }
 
 //----------------------------------------------------------------//
