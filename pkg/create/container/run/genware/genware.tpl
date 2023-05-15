@@ -11,6 +11,7 @@ import (
   crg "github.com/pcbuildpluscoding/cibuild/lib/create/container/run"
   elm "github.com/pcbuildpluscoding/genware/lib/element"
   tdb "github.com/pcbuildpluscoding/trovedb/std"
+  gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
   gwt "github.com/pcbuildpluscoding/types/genware"
   rwt "github.com/pcbuildpluscoding/types/runware"
   "github.com/sirupsen/logrus"
@@ -27,6 +28,7 @@ func SetLogger(super *logrus.Logger) {
 
 type Genware = gwt.Genware
 type GenwareVendor = gwt.GenwareVendor
+type GenworkVendor = gwt.GenworkVendor
 type Runware = rwt.Runware
 type Trovian = tdb.Trovian
 
@@ -37,6 +39,9 @@ func init() {
   pkey := "cibuild/container/run"
   vendor := NewCRGenVendor(pkey)
   gwt.RegisterGenware(pkey, vendor)
+  pkey := "cibuild/profile/edit"
+  vendor := NewEditProfileVendor()
+  gwt.RegisterGenwork(pkey, vendor)
 }
 
 //----------------------------------------------------------------//
@@ -61,6 +66,19 @@ func NewCRGenVendor(pkey string) GenwareVendor {
     default:
       return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
     }
+  }
+}
+
+//----------------------------------------------------------------//
+// NewEditProfileVendor
+//----------------------------------------------------------------//
+func NewEditProfileVendor() GenworkVendor {
+  return func(troveAddr string, rw Runware) (Genwork, error) {
+    connex, err := newTrovian(troveAddr, rw.String("BucketName"))
+    if err != nil {
+      return nil, err
+    }
+    return gwk.NewProfileEditor(connex), nil
   }
 }
 
