@@ -1,0 +1,11 @@
+---
+importable: [cmd, lib, genware]
+cmd:
+  copyFrom: pkg/linux/container/run/cmd
+  copyTo: cmd/server
+lib:
+  copyFrom: pkg/linux/container/run/lib
+  copyTo: lib/linux/container/run
+genware:
+  copyFrom: pkg/linux/container/run/genware
+  copyTo: genware/std

@@ -36,12 +36,12 @@ func (p *TCProvider) newEditor(kind string) (TextConsumer, error) {
 // Arrange
 //----------------------------------------------------------------//
 func (p *TCProvider) Arrange(spec Runware) error {
-  if !spec.HasKeys("TextConsumerKinds") {
-    return fmt.Errorf("required taskSpec property TextConsumerKinds is undefined")
+  if !spec.HasKeys("Workers") {
+    return fmt.Errorf("required taskSpec property Workers is undefined")
   }
   elist := ab.NewErrorlist(true)
   var err error
-  for _, kind := range spec.StringList("TextConsumerKinds") {
+  for _, kind := range spec.StringList("Workers") {
     p.cache[kind], err = p.newEditor(kind)
     elist.Add(err)
   }

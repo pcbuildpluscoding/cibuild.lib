@@ -52,12 +52,12 @@ func (p *PrintProvider) newPrinter(kind string) (Printer, error) {
 // Arrange
 //----------------------------------------------------------------//
 func (p *PrintProvider) Arrange(spec Runware) error {
-  if !spec.HasKeys("PrinterKinds") {
-    return fmt.Errorf("required taskSpec property PrinterKinds is undefined")
+  if !spec.HasKeys("Workers") {
+    return fmt.Errorf("required taskSpec property Workers is undefined")
   }
   elist := ab.NewErrorlist(true)
   var err error
-  for _, kind := range spec.StringList("PrinterKinds") {
+  for _, kind := range spec.StringList("Workers") {
     p.cache[kind], err = p.newPrinter(kind)
     elist.Add(err)
   }
