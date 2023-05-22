@@ -1,14 +1,13 @@
 package run
 
 import (
-  "fmt"
-  "text/scanner"
+	"fmt"
+	"text/scanner"
 
-  ab "github.com/pcbuildpluscoding/apibase/std"
-  elm "github.com/pcbuildpluscoding/genware/lib/element"
-  han "github.com/pcbuildpluscoding/genware/lib/handler"
+	ab "github.com/pcbuildpluscoding/apibase/std"
+	elm "github.com/pcbuildpluscoding/genware/lib/element"
+	han "github.com/pcbuildpluscoding/genware/lib/handler"
 )
-
 
 //================================================================//
 // PrintProvider
@@ -16,6 +15,7 @@ import (
 type PrintProvider struct {
   dd *DataDealer
   cache map[string]Printer
+  spec Runware
   writer LineWriter
 }
 
@@ -42,7 +42,7 @@ func (p *PrintProvider) Print(kind, sectionName string) error {
 func (p *PrintProvider) newPrinter(kind string) (Printer, error) {
   switch kind {
   case "VarDec":
-    return NewVardecPrinter(p.dd, p.writer)
+    return elm.NewVardecPrinter(p.dd, p.spec, p.writer)
   default:
     return elm.NewStdPrinter(p.dd, p.writer)
   }
@@ -117,14 +117,12 @@ func (c *CRComposer) composeL0(line string) (LineParser_CRC) {
   case 4:
     c.provider.Print("VarDec", "generateRootfsOpts")
   case 5:
-    c.provider.Print("Default", "generateLogURI")
-  case 6:
     c.provider.Print("Default", "withContainerLabels")
-  case 7:
+  case 6:
     c.provider.Print("VarDec", "readKVStringsMapfFromLabel")
-  case 8:
+  case 7:
     c.provider.Print("VarDec", "parseKVStringsMapFromLogOpt")
-  case 9:
+  case 8:
     c.provider.Print("Default", "withStop")
   }
   c.lineState = 0
@@ -142,64 +140,57 @@ func (c *CRComposer) composeT0(sd *ScanData) TokenParser_CRC {
       c.skipLines(1)
       c.tokenState = 1
       c.lineState = 1
-    } 
+    }
   case 1:
     if sd.Token == "// compose:createContainer" {
       logger.Debugf("$$$$$$$$$ compose:createContainer tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 2
       c.lineState = 2
-    } 
+    }
   case 2:
     if sd.Token == "// compose:processPullCommandFlagsInRun" {
       logger.Debugf("$$$$$$$$$ compose:processPullCommandFlagsInRun tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 3
       c.lineState = 3
-    } 
+    }
   case 3:
     if sd.Token == "// compose:generateRootfsOpts" {
       logger.Debugf("$$$$$$$$$ compose:generateRootfsOpts tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 4
       c.lineState = 4
-    } 
+    }
   case 4:
-    if sd.Token == "// compose:generateLogURI" {
-      logger.Debugf("$$$$$$$$$ compose:generateLogURI tag detected $$$$$$$$$$")
+    if sd.Token == "// compose:withContainerLabels" {
+      logger.Debugf("$$$$$$$$$ compose:withContainerLabels tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 5
       c.lineState = 5
-    } 
+    }
   case 5:
-    if sd.Token == "// compose:withContainerLabels" {
-      logger.Debugf("$$$$$$$$$ compose:withContainerLabels tag detected $$$$$$$$$$")
+    if sd.Token == "// compose:readKVStringsMapfFromLabel" {
+      logger.Debugf("$$$$$$$$$ compose:readKVStringsMapfFromLabel tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 6
       c.lineState = 6
     } 
   case 6:
-    if sd.Token == "// compose:readKVStringsMapfFromLabel" {
-      logger.Debugf("$$$$$$$$$ compose:readKVStringsMapfFromLabel tag detected $$$$$$$$$$")
+    if sd.Token == "// compose:parseKVStringsMapFromLogOpt" {
+      logger.Debugf("$$$$$$$$$ compose:parseKVStringsMapFromLogOpt tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 7
       c.lineState = 7
     } 
   case 7:
-    if sd.Token == "// compose:parseKVStringsMapFromLogOpt" {
-      logger.Debugf("$$$$$$$$$ compose:parseKVStringsMapFromLogOpt tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 8
-      c.lineState = 8
-    } 
-  case 8:
     if sd.Token == "// compose:withStop" {
       logger.Debugf("$$$$$$$$$ compose:withStop tag detected $$$$$$$$$$")
       c.skipLines(1)
       c.tokenState = 0
-      c.lineState = 9
+      c.lineState = 8
       return nil
-    } 
+    }
   }
   return (*CRComposer).composeT0
 }
@@ -210,7 +201,7 @@ func (c *CRComposer) composeT0(sd *ScanData) TokenParser_CRC {
 //----------------------------------------------------------------//
 func (c *CRComposer) EndOfFile(...string) {
   switch c.lineState {
-  case 9:
+  case 8:
     // this means the 'compose:withStop' token was detected and lineState
     // set = 9 but the lineParser did not run since EOF happened
     c.provider.Print("default", "withStop")
