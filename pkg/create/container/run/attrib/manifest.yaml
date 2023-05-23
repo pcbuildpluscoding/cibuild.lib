@@ -1,4 +1,7 @@
 ---
+fromDir:
+baseDir:
+basePath: pkg/create/container/run
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang
@@ -10,18 +13,18 @@ convertExt:
     module: copyFile
 importable: [cmd, config, genware, lib]
 cmd:
-  copyFrom: pkg/create/container/run/cmd
+  copyFrom: cmd
   copyTo: cmd/server
   exclude: ''
 config:
-  copyFrom: pkg/create/container/run/config
+  copyFrom: config
   copyTo: config/create/container/run
   exclude: ''
 genware:
-  copyFrom: pkg/create/container/run/genware
+  copyFrom: genware
   copyTo: genware/std
   exclude: ''
 lib:
-  copyFrom: pkg/create/container/run/lib
+  copyFrom: lib
   copyTo: lib/create/container/run
   exclude: ''

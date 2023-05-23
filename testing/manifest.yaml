@@ -10,7 +10,7 @@ convertExt:
     toExt: .tpl
   notApplicable:
     module: copyFile
-importable: [config]
+importable: []
 cmd:
   copyFrom: cmd/server
   copyTo: cmd

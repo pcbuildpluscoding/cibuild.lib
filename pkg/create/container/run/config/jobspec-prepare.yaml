@@ -8,19 +8,11 @@ Tasks:
 EditCopy1: 
   Action: CopyFile
   AsyncTask: false
-  BASE_DIR: $HOME/enterprise/cibuild
-  CIBUILD_DB_BUCKET: nerdctl/integration
-  CIBUILD_JOB_ID: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
   Device: Genwork
-  EnvironmentVars: 
-    - CIBUILD_DB_BUCKET
-    - CIBUILD_JOB_ID
-    - RELEASE_TAG
-    - BASE_DIR
+  EnvironmentVars: []
   InputFile: trovedb:system/uri|github.repo/internal,incron.profile/template/cibuild/dev01/.profile
   OutputFile: trovedb:system/uri|github.repo/cibuild,incron.profile/cibuild/dev01/.profile
   PluginKey: cibuild/profile/edit
-  RELEASE_TAG: v0.3.3
   Subject: CreateContainerRun
 CopyFile1:
   Action: CopyFileWithTmsp
