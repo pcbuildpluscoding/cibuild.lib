@@ -1,3 +1,4 @@
 pkg/create/container/run/cmd
+pkg/create/container/run/config
 pkg/create/container/run/genware
 pkg/create/container/run/lib

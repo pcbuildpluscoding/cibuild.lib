@@ -1,11 +1,27 @@
 ---
-importable: [cmd, lib, genware]
+convertExt:
+  convertible: [cmd, genware, lib]
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .tpl
+    toExt: .go
+  notApplicable:
+    module: copyFile
+importable: [cmd, config, genware, lib]
 cmd:
   copyFrom: pkg/create/container/run/cmd
   copyTo: cmd/server
-lib:
-  copyFrom: pkg/create/container/run/lib
-  copyTo: lib/create/container/run
+  exclude: ''
+config:
+  copyFrom: pkg/create/container/run/config
+  copyTo: config/create/container/run
+  exclude: ''
 genware:
   copyFrom: pkg/create/container/run/genware
   copyTo: genware/std
+  exclude: ''
+lib:
+  copyFrom: pkg/create/container/run/lib
+  copyTo: lib/create/container/run
+  exclude: ''

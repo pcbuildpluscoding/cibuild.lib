@@ -1,11 +1,23 @@
 ---
+convertExt:
+  convertible: [cmd, genware, lib]
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .tpl
+    toExt: .go
+  notApplicable:
+    module: copyFile
 importable: [cmd, lib, genware]
 cmd:
   copyFrom: pkg/codegen/progen/cmd
   copyTo: cmd/server
+  exclude: ''
 lib:
   copyFrom: pkg/codegen/progen/lib
   copyTo: lib/codegen/progen
+  exclude: ''
 genware:
   copyFrom: pkg/codegen/progen/genware
   copyTo: genware/std
+  exclude: ''

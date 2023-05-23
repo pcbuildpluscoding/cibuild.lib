@@ -1,0 +1,48 @@
+---
+RemoteAddr: 127.0.0.1:4499
+Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2
+Tasks:
+  - ScanVars
+  - Generate
+  # - CopyFile
+ScanVars:
+  Action: ScanVars
+  BucketName: system/testing
+  DbPrefix: create/container/run
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run.go
+  OutputFile: Stdout
+  PluginKey: create/container/run
+  Subject: CreateContainerRun
+  Arrangement:
+    Blacklist:
+      createContainer:
+        - [var umask string, 1]
+        - [var pidFile string, 1]
+    BucketName: nerdctl/integration
+    LineParserB:
+      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/LineParserB
+    SectionDealer:
+      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/SectionDealer
+    Workers: ["LineParserA","LineParserB"]
+Generate: 
+  Action: Generate
+  BucketName: system/testing
+  DbPrefix: create/container/run
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerRun.tpl
+  OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerRun.go
+  PluginKey: create/container/run
+  Workers: ["Default","VarDec"]
+  Subject: CreateContainerRun
+  Arrangement:
+    BucketName: nerdctl/integration
+    VarDecErrTest:
+      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/VarDecErrTest
+CopyFile:
+  Action: CopyFileWithTmsp
+  AsyncTask: true
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cleanup/dev01/manifest.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,cleanup/dev01/manifest.yaml
+  Subject: CreateContainerRun

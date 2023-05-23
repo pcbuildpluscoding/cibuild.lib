@@ -1,22 +1,33 @@
----
 fromDir: /home/devapps/enterprise/github/cibuild
+baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/create/container/run
 basePath: pkg/create/container/run
-baseExt: .tpl
-importable: [cmd, genware, lib]
+convertExt:
+  convertible: [cmd, genware, lib]
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .go
+    toExt: .tpl
+  notApplicable:
+    module: copyFile
+importable: [config]
 cmd:
   copyFrom: cmd/server
   copyTo: cmd
   exclude: '[main.go]'
+config:
+  copyFrom: config/create/container/run
+  copyTo: config
+  exclude: ''
 genware:
   copyFrom: genware/std
   copyTo: genware
-  exclude: '[]'
+  exclude: ''
 lib:
   copyFrom: lib/create/container/run
   copyTo: lib
-  exclude: '[]'
+  exclude: ''
 releaseSpec:
   about: about.txt
   manifest: manifest.yaml
   assetSpec: git_archive_path.txt
-baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/create/container/run
