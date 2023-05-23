@@ -1,1 +1,1 @@
-changed create/container/run/attrib/manifest.yaml so it complies with generic CopyBranch manifest protocol
+latest create/container/run development works

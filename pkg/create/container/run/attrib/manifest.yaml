@@ -1,7 +1,8 @@
 ---
 fromDir:
+fromPath: pkg/create/container/run
 baseDir:
-basePath: pkg/create/container/run
+basePath:
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang

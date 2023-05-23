@@ -1,5 +1,6 @@
 fromDir: /home/devapps/enterprise/github/cibuild
-baseDir: /home/devapps/enterprise/github/cibuild.lib/pkg/create/container/run
+fromPath:
+baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/create/container/run
 convertExt:
   convertible: [cmd, genware, lib]
@@ -30,4 +31,4 @@ lib:
 releaseSpec:
   about: about.txt
   manifest: manifest.yaml
-  assetSpec: git_archive_path.txt
+  pathSpec: git_archive_path.txt
