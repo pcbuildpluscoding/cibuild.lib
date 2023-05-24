@@ -15,6 +15,7 @@ import (
 type PrintProvider struct {
   dd *DataDealer
   cache map[string]Printer
+  spec Runware
   writer LineWriter
 }
 
@@ -41,7 +42,7 @@ func (p *PrintProvider) Print(kind, sectionName string) error {
 func (p *PrintProvider) newPrinter(kind string) (Printer, error) {
   switch kind {
   case "VarDec":
-    return NewVardecPrinter(p.dd, p.writer)
+    return elm.NewVardecPrinter(p.dd, p.spec, p.writer)
   default:
     return elm.NewStdPrinter(p.dd, p.writer)
   }

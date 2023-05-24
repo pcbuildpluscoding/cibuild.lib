@@ -16,6 +16,7 @@ type TCProvider struct {
   dd *DataDealer
   cache map[string]TextParser
   skipLineCount *int
+  spec Runware
 }
 
 //----------------------------------------------------------------//
@@ -24,7 +25,7 @@ type TCProvider struct {
 func (p *TCProvider) newParser(kind string) (TextParser, error) {
   switch kind {
   case "LineParserA":
-    return NewLineParserA(p.dd, p.skipLineCount)
+    return NewLineParserA(p.dd, p.skipLineCount, p.spec)
   case "LineParserB":
     return NewLineParserB(p.dd, p.skipLineCount)
   default:
@@ -153,13 +154,13 @@ func (p *CRProducer) setParser(sectionName, kind string) error {
 // SectionEnd
 //----------------------------------------------------------------//
 func (p *CRProducer) SectionEnd(...string) {
-  section, _ := p.dealer.getSectionProps()
-  logger.Debugf("$$$$$$$$$ SectionEnd - new section : %s $$$$$$$$", section)
   p.parser.SectionEnd()
   p.parser.RemoveNext()
   p.parser = nil
   // set the next Sectional instance for sectionStart searching
   p.dealer.setNext()
+  section, _ := p.dealer.getSectionProps()
+  logger.Debugf("$$$$$$$$$ SectionEnd - new section : %s $$$$$$$$", section)
 }
 
 //----------------------------------------------------------------//

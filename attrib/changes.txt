@@ -1,1 +1,1 @@
-latest create/container/run development works
+updated LineParserA and VarDec with IfCmdGetErr state improvements

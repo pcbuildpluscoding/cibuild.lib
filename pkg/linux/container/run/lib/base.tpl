@@ -2,6 +2,8 @@ package run
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/pcbuildpluscoding/apibase/loggar"
@@ -15,6 +17,7 @@ import (
 )
 
 type ApiRecord = rdt.ApiRecord
+type Blacklist = elm.Blacklist
 type Component = elm.Component
 type DataDealer = elm.DataDealer
 type ScanData = han.ScanData
@@ -24,6 +27,7 @@ type Runware = rwt.Runware
 type StdPrinter = elm.StdPrinter
 type TextConsumer = han.TextConsumer
 type Trovian = tdb.Trovian
+type VarDecErrTest = elm.VarDecErrTest
 type XString = fs.XString
 
 var logger = loggar.Get()
@@ -94,10 +98,11 @@ func NewCRComposer(connex *Trovian, spec Runware, writer LineWriter) (*CRCompose
 //----------------------------------------------------------------//
 func NewPrintProvider(connex *Trovian, spec Runware, writer LineWriter) (PrintProvider, error) {
   desc := "PrintProvider-" + time.Now().Format("150405.000000")
-  dd, err := elm.NewDataDealer(connex, desc, "", spec)
+  dd, err := elm.NewDataDealer(desc, connex, spec)
   return PrintProvider{
     dd: &dd,
     cache: map[string]Printer{},
+    spec: spec,
     writer: writer,
   }, err
 }
@@ -107,22 +112,12 @@ func NewPrintProvider(connex *Trovian, spec Runware, writer LineWriter) (PrintPr
 //----------------------------------------------------------------//
 func NewTCProvider(connex *Trovian, spec Runware, count *int) (TCProvider, error) {
   desc := "TCProvider-" + time.Now().Format("150405.000000")
-  dd, err := elm.NewDataDealer(connex, desc, "", spec)
+  dd, err := elm.NewDataDealer(desc, connex, spec)
   return TCProvider{
     dd: &dd,
     cache: map[string]TextParser{},
     skipLineCount: count,
-  }, err
-}
-
-//----------------------------------------------------------------//
-// NewVardecPrinter
-//----------------------------------------------------------------//
-func NewVardecPrinter(dd *DataDealer, writer LineWriter) (*VardecPrinter, error) {
-  p, err := elm.NewStdPrinter(dd, writer)
-  p.Desc = "VardecPrinter-" + time.Now().Format("150405.000000")
-  return &VardecPrinter{
-    StdPrinter: *p,
+    spec: spec,
   }, err
 }
 
@@ -144,11 +139,16 @@ func NewLineCopier(dd *DataDealer, count *int, darg ...string) LineCopier {
 //----------------------------------------------------------------//
 // NewLineParserA
 //----------------------------------------------------------------//
-func NewLineParserA(dd *DataDealer, count *int) (*LineParserA, error) {
+func NewLineParserA(dd *DataDealer, count *int, spec Runware) (*LineParserA, error) {
   desc := "LineParserA-" + time.Now().Format("150405.000000")
   dd.Desc = desc
+  blacklist, err := elm.NewBlacklist(spec.SubNode("Arrangement"))
+  if err != nil {
+    return nil, err
+  }
   return &LineParserA{
     LineCopier: NewLineCopier(dd, count, desc),
+    blacklist: blacklist,
     buffer: []interface{}{},
   }, nil
 }
@@ -172,4 +172,154 @@ func NewSectionDealer(count *int) SectionDealer {
     Desc: "SectionDealer-" + time.Now().Format("150405.000000"),
     skipLineCount: count,
   }
+}
+
+//================================================================//
+// VarDec
+//================================================================//
+type VarDec struct {
+  varName string
+  flagName string
+  varType string
+  equalToken string
+  indentFactor int
+  indentSize int
+  inlineErr bool
+  isSlice *regexp.Regexp
+}
+
+//----------------------------------------------------------------//
+// DecIndent
+//----------------------------------------------------------------//
+func (d *VarDec) DecIndent() {
+  d.indentFactor -= 1
+}
+
+//----------------------------------------------------------------//
+// getIndent
+//----------------------------------------------------------------//
+func (d VarDec) getIndent() string {
+  indentFmt := "%" + fmt.Sprintf("%ds", d.indentFactor * d.indentSize)
+  return fmt.Sprintf(indentFmt, " ")
+}
+
+//----------------------------------------------------------------//
+// GetIndentFactor
+//----------------------------------------------------------------//
+func (d *VarDec) GetIndentFactor() int {
+  return d.indentFactor
+}
+
+//----------------------------------------------------------------//
+// GetParamSetter
+//----------------------------------------------------------------//
+func (d VarDec) GetParamSetter() string {
+  indent := d.getIndent()
+  return fmt.Sprintf("%sp := cspec.Parameter(\"%s\")", indent, d.flagName)
+}
+
+//----------------------------------------------------------------//
+// GetParamValue
+//----------------------------------------------------------------//
+func (d VarDec) GetParamValue() string {
+  indent := d.getIndent()
+  if d.inlineErr {
+    return fmt.Sprintf("%s%s %s p.%s(); p.Err() != nil {", indent, d.varName, d.equalToken, d.varType)
+  }
+  return fmt.Sprintf("%s%s %s p.%s()", indent, d.varName, d.equalToken, d.varType)
+}
+
+//----------------------------------------------------------------//
+// GetVarDec
+//----------------------------------------------------------------//
+func (d VarDec) GetVarDec() string {
+  goVarType := strings.ToLower(d.varType)
+  switch d.varType {
+  case "StringList":
+    goVarType = "[]string"
+  case "ParamList":
+    goVarType = "[]Parameter"
+  }
+  indent := d.getIndent()
+  return fmt.Sprintf("%svar %s %s", indent, d.varName, goVarType)
+}
+
+//----------------------------------------------------------------//
+// GetVarSetter
+//----------------------------------------------------------------//
+func (d VarDec) GetVarSetter() string {
+  indent := d.getIndent()
+  return fmt.Sprintf("%s%s %s cspec.%s(\"%s\")", indent, d.varName, d.equalToken, d.varType, d.flagName)
+}
+
+//----------------------------------------------------------------//
+// IndentLine
+//----------------------------------------------------------------//
+func (d VarDec) IndentLine(text string) string {
+  indent := d.getIndent()
+  return fmt.Sprintf("%s%s", indent, text)
+}
+
+//----------------------------------------------------------------//
+// IncIndent
+//----------------------------------------------------------------//
+func (d *VarDec) IncIndent() {
+  d.indentFactor += 1
+}
+
+//----------------------------------------------------------------//
+// ParseGetter
+//----------------------------------------------------------------//
+func (d *VarDec) ParseGetter(line string) *VarDec {
+  varText, remnant := XString(line).SplitInTwo(", ")
+  _, equalToken, remnantA := remnant.SplitInThree(" ")
+  varType, flagName := remnantA.SplitNKeepOne("Flags().Get",2,1).SplitInTwo(`("`)
+  inlineErr := flagName.Contains("err != nil")
+  if inlineErr {
+    flagName, _ = flagName.SplitInTwo(`")`)
+  } else {
+    flagName.Replace(`")`, "", 1)
+  }
+  var varName string
+  if varText.Contains("if") {
+    varName = varText.SplitNKeepOne(" ",2,1).Trim()
+  } else {
+    varName = varText.Trim()
+  }
+  d.parseVarType(varType)
+  d.varName = varName
+  d.flagName = flagName.String()
+  d.equalToken = equalToken.String()
+  d.inlineErr = inlineErr
+  return d
+}
+
+//----------------------------------------------------------------//
+// ResetIndent
+//----------------------------------------------------------------//
+func (d *VarDec) ResetIndent() {
+  d.indentFactor = 1
+}
+
+//----------------------------------------------------------------//
+// parseVarType
+//----------------------------------------------------------------//
+func (d *VarDec) parseVarType(varType XString) {
+  d.varType = varType.String()
+  if d.isSlice.MatchString(varType.String()) {
+    if varType.Contains("String") {
+      d.varType = "StringList"
+    } else {
+      d.varType = "ParamList"
+    }
+  }
+}
+
+//----------------------------------------------------------------//
+// Start
+//----------------------------------------------------------------//
+func (d *VarDec) Start() error {
+  var err error
+  d.isSlice, err = regexp.Compile("Slice|Array")
+  return err
 }

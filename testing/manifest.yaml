@@ -1,7 +1,7 @@
 fromDir: /home/devapps/enterprise/github/cibuild
 fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/create/container/run
+basePath: pkg/linux/container/run
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang
@@ -11,13 +11,13 @@ convertExt:
     toExt: .tpl
   notApplicable:
     module: copyFile
-importable: []
+importable: [cmd, genware, lib]
 cmd:
   copyFrom: cmd/server
   copyTo: cmd
   exclude: '[main.go]'
 config:
-  copyFrom: config/create/container/run
+  copyFrom: config/linux/container/run
   copyTo: config
   exclude: ''
 genware:
@@ -25,7 +25,7 @@ genware:
   copyTo: genware
   exclude: ''
 lib:
-  copyFrom: lib/create/container/run
+  copyFrom: lib/linux/container/run
   copyTo: lib
   exclude: ''
 releaseSpec:

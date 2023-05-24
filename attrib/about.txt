@@ -1,1 +1,1 @@
-cibuild pkg/create/container/run is a code generation module that produces content for cntrize /create/container/run
+cibuild pkg/linux/container/run is a code generation module that produces content for cntrize /linux/container/run

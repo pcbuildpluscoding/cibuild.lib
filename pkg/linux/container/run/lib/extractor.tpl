@@ -90,7 +90,7 @@ func (c *LineCopier) EndOfFile(...string) {
 //----------------------------------------------------------------//
 func (p *LineCopier) PutLine(line string) {
   if *p.skipLineCount == 0 {
-    p.dd.PutLine(line)
+    p.dd.AddLines(line)
   }
 }
 
@@ -107,7 +107,7 @@ func (c *LineCopier) SectionEnd() {
 func (p *LineCopier) SectionStart(string) {}
 
 //----------------------------------------------------------------//
-// Start
+// String
 //----------------------------------------------------------------//
 func (p *LineCopier) String() string {
   return p.Desc
@@ -119,9 +119,11 @@ func (p *LineCopier) String() string {
 type LineParserA struct {
   LineCopier
   buffer []interface{}
+  blacklist Blacklist
   regex map[string]*regexp.Regexp
   state string
   varId int
+  varDec VarDec
 }
 
 //----------------------------------------------------------------//
@@ -131,15 +133,24 @@ func (p *LineParserA) Arrange(rw Runware) error {
   elist := ab.NewErrorlist(true)
   var err error
   p.regex = map[string]*regexp.Regexp{}
-  p.regex["IfCmdFlagErr"], err = regexp.Compile(`if.+err.+cmd\.Flag.+\{`)
+  p.regex["IfCmdGetErr"], err = regexp.Compile(`if.+err.+cmd\.Flags\(\).Get.+\{`)
   elist.Add(err)
   p.regex["IfCmdLookup"], err = regexp.Compile(`if.+cmd\.Flag.+Lookup.+Changed`)
   elist.Add(err)
   p.regex["IfCmdChanged"], err = regexp.Compile(`if.+cmd\.Flag.+Changed`)
   elist.Add(err)
-  p.regex["CmdFlag"], err = regexp.Compile(`err.+cmd\.Flag`)
+  p.regex["CmdGet"], err = regexp.Compile(`err.+cmd\.Flags\(\).Get`)
   elist.Add(err)
-  p.regex["SliceType"], err = regexp.Compile(`Slice|Array`)
+  p.regex["IfCmdFlag"], err = regexp.Compile(`if.+cmd\.Flag.+\{`)
+  elist.Add(err)
+  p.regex["IfBlock"], err = regexp.Compile(`if.+\{`)
+  elist.Add(err)
+  isSlice, err := regexp.Compile(`Slice|Array`)
+  p.varDec = VarDec{
+    isSlice: isSlice,
+    indentFactor: 1,
+    indentSize: 2,
+  }
   elist.Add(err)
   return elist.Unwrap()
 }
@@ -160,21 +171,6 @@ func (p *LineParserA) Next() TextParser {
 // AddSectionCount
 //----------------------------------------------------------------//
 func (p *LineParserA) addSectionCount() {
-  var lines = []interface{}{
-    "",
-    "  if err := cspec.Err(); err != nil {",
-    "    return nil, err",
-    "  }",
-    "  cspec.ErrReset()",
-    "",
-  }
-  // switch p.dd.SectionName {
-  // case "createContainer":
-  //   lines[2] = "    return nil, nil, err"
-  // case "generateRootfsOpts":
-  //   lines[2] = "    return nil, nil, nil, err"
-  // }
-  p.dd.Put("vardec-errtest", lines)
   p.dd.Put("vardec-count", p.varId)
   p.dd.AddSectionCount()
 }
@@ -184,7 +180,7 @@ func (p *LineParserA) addSectionCount() {
 //----------------------------------------------------------------//
 func (p *LineParserA) addVarDec(line interface{}) {
   if p.varId == 0 {
-    p.dd.PutLine("// variable-declarations")
+    p.dd.AddLines("// variable-declarations")
   }
   p.dd.Put("vardec/%02d", line, p.varId)
   p.varId += 1
@@ -194,6 +190,9 @@ func (p *LineParserA) addVarDec(line interface{}) {
 // EditLine
 //----------------------------------------------------------------//
 func (p *LineParserA) EditLine(line *string) {
+  if p.blacklist.Matches(*line) {
+    return
+  }
   p.editLine(line)
   if p.next != nil {
     p.next.EditLine(line)
@@ -205,39 +204,64 @@ func (p *LineParserA) EditLine(line *string) {
 //----------------------------------------------------------------//
 func (p *LineParserA) editLine(line *string) {
   switch p.state {
-  case "IfElseBlock":
-    if p.regex["CmdFlag"].MatchString(*line) {
-      *line, _ = p.rewriteGetter(*line, false)
-      p.state = "NestedVarDec"
-    }
-    p.buffer = append(p.buffer, *line)
-  case "NestedVarDec":
-    p.buffer = append(p.buffer, *line)
   case "Parse":
-    if p.regex["IfCmdChanged"].MatchString(*line) {
-      *line = p.rewriteLine("IfCmdChanged", *line)
-      p.buffer = append(p.buffer, *line)
+    switch {
+    case p.regex["IfCmdFlag"].MatchString(*line):
       p.state = "IfElseBlock"
-    } else if p.regex["IfCmdFlagErr"].MatchString(*line) {
-      *line = p.rewriteLine("IfCmdFlagErr", *line)
-    } else if p.regex["CmdFlag"].MatchString(*line) {
-      *line,_ = p.rewriteGetter(*line, false)
-      p.addVarDec(*line)
-      p.skipLines(4)
+      if p.regex["IfCmdLookup"].MatchString(*line) {
+        *line = p.rewriteLine("IfCmdLookup", *line)
+      } else if p.regex["IfCmdChanged"].MatchString(*line) {
+      *line = p.rewriteLine("IfCmdChanged", *line)
+      } else if p.regex["IfCmdGetErr"].MatchString(*line) {
+        *line = p.rewriteLine("IfCmdGetErr", *line)
+        p.state = "IfCmdGetErr"
+      }
+      p.buffer = append(p.buffer, *line)
+    default:
+      if p.regex["CmdGet"].MatchString(*line) {
+        p.addVarDec(p.varDec.ParseGetter(*line).GetVarSetter())
+        p.skipLines(4)
+      }
     }
   default:
-    logger.Warnf("%s unexpected parser state in EditLine : |%s|", p.Desc, p.state)
+    switch p.state {
+    case "IfCmdGetErr":
+      p.varDec.IncIndent()
+      line_ := p.varDec.IndentLine("return nil, p.Err()")
+      p.buffer = append(p.buffer, line_)
+      p.varDec.DecIndent()
+      p.state="IfElseBlock"
+      logger.Debugf("$$$$$$ switching from IfCmdGetErr back to IfElseBlock - current indent factor : %d", p.varDec.GetIndentFactor())
+    case "IfElseBlock":
+      if p.regex["CmdGet"].MatchString(*line) {
+        p.varDec.ParseGetter(*line)
+        *line = p.varDec.GetVarSetter()
+        p.state = "NestedVarDec"
+      }
+      p.buffer = append(p.buffer, *line)
+    case "NestedVarDec":
+    default:
+      logger.Warnf("%s unexpected parser state in EditLine : |%s|", p.Desc, p.state)
+    }
   }
 }
 
 //----------------------------------------------------------------//
 // flushBuffer
 //----------------------------------------------------------------//
-func (p *LineParserA) flushBuffer() {
+func (p *LineParserA) flushBuffer(line_ string) {
   switch p.state {
   case "IfElseBlock":
-    p.dd.AddLines(p.buffer...)
+    p.dd.FlushBuffer(p.buffer...)
   case "NestedVarDec":
+    if p.varDec.equalToken == "=" {
+      // prepend a variable declaration if the original setter relied on a previous vardec
+      p.buffer = append([]interface{}{
+        p.varDec.GetVarDec()},
+        p.buffer...
+      )
+    }
+    p.buffer = append(p.buffer, line_)
     for _, line := range p.buffer {
       p.addVarDec(line)
     }
@@ -246,48 +270,36 @@ func (p *LineParserA) flushBuffer() {
   }
   p.state = "Parse"
   p.buffer = []interface{}{}
+  p.varDec.ResetIndent()
 }
 
 //----------------------------------------------------------------//
 // PutLine
 //----------------------------------------------------------------//
 func (p *LineParserA) PutLine(line string) {
+  if p.blacklist.Excluded {
+    logger.Infof("$$$$$$$$ line is excluded : |%s|", line)
+    return 
+  }
   switch p.state {
   case "IfElseBlock", "NestedVarDec":
     if XString(line).Trim() == "}" {
-      p.flushBuffer()
+      p.varDec.DecIndent()
+    } else if p.regex["IfBlock"].MatchString(line) {
+      p.varDec.IncIndent()
     }
+    if p.varDec.GetIndentFactor() == 1 {
+      p.flushBuffer(line)
+    }
+  case "IfCmdGetErr":
+    logger.Debugf("$$$$$$$ PutLine in IfCmdGetErr state $$$$$$$$$")
   case "Parse":
     if *p.skipLineCount == 0 {
-      p.dd.PutLine(line)
+      p.dd.AddLines(line)
     }
   default:
     logger.Errorf("$$$$$$$$ UNKNOWN STATE : %s $$$$$$$$$$", p.state)
   }
-}
-
-//----------------------------------------------------------------//
-// rewriteGetter
-//----------------------------------------------------------------//
-func (p *LineParserA) rewriteGetter(line string, useParameter bool) (string, string) {
-  varName, remnant := XString(line).SplitInTwo(", ")
-  _, equalToken, remnantA := remnant.SplitInThree(" ")
-  varType, flagName := remnantA.SplitNKeepOne("Flags().Get",2,1).SplitInTwo(`("`)
-  if flagName.Contains("err != nil") {
-    flagName, _ = flagName.SplitInTwo(`")`)
-  } else {
-    flagName.Replace(`")`, "", 1)
-  }
-  if p.regex["SliceType"].MatchString(varType.String()) {
-    varType.Set("StringList")
-    if !varType.Contains("String") {
-      varType.Set("List")
-    }
-  }
-  if useParameter {
-    return fmt.Sprintf("%s %s p.%s()", varName, equalToken, varType), flagName.String() 
-  }
-  return fmt.Sprintf("%s %s cspec.%s(\"%s\")", varName, equalToken, varType, flagName), flagName.String()
 }
 
 //----------------------------------------------------------------//
@@ -296,9 +308,9 @@ func (p *LineParserA) rewriteGetter(line string, useParameter bool) (string, str
 func (p *LineParserA) rewriteLine(key, line string) string {
   switch key {
   case "IfCmdLookup":
-    prefix, flagName := XString(line).SplitInTwo(`Flags().Lookup`)
-    prefix.Replace(`cmd.`,`cspec.`,1)
-    return prefix.String() + "Applied" + flagName.SplitNKeepOne(".",2,0).String() + " {"
+    prefix, flagName := XString(line).SplitInTwo(`.Flags().Lookup`)
+    prefix.Replace(`cmd`,`cspec`,1)
+    return prefix.String() + ".Applied" + flagName.SplitNKeepOne(".",2,0).String() + " {"
   case "IfCmdChanged":
     xline := XString(line)
     if xline.Contains(`Flags().Changed`) {
@@ -310,13 +322,10 @@ func (p *LineParserA) rewriteLine(key, line string) string {
     prefix.Replace(`cmd.`,`cspec.`,1)
     flagName.Replace(`.Changed`,"",1)
     return prefix.String() + "Applied" + flagName.String()
-  case "IfCmdFlagErr":
-    var fieldName string
-    line, fieldName := p.rewriteGetter(line, true)
-    line_ := fmt.Sprintf("  p := cspec.Parameter(\"%s\")", fieldName)
-    p.dd.PutLine(line_)
-    line = fmt.Sprintf("%s; p.Err() != nil {", line)
-    return line
+  case "IfCmdGetErr":
+    line_ := p.varDec.ParseGetter(line).GetParamSetter()
+    p.buffer = append(p.buffer, line_)
+    return p.varDec.GetParamValue()
   default:
     logger.Errorf("%s - unknown pattern after initial IfCmdFlag match : %s", p.Desc, line)
     return line
@@ -340,9 +349,10 @@ func (p *LineParserA) SectionEnd() {
 //----------------------------------------------------------------//
 // Start
 //----------------------------------------------------------------//
-func (p *LineParserA) SectionStart(string) {
+func (p *LineParserA) SectionStart(sectionName string) {
   p.state = "Parse"
   p.varId = 0
+  p.blacklist.SetList(sectionName)
 }
 
 //================================================================//
@@ -420,9 +430,13 @@ type LineParserB struct {
 // Arrange
 //----------------------------------------------------------------//
 func (p *LineParserB) Arrange(spec Runware) error {
-  dbPrefix := spec.String("DbPrefix")
+  logger.Debugf("%s is arranging ...", p.Desc)
+  dbkey := spec.SubNode("LineParserB").String("Dbkey")
+  if dbkey == "" {
+    return fmt.Errorf("%s - required Arrangement.LineParserB.Dbkey parameter is undefined", p.Desc)
+  }
   rw,_ := stx.NewRunware(nil)
-  err := p.dd.GetWithKey(dbPrefix + "/LineParserB", rw)
+  err := p.dd.GetWithKey(dbkey, rw)
   if err != nil {
     return err
   }
@@ -479,17 +493,27 @@ type Sectional struct {
   name string
   starting *regexp.Regexp
   ending *regexp.Regexp
+  endTimes int
   parserKind []string
   printStart bool
   printEnd bool
 }
 
-func (s Sectional) SectionStart(line string) bool {
-  return s.starting.MatchString(line)
+//----------------------------------------------------------------//
+// SectionEnd
+//----------------------------------------------------------------//
+func (s Sectional) SectionEnd(line string) bool {
+  if s.ending != nil {
+    return s.ending.MatchString(line)
+  }
+  return false
 }
 
-func (s Sectional) SectionEnd(line string) bool {
-  return s.ending.MatchString(line)
+//----------------------------------------------------------------//
+// SectionStart
+//----------------------------------------------------------------//
+func (s Sectional) SectionStart(line string) bool {
+  return s.starting.MatchString(line)
 }
 
 //================================================================//
@@ -504,11 +528,14 @@ type SectionDealer struct {
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (d *SectionDealer) Arrange(dd *DataDealer,spec Runware) error {
+func (d *SectionDealer) Arrange(dd *DataDealer, spec Runware) error {
   logger.Debugf("%s is arranging ...", d.Desc)
-  dbPrefix := spec.String("DbPrefix")
   rw,_ := stx.NewRunware(nil)
-  err := dd.GetWithKey(dbPrefix + "/SectionDealer", rw)
+  dbkey := spec.SubNode("SectionDealer").String("Dbkey")
+  if dbkey == "" {
+    return fmt.Errorf("%s - required Arrangement.SectionDealer.Dbkey parameter is undefined", d.Desc)
+  }
+  err := dd.GetWithKey(dbkey, rw)
   if err != nil {
     return err
   }
@@ -528,13 +555,18 @@ func (d *SectionDealer) Arrange(dd *DataDealer,spec Runware) error {
     x.printStart = params[1].Bool()
     elist.Add(err)
     params = rw.ParamList(fmt.Sprintf("%d/Ending", i))
-    if len(params) < 2 {
+    if len(params) < 3 {
       return fmt.Errorf("%s bad arrangement - %s starting parameter list length is < required length of 2", d.Desc, section)
     }
     pattern = params[0].String()
-    // logger.Debugf("%s ending pattern : %s", section, pattern)
+    if pattern != "EOF" {
     x.ending, err = regexp.Compile(pattern)
-    x.printEnd = params[1].Bool()
+    }
+    x.endTimes = params[1].Int()
+    if x.endTimes < 1 {
+      return fmt.Errorf("%s bad arrangement - %s endTimes parameter must be >= 1", d.Desc, section)
+    }
+    x.printEnd = params[2].Bool()
     elist.Add(err)
     d.section[i] = x
     logger.Debugf("%s got Sectional instance : %v", d.Desc, x)
@@ -548,9 +580,14 @@ func (d *SectionDealer) Arrange(dd *DataDealer,spec Runware) error {
 func (d *SectionDealer) SectionEnd(line string) bool {
   found := d.section[0].SectionEnd(line)
   if found {
+    if d.section[0].endTimes == 1 {
     logger.Debugf("%s printEnd : %v", d.section[0].name, d.section[0].printEnd)
     if !d.section[0].printEnd {
       *d.skipLineCount = 1
+    }
+    } else {
+      found = false
+      d.section[0].endTimes -= 1
     }
   }
   return found
