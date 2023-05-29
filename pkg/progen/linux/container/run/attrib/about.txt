@@ -1,1 +1,1 @@
-cibuild pkg/progen/container/run/linux produces code-generator source code by converting a template using configuration as code.
+cibuild pkg/progen/container/run/linux produces code-generator related configuration

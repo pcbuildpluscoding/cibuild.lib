@@ -16,5 +16,5 @@ importable: [config]
 cleanToDir: [config]
 config:
   copyFrom: config
-  copyTo: progen/config
+  copyTo: config/progen/linux/container/run 
   exclude: ''

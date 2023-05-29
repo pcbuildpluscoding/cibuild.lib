@@ -1,1 +1,1 @@
-cut a codegen/progen release to start end-to-end SnipTree testing
+cut a progen/../config release to start end-to-end SnipTree testing

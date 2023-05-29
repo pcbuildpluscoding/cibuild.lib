@@ -2,7 +2,7 @@
 fromDir: /home/devapps/enterprise/github/cibuild
 fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/codegen/progen
+basePath: pkg/progen/linux/container/run
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang
