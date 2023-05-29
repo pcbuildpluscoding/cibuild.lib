@@ -1,6 +1,6 @@
 ---
 fromDir:
-fromPath: pkg/create/container/run
+fromPath: pkg/codegen/progen
 baseDir:
 basePath:
 convertExt:
@@ -12,14 +12,15 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, genware, lib]
+importable: [cmd, lib, genware]
+cleanToDir: [lib, genware]
 cmd:
   copyFrom: cmd
   copyTo: cmd/server
   exclude: ''
 lib:
   copyFrom: lib
-  copyTo: lib/linux/container/run
+  copyTo: lib/progen
   exclude: ''
 genware:
   copyFrom: genware

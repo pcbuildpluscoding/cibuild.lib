@@ -1,4 +1,8 @@
 ---
+fromDir:
+fromPath: pkg/codegen/progen
+baseDir:
+basePath:
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang
@@ -8,17 +12,17 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, config lib, genware]
+importable: [cmd, lib, genware]
 cleanToDir: [lib, genware]
 cmd:
-  copyFrom: pkg/codegen/progen/cmd
+  copyFrom: cmd
   copyTo: cmd/server
   exclude: ''
 lib:
-  copyFrom: pkg/codegen/progen/lib
-  copyTo: lib/codegen/progen
+  copyFrom: lib
+  copyTo: lib/progen
   exclude: ''
 genware:
-  copyFrom: pkg/codegen/progen/genware
+  copyFrom: genware
   copyTo: genware/std
   exclude: ''

@@ -4,16 +4,16 @@
 package std
 
 import (
-	"fmt"
-	"net"
+  "fmt"
+  "net"
 
-	"github.com/pcbuildpluscoding/apibase/loggar"
-	crg "github.com/pcbuildpluscoding/cibuild/progen/linux/container/run"
-	gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	gwt "github.com/pcbuildpluscoding/types/genware"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	"github.com/sirupsen/logrus"
+  "github.com/pcbuildpluscoding/apibase/loggar"
+  prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
+  gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  gwt "github.com/pcbuildpluscoding/types/genware"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  "github.com/sirupsen/logrus"
 )
 
 var logger = loggar.Get()
@@ -55,12 +55,12 @@ func NewPGGenVendor(pkey string) GenwareVendor {
     }
     switch action := spec.String("Action"); action {
     case "Generate":
-      dealer := crg.NewSnipDealer(connex)
+      dealer := prg.NewSnipDealer(connex)
       err := dealer.Arrange(spec)
       if err != nil {
         return nil, err
       }
-      return crg.NewPGComposer(connex, dealer)
+      return prg.NewPGComposer(connex, dealer)
     default:
       return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
     }

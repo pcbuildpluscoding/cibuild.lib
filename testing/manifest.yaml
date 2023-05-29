@@ -12,7 +12,7 @@ convertExt:
     toExt: .tpl
   notApplicable:
     module: copyFile
-importable: [cmd, genware, lib]
+importable: []
 cleanToDir: [lib]
 cmd:
   copyFrom: cmd/server

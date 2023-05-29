@@ -1,1 +1,1 @@
-updated LineParserA and VarDec with IfCmdGetErr state improvements
+cut a codegen/progen release to start end-to-end SnipTree testing
