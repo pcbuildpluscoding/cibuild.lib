@@ -4,15 +4,16 @@
 package std
 
 import (
-  "fmt"
-  "net"
+	"fmt"
+	"net"
 
-  "github.com/pcbuildpluscoding/apibase/loggar"
-  prg "github.com/pcbuildpluscoding/cibuild/lib/codegen/progen"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  gwt "github.com/pcbuildpluscoding/types/genware"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  "github.com/sirupsen/logrus"
+	"github.com/pcbuildpluscoding/apibase/loggar"
+	crg "github.com/pcbuildpluscoding/cibuild/progen/linux/container/run"
+	gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	gwt "github.com/pcbuildpluscoding/types/genware"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	"github.com/sirupsen/logrus"
 )
 
 var logger = loggar.Get()
@@ -25,33 +26,57 @@ func SetLogger(super *logrus.Logger) {
 }
 
 type Genware = gwt.Genware
+type Genwork = gwt.Genwork
 type GenwareVendor = gwt.GenwareVendor
+type GenworkVendor = gwt.GenworkVendor
 type Runware = rwt.Runware
 type Trovian = tdb.Trovian
 
 //------------------------------------------------------------------//
-// init - register genware plugins
+// init - register plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "codegen/progen/std"
-  vendor := NewProGenVendor()
-  gwt.RegisterGenware(pkey, vendor)
+  pkey := "cibuild/progen/std"
+  vendorA := NewPGGenVendor(pkey)
+  gwt.RegisterGenware(pkey, vendorA)
+  pkey = "cibuild/profile/edit"
+  vendorB := NewEditProfileVendor()
+  gwt.RegisterGenwork(pkey, vendorB)
 }
 
 //----------------------------------------------------------------//
-// NewProGenVendor
+// NewPGGenVendor
 //----------------------------------------------------------------//
-func NewProGenVendor() GenwareVendor {
-  return func(netAddr string, rw Runware) (Genware, error) {
-    connex,err := newTrovian(netAddr, rw.String("BucketName"))
+func NewPGGenVendor(pkey string) GenwareVendor {
+  return func(netAddr string, spec Runware) (Genware, error) {
+    connex, err := newTrovian(netAddr, spec.String("BucketName"))
     if err != nil {
       return nil, err
     }
-    writer, err := prg.NewWriter(connex, "ProGen", rw.String("Action"), rw.String("OutputFile"))
+    switch action := spec.String("Action"); action {
+    case "Generate":
+      dealer := crg.NewSnipDealer(connex)
+      err := dealer.Arrange(spec)
+      if err != nil {
+        return nil, err
+      }
+      return crg.NewPGComposer(connex, dealer)
+    default:
+      return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
+    }
+  }
+}
+
+//----------------------------------------------------------------//
+// NewEditProfileVendor
+//----------------------------------------------------------------//
+func NewEditProfileVendor() GenworkVendor {
+  return func(troveAddr string, rw Runware) (Genwork, error) {
+    connex, err := newTrovian(troveAddr, rw.String("BucketName"))
     if err != nil {
       return nil, err
-    } 
-    return prg.NewPGProducer(connex, rw, writer)
+    }
+    return gwk.NewProfileEditor(connex), nil
   }
 }
 

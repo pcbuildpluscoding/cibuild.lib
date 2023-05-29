@@ -1,0 +1,20 @@
+---
+fromDir:
+fromPath: pkg/progen/linux/container/run
+baseDir:
+basePath:
+convertExt:
+  convertible: []
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .tpl
+    toExt: .go
+  notApplicable:
+    module: copyFile
+importable: [config]
+cleanToDir: [config]
+config:
+  copyFrom: config
+  copyTo: progen/config
+  exclude: ''

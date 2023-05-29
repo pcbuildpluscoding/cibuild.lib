@@ -13,6 +13,7 @@ convertExt:
   notApplicable:
     module: copyFile
 importable: [cmd, config, genware, lib]
+cleanToDir: [config, lib, genware]
 cmd:
   copyFrom: cmd
   copyTo: cmd/server

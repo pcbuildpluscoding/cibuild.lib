@@ -8,7 +8,8 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, lib, genware]
+importable: [cmd, config lib, genware]
+cleanToDir: [lib, genware]
 cmd:
   copyFrom: pkg/codegen/progen/cmd
   copyTo: cmd/server

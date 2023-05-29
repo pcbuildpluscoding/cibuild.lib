@@ -1,6 +1,6 @@
 ---
 fromDir:
-fromPath: pkg/create/container/run
+fromPath: pkg/linux/container/run
 baseDir:
 basePath:
 convertExt:
@@ -13,6 +13,7 @@ convertExt:
   notApplicable:
     module: copyFile
 importable: [cmd, genware, lib]
+cleanToDir: [lib, genware]
 cmd:
   copyFrom: cmd
   copyTo: cmd/server

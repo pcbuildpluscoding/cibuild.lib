@@ -1,37 +1,37 @@
-package progen
+package run
 
 import (
-  "fmt"
-  "io"
-  "os"
-  "time"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
-  "github.com/pcbuildpluscoding/apibase/loggar"
-  ab "github.com/pcbuildpluscoding/apibase/std"
-  elm "github.com/pcbuildpluscoding/genware/lib/element"
-  fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
-  han "github.com/pcbuildpluscoding/genware/lib/handler"
-  stx "github.com/pcbuildpluscoding/strucex/std"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  rdt "github.com/pcbuildpluscoding/types/apirecord"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  "github.com/sirupsen/logrus"
+	"github.com/pcbuildpluscoding/apibase/loggar"
+	ac "github.com/pcbuildpluscoding/apicore/std"
+	elm "github.com/pcbuildpluscoding/genware/lib/element"
+	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
+	han "github.com/pcbuildpluscoding/genware/lib/handler"
+	stx "github.com/pcbuildpluscoding/strucex/std"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	rdt "github.com/pcbuildpluscoding/types/apirecord"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	"github.com/sirupsen/logrus"
 )
 
-type ApiResult = ab.ApiResult
 type ApiRecord = rdt.ApiRecord
 type Component = elm.Component
 type DataDealer = elm.DataDealer
-type LineWriter = elm.LineWriter
-
 type ScanData = han.ScanData
+type Parameter = stx.Parameter
+type Printer = elm.Printer
+type Runware = rwt.Runware
+type Statial = ac.Statial
+type StdPrinter = elm.StdPrinter
 type TextConsumer = han.TextConsumer
 type Trovian = tdb.Trovian
-type Parameter rwt.Parameter
-type Runware = rwt.Runware
-type Strucex = stx.Strucex
-type ValueA1 = stx.ValueA1
-type XString = elm.XString
+type XString = fs.XString
 
 var (
   logger = loggar.Get()
@@ -46,116 +46,94 @@ func SetLogger(super *logrus.Logger, superfd *os.File) {
   logfd = superfd
 }
 
-//----------------------------------------------------------------//
-// NewContentBlock
-//----------------------------------------------------------------//
-func NewContentBlock(connex *Trovian, spec Runware) (*ContentBlock, error) {
-  desc := "ContentBlock-" + time.Now().Format("150405.000000")
-  sectionName := spec.String("SectionName")
-  dd, err := elm.NewDataDealer(connex, desc, sectionName, spec)
-  markup,_ := stx.NewRunware(nil)
-  return &ContentBlock{
-    Desc: desc,
-    dd: &dd,
-    markup: markup,
-  }, err
+//================================================================//
+// LineWriter
+//================================================================//
+type LineWriter interface {
+  Write(...string)
 }
 
 //----------------------------------------------------------------//
-// NewPGProducer
+// NewPGComposer
 //----------------------------------------------------------------//
-func NewPGProducer(connex *Trovian, spec Runware, writer LineWriter) (*PGProducer, error) {
+func NewPGComposer(connex *Trovian, dealer SnipDealer) (*PGComposer, error) {
+  logger.Debugf("$$$$$$$$$$$ creating PGComposer $$$$$$$$$$$")
   count := 0
-  desc := "PGProducer-" + time.Now().Format("150405.000000")
-  cblock, err := NewContentBlock(connex, spec)
-  return &PGProducer{
-    Component: Component{Desc: desc},
-    block: cblock,
+  desc := "PGComposer-" + time.Now().Format("150405.000000")
+  return &PGComposer{
+    Statial: ac.NewStatial(desc),
+    dealer: dealer,
     skipLineCount: &count,
-    writer: writer,
-  }, err
+  }, nil
 }
 
 //----------------------------------------------------------------//
-// NewPGWriter
+// NewScanHandler
 //----------------------------------------------------------------//
-func NewPGWriter(w io.Writer) *PGWriter {
-  return &PGWriter{
-    writer: w,
+func NewScanHandler(readCh chan string) ScanHandler {
+  return ScanHandler{
+    readCh: readCh,
+    Desc: "ScanHandler-" + time.Now().Format("150405.000000"),
   }
 }
 
-//================================================================//
-// PGWriter
-//================================================================//
-type PGWriter struct {
-  writer io.Writer
-}
-
 //----------------------------------------------------------------//
-// SetProperty
+// NewSnipDealer
 //----------------------------------------------------------------//
-func (w *PGWriter) SetProperty(propName string, value interface{}) error {
-  return nil
-}
-
-//----------------------------------------------------------------//
-// Write
-//----------------------------------------------------------------//
-func (w PGWriter) Write(lines ...interface{}) {
-  for _, item := range lines {
-    switch item.(type) {
-    case []string:
-      x := item.([]string)
-      indent := x[0]
-      for _, line := range x[1:] {
-        w.PrintLine(XString(indent + line))
-      }
-    case string:
-      w.PrintLine(XString(item.(string)))
-    case []interface{}:
-      x := item.([]interface{})
-      w.Write(x...)
-    default:
-      logger.Warnf("StdWriter got an unexpected data type : %T\n", item)
-      fmt.Fprintf(w.writer, "$$$$$$$$$ StdWriter got an unexpected data type : %T\n$$$$$$$$", item)
-    }
-  }
-}
-
-func (w PGWriter) PrintLine(xline XString) {
-  switch {
-  case xline.HasSuffix("// skip-new-line"):
-    fmt.Fprint(w.writer, xline.Replace("// skip-new-line","",1).String())
-  case xline.HasSuffix("// trim-space"):
-    fmt.Fprintln(w.writer, xline.Replace("// trim-space","",1).Trim())
-  default:
-    fmt.Fprintln(w.writer, xline.String())
+func NewSnipDealer(connex *Trovian) SnipDealer {
+  return SnipDealer{
+    Desc: "SnipDealer-" + time.Now().Format("150405.000000"),
+    connex: connex,
   }
 }
 
 // -------------------------------------------------------------- //
 // NewWriter
 // ---------------------------------------------------------------//
-func NewWriter(connex *Trovian, model, action, outputPath string) (LineWriter, error) {
+func NewSnipWriter(connex *Trovian, outputPath string, index ...int) (SnipWriter, error) {
 
-  switch model {
-  case "Standard":
-    switch action {
-    case "Generate":
-      writer, err := fs.CreateFile(connex, outputPath, false)
-      return elm.NewStdWriter(writer), err
-    }
-  case "VarDec":
-    switch action {
-    case "Generate":
-      writer, err := fs.CreateFile(connex, outputPath, false)
-      return elm.NewVDWriter(writer), err
-    }
-  case "ProGen":
-    writer, err := fs.CreateFile(connex, outputPath, false)
-    return NewPGWriter(writer), err
-  }
-  return nil, fmt.Errorf("unsupported subject or action")
+  writer, err := createFile(connex, outputPath, index...)
+  return SnipWriter{writer: writer}, err
 }
+
+// -------------------------------------------------------------- //
+// createFile
+// ---------------------------------------------------------------//
+func createFile(connex *Trovian, outputPath string, index ...int) (*os.File, error) {
+
+  if outputPath == "Stdout" {
+    return os.Stdout, nil
+  }
+  
+  if strings.HasPrefix(outputPath, "trovedb:") {
+    var err error
+    outputPath, err = fs.ResolvePath(connex, outputPath)
+    if err != nil {
+      logger.Error(err)
+      return nil, err
+    }
+    logger.Infof("resolved output file path : %s", outputPath)
+  }
+
+  outputDir := filepath.Dir(outputPath)
+
+  _, err := os.Stat(outputDir)
+  if errors.Is(err, os.ErrNotExist) {
+    if err := os.MkdirAll(outputDir, 0755); err != nil {
+      return nil, fmt.Errorf("output directory |%s| creation failed : %v", outputDir, err)
+    }
+  }
+
+  if index != nil && index[0] >= 0 {
+    fileName := filepath.Base(outputPath)
+    ext := filepath.Ext(fileName)
+    x := strings.Replace(fileName, ext, "", 1)
+    fileName = fmt.Sprintf("%s-%02d%s", x, index[0], ext)
+    logger.Infof("!!!!!! appended an index to the output file : %s !!!!!!", fileName)
+    outputPath = filepath.Join(outputDir, fileName)
+  }
+
+  return os.Create(outputPath)
+}
+
 

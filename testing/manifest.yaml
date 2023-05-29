@@ -1,7 +1,8 @@
+---
 fromDir: /home/devapps/enterprise/github/cibuild
 fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/linux/container/run
+basePath: pkg/codegen/progen
 convertExt:
   convertible: [cmd, genware, lib]
   defaultRef: golang
@@ -12,6 +13,7 @@ convertExt:
   notApplicable:
     module: copyFile
 importable: [cmd, genware, lib]
+cleanToDir: [lib]
 cmd:
   copyFrom: cmd/server
   copyTo: cmd
@@ -25,7 +27,7 @@ genware:
   copyTo: genware
   exclude: ''
 lib:
-  copyFrom: lib/linux/container/run
+  copyFrom: progen/linux/container/run
   copyTo: lib
   exclude: ''
 releaseSpec:
