@@ -4,7 +4,7 @@ fromPath: pkg/linux/container/run
 baseDir:
 basePath:
 convertExt:
-  convertible: [cmd, genware, lib]
+  convertible: [cmd, genware, progen/lib]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -12,17 +12,29 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, genware, lib]
-cleanToDir: [lib, genware]
+importable: [cmd, config, genware, lib, progen/config, progen/lib]
+cleanToDir: [config, genware, lib, progen/config, progen/lib]
 cmd:
   copyFrom: cmd
   copyTo: cmd/server
   exclude: ''
-lib:
-  copyFrom: lib
-  copyTo: lib/linux/container/run
+config:
+  copyFrom: config
+  copyTo: config/linux/container/run
   exclude: ''
 genware:
   copyFrom: genware
   copyTo: genware/std
+  exclude: ''
+lib:
+  copyFrom: lib
+  copyTo: template/linux/container/run
+  exclude: ''
+progen/config:
+  copyFrom: progen/config
+  copyTo: config/progen
+  exclude: ''
+progen/lib:
+  copyFrom: progen/lib
+  copyTo: lib/progen
   exclude: ''

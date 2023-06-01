@@ -1,0 +1,16 @@
+---
+Sections:
+  - setPlatformOptions
+  - generateNamespaceOpts
+  - setOOMScoreAdj
+setPlatformOptions:
+  - [TextEditorB, 'func setPlatformOptions', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, generateCgroupOpts, cmd, cspec]
+  - [TextEditorA, readKVStringsMapfFromLabel, cmd, cspec]
+  - [TextEditorA, generateUlimitsOpts, cmd, cspec]
+  - [TextEditorA, generateNamespaceOpts, cmd, cspec]
+  - [TextEditorA, setOOMScoreAdj, cmd, cspec]
+generateNamespaceOpts:
+  - [TextEditorB, 'cmd *cobra.Command', 'cmd *cobra.Command', 'cspec *CntrSpec']
+setOOMScoreAdj:
+  - [TextEditorB, 'func setOOMScoreAdj', 'cmd *cobra.Command', 'cspec *CntrSpec']

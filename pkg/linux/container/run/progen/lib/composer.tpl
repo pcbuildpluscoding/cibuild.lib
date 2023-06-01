@@ -24,6 +24,35 @@ func (c *PGComposer) EndOfFile(...string) {
 }
 
 //----------------------------------------------------------------//
+// Receive
+//----------------------------------------------------------------//
+func (c *PGComposer) Receive(readCh chan string) error {
+  logger.Debugf("%s is receiving ...", c.Desc)
+  for !c.Is(cwt.Stopped) {
+    switch c.Status() {
+    case cwt.Starting:
+      c.SetStatus(cwt.Running)
+    case cwt.Running:
+      select {
+      case line, ok := <-readCh:
+        if !ok {
+          logger.Errorf("%s - input data channel closed before scanning was complete", c.Desc)
+          c.SetStatus(cwt.Stopped)
+        }
+        if line == "EOF" {
+          logger.Debugf("!!!! %s got EOF, stopping ...", c.Desc)
+          c.SetStatus(cwt.Stopped)
+        } else {
+          c.dealer.Read(line)
+        }
+      }
+    }
+  }
+  close(readCh)
+  return nil
+}
+
+//----------------------------------------------------------------//
 // Reset
 //----------------------------------------------------------------//
 func (c *PGComposer) Reset(spec Runware) error {
@@ -31,7 +60,7 @@ func (c *PGComposer) Reset(spec Runware) error {
 }
 
 //----------------------------------------------------------------//
-// Start
+// Run
 //----------------------------------------------------------------//
 func (c *PGComposer) Run(reader io.Reader) ApiRecord {
   err := c.dealer.Start()
@@ -65,33 +94,4 @@ func (c *PGComposer) String() string {
 //----------------------------------------------------------------//
 func (c *PGComposer) skipLines(skipLineCount int) {
   *c.skipLineCount = skipLineCount
-}
-
-//----------------------------------------------------------------//
-// Receive
-//----------------------------------------------------------------//
-func (c *PGComposer) Receive(readCh chan string) error {
-  logger.Debugf("%s is receiving ...", c.Desc)
-  for !c.Is(cwt.Stopped) {
-    switch c.Status() {
-    case cwt.Starting:
-      c.SetStatus(cwt.Running)
-    case cwt.Running:
-      select {
-      case line, ok := <-readCh:
-        if !ok {
-          logger.Errorf("%s - input data channel closed before scanning was complete", c.Desc)
-          c.SetStatus(cwt.Stopped)
-        }
-        if line == "EOF" {
-          logger.Debugf("!!!! %s got EOF, stopping ...", c.Desc)
-          c.SetStatus(cwt.Stopped)
-        } else {
-          c.dealer.Read(line)
-        }
-      }
-    }
-  }
-  close(readCh)
-  return nil
 }

@@ -15,11 +15,12 @@ import (
 	ab "github.com/pcbuildpluscoding/apibase/std"
 	_ "github.com/pcbuildpluscoding/appware/std"
 
-	crn "github.com/pcbuildpluscoding/cibuild/lib/linux/container/run"
+	crg "github.com/pcbuildpluscoding/cibuild/lib/linux/container/run"
+	prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
 	cib "github.com/pcbuildpluscoding/cibuild/std"
 	_ "github.com/pcbuildpluscoding/flowware/std"
 	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
+	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
 
 	rdt "github.com/pcbuildpluscoding/types/apirecord"
 	awt "github.com/pcbuildpluscoding/types/appware"
@@ -56,9 +57,10 @@ func init() {
 // ---------------------------------------------------------------//
 func serve() error {
   cib.SetLogger(logger, logfd)
-  crn.SetLogger(logger)
-  han.SetLogger(logger)
+  crg.SetLogger(logger, logfd)
+  prg.SetLogger(logger, logfd)
   elm.SetLogger(logger, logfd)
+  fs.SetLogger(logger)
 
   server, err := newCigServer()
 

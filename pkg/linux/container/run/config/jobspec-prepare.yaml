@@ -1,0 +1,36 @@
+---
+RemoteAddr: 127.0.0.1:6699
+Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step1
+Tasks:
+  - EditCopy1
+  # - CopyFile1
+  - CopyFile2
+EditCopy1: 
+  Action: CopyFile
+  AsyncTask: false
+  BASE_DIR: $HOME/enterprise/cibuild
+  CIBUILD_JOB_ID: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+  Device: Genwork
+  EnvironmentVars: 
+    - BASE_DIR
+    - CIBUILD_JOB_ID
+    - RELEASE_TAG
+  InputFile: trovedb:system/uri|github.repo/internal,incron.profile/template/cibuild/dev01/.profile
+  OutputFile: trovedb:system/uri|github.repo/cibuild,incron.profile/cibuild/dev01/.profile
+  PluginKey: cibuild/profile/edit
+  RELEASE_TAG: v0.1.1,v0.5.0
+  Subject: LinuxContainerRun
+CopyFile1:
+  Action: CopyFileWithTmsp
+  AsyncTask: true
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild.lib/dev01/manifest.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,cibuild.lib/dev01/manifest.yaml
+  Subject: LinuxContainerRun
+CopyFile2:
+  Action: CopyFileWithTmsp
+  AsyncTask: true
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
+  Subject: LinuxContainerRun

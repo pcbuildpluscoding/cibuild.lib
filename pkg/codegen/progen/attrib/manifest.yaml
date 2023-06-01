@@ -12,17 +12,17 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, lib, genware]
-cleanToDir: [lib, genware]
+importable: [cmd, genware, lib]
+cleanToDir: [genware, lib]
 cmd:
   copyFrom: cmd
   copyTo: cmd/server
   exclude: ''
-lib:
-  copyFrom: lib
-  copyTo: lib/progen
-  exclude: ''
 genware:
   copyFrom: genware
   copyTo: genware/std
+  exclude: ''
+lib:
+  copyFrom: lib
+  copyTo: lib/progen
   exclude: ''

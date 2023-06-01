@@ -1,0 +1,45 @@
+---
+RemoteAddr: 127.0.0.1:4499
+Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2
+Tasks:
+  - Import
+  - ProGenerate1
+  - ProGenerate2
+  - CopyFile
+Import:
+  Action: Import
+  BucketName: nerdctl/integration
+  DbPrefix: cibuild/progen/std
+  Device: Trovient
+  InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
+  InputFile: [snipset-base.yaml, snipset-parser.yaml]
+  Protocol: "SnipTree"
+  Subject: LinuxContainerRun
+  Sync: true
+ProGenerate1: 
+  Action: Generate
+  BucketName: nerdctl/integration
+  DbPrefix: cibuild/progen/std/Base
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib/base.tpl
+  PluginKey: cibuild/progen/std
+  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/base.go
+  Sync: false
+ProGenerate2: 
+  Action: Generate
+  BucketName: nerdctl/integration
+  DbPrefix: cibuild/progen/std/Parser
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib/parser.tpl
+  PluginKey: cibuild/progen/std
+  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/parser.go
+  Sync: false
+CopyFile:
+  Action: CopyModExt
+  Device: FileSystem
+  InputPath: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib
+  OutputPath: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run
+  InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
+  ModifyExt: .go
+  Subject: LinuxContainerRun
+  Sync: true

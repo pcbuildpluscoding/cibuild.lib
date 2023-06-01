@@ -9,6 +9,7 @@ import (
 
 	"github.com/pcbuildpluscoding/apibase/loggar"
 	crg "github.com/pcbuildpluscoding/cibuild/lib/linux/container/run"
+	prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
 	gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
 	elm "github.com/pcbuildpluscoding/genware/lib/element"
 	tdb "github.com/pcbuildpluscoding/trovedb/std"
@@ -37,12 +38,15 @@ type Trovian = tdb.Trovian
 // init - register plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "linux/container/run"
-  vendorA := NewCRGenVendor(pkey)
-  gwt.RegisterGenware(pkey, vendorA)
-  pkey = "cibuild/profile/edit"
+  pkey := "cibuild/profile/edit"
   vendorB := NewEditProfileVendor()
   gwt.RegisterGenwork(pkey, vendorB)
+  pkey = "cibuild/progen/std"
+  vendorA := NewPGGenVendor(pkey)
+  gwt.RegisterGenware(pkey, vendorA)
+  pkey = "linux/container/run"
+  vendorC := NewCRGenVendor(pkey)
+  gwt.RegisterGenware(pkey, vendorC)
 }
 
 //----------------------------------------------------------------//
@@ -64,6 +68,29 @@ func NewCRGenVendor(pkey string) GenwareVendor {
         return nil, err
       } 
       return crg.NewCRComposer(connex, rw, writer)
+    default:
+      return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
+    }
+  }
+}
+
+//----------------------------------------------------------------//
+// NewPGGenVendor
+//----------------------------------------------------------------//
+func NewPGGenVendor(pkey string) GenwareVendor {
+  return func(netAddr string, spec Runware) (Genware, error) {
+    connex, err := newTrovian(netAddr, spec.String("BucketName"))
+    if err != nil {
+      return nil, err
+    }
+    switch action := spec.String("Action"); action {
+    case "Generate":
+      dealer := prg.NewSnipDealer(connex)
+      err := dealer.Arrange(spec)
+      if err != nil {
+        return nil, err
+      }
+      return prg.NewPGComposer(connex, dealer)
     default:
       return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
     }
