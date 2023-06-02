@@ -49,8 +49,8 @@ Generate:
   Sync: false
 CopyFile2:
   Action: CopyFileWithTmsp
-  AsyncTask: true
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/internal,dropzone/cleanup/dev01/manifest.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,cleanup/dev01/manifest.yaml
   Subject: LinuxContainerRun
+  Sync: false

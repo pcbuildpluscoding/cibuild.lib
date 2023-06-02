@@ -7,7 +7,6 @@ Tasks:
   - CopyFile2
 EditCopy1: 
   Action: CopyFile
-  AsyncTask: false
   BASE_DIR: $HOME/enterprise/cibuild
   CIBUILD_JOB_ID: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
   Device: Genwork
@@ -20,17 +19,18 @@ EditCopy1:
   PluginKey: cibuild/profile/edit
   RELEASE_TAG: v0.1.1,v0.5.0
   Subject: LinuxContainerRun
+  Sync: true
 CopyFile1:
   Action: CopyFileWithTmsp
-  AsyncTask: true
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild.lib/dev01/manifest.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,cibuild.lib/dev01/manifest.yaml
   Subject: LinuxContainerRun
+  Sync: false
 CopyFile2:
   Action: CopyFileWithTmsp
-  AsyncTask: true
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
   Subject: LinuxContainerRun
+  Sync: false

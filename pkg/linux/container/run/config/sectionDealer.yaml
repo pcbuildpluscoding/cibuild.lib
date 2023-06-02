@@ -1,5 +1,4 @@
 ---
-Sections: [import, WithoutRunMount, setPlatformOptions, generateNamespaceOpts, setOOMScoreAdj, withOOMScoreAdj]
 0/Workers: [LineCopier]
 0/Starting: ['^import \(', false]
 0/Ending: ['^\)$', 1, false]
@@ -18,3 +17,10 @@ Sections: [import, WithoutRunMount, setPlatformOptions, generateNamespaceOpts, s
 5/Workers: [LineCopier]
 5/Starting: ['^func withOOMScoreAdj', true]
 5/Ending: [EOF, 1, true]
+Sections: 
+  - import
+  - WithoutRunMount
+  - setPlatformOptions
+  - generateNamespaceOpts
+  - setOOMScoreAdj
+  - withOOMScoreAdj
