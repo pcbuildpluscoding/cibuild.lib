@@ -43,3 +43,8 @@ CopyFile:
   ModifyExt: .go
   Subject: LinuxContainerRun
   Sync: true
+ResumeRequest:
+  Device: MessageProxy
+  RemoteAddr: 127.0.0.1:7799
+  Subject: LinuxContainerRun
+  Sync: true
