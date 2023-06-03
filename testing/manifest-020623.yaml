@@ -1,13 +1,13 @@
 ---
 fromDir: /home/devapps/enterprise/github/cibuild
-fromPath: 
+fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/linux/container/run
 branches: []
 convertExt:
   convertible: 
     cibuild: []
-    codegen: [cmd, genware, lib]
+    codegen: [cmd, genware]
     progen: [lib]
   defaultRef: golang
   golang:
@@ -20,10 +20,7 @@ importable:
   cibuild: [jobspec]
   codegen: [cmd, genware, lib]
   progen: [config, lib]
-cleanToDir: 
-  cibuild: [jobspec]
-  codegen: [cmd, genware, lib]
-  progen: [config, lib]
+cleanToDir: [lib]
 cibuild:
   jobspec:
     copyFrom: jobspec
@@ -31,18 +28,18 @@ cibuild:
 codegen:
   cmd:
     copyFrom: cmd/server
-    copyTo: codegen/cmd
+    copyTo: cmd
     exclude: [main.go]
+  config:
+    copyFrom: config/linux/container/run
+    copyTo: config
   genware:
     copyFrom: genware/std
-    copyTo: codegen/genware
+    copyTo: genware
   lib:
-    copyFrom: lib/linux/container/run
-    copyTo: codegen/lib
-progen:
-  config:
-    copyFrom: config/progen
-    copyTo: progen/config
-  lib:
-    copyFrom: lib/progen
-    copyTo: progen/lib
+    copyFrom: progen/linux/container/run
+    copyTo: lib
+releaseSpec:
+  about: about.txt
+  manifest: manifest.yaml
+  pathSpec: git_archive_path.txt

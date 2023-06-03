@@ -1,5 +1,3 @@
-pkg/linux/container/run/cmd
-pkg/linux/container/run/config
-pkg/linux/container/run/genware
-pkg/linux/container/run/lib
+pkg/linux/container/run/codegen
+pkg/linux/container/run/jobspec
 pkg/linux/container/run/progen

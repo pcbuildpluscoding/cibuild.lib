@@ -1,10 +1,14 @@
 ---
 fromDir:
-fromPath: pkg/progen/linux/container/run
+fromPath: pkg/linux/container/run
 baseDir:
 basePath:
+branches: [cibuild, codegen, progen]
 convertExt:
-  convertible: []
+  convertible: 
+    cibuild: []
+    codegen: [cmd, genware]
+    progen: [lib]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -12,9 +16,32 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [config]
-cleanToDir: [config]
-config:
-  copyFrom: config
-  copyTo: config/progen/linux/container/run 
-  exclude: ''
+importable: 
+  cibuild: [jobspec]
+  codegen: [cmd, genware, lib]
+  progen: [config, lib]
+cleanToDir: 
+  cibuild: [jobspec]
+  codegen: [genware, lib]
+  progen: [config, lib]
+cibuild:
+  jobspec:
+    copyFrom: jobspec
+    copyTo: jobspec
+codegen:
+  cmd:
+    copyFrom: codegen/cmd
+    copyTo: cmd/server
+  genware:
+    copyFrom: codegen/genware
+    copyTo: genware/std
+  lib:
+    copyFrom: codegen/lib
+    copyTo: template/linux/container/run
+progen:
+  config:
+    copyFrom: progen/config
+    copyTo: config/progen
+  lib:
+    copyFrom: progen/lib
+    copyTo: lib/progen

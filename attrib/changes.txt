@@ -1,1 +1,1 @@
-cut a progen/../config release to start end-to-end SnipTree testing
+preparation for progen-codegen linux/container/run end-to-end testing

@@ -1,1 +1,1 @@
-cibuild pkg/progen/container/run/linux produces code-generator related configuration
+cibuild pkg/linux/container/run is a code generation module that produces content for cntrize /linux/container/run

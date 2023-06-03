@@ -30,27 +30,18 @@ cibuild:
     copyTo: jobspec
 codegen:
   cmd:
-    copyFrom: cmd
+    copyFrom: codegen/cmd
     copyTo: cmd/server
-    exclude: ''
-  config:
-    copyFrom: config
-    copyTo: config/linux/container/run
-    exclude: ''
   genware:
-    copyFrom: genware
+    copyFrom: codegen/genware
     copyTo: genware/std
-    exclude: ''
   lib:
-    copyFrom: lib
+    copyFrom: codegen/lib
     copyTo: template/linux/container/run
-    exclude: ''
 progen:
   config:
     copyFrom: progen/config
     copyTo: config/progen
-    exclude: ''
   lib:
     copyFrom: progen/lib
     copyTo: lib/progen
-    exclude: ''
