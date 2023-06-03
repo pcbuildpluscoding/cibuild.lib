@@ -1,1 +1,0 @@
-cibuild pkg/progen/container/run/linux produces code-generator related configuration

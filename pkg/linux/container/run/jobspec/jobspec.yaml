@@ -1,20 +1,13 @@
 ---
-Import:
-  Action: Import
-  BucketName: nerdctl/integration
-  DbPrefix: linux/container/run
-  Device: Trovient
-  InputPath: trovedb:system/uri|github.repo/cibuild,config/linux/container/run
-  InputFile: 
-    - [jobspec.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f]
-    - [jobspec-build.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step3]
-    - [jobspec-prepare.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step1]
-    - [jobspec-progen.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2]
-    - [lineEditor.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/LineEditor]
-    - [sectionDealer.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/SectionDealer]
-    - [varDecErrTest.yaml, scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/VarDecErrTest]
-  JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
-  JobKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
-  Protocol: "JobSpec"
-  Subject: LinuxContainerRun
-  Sync: true
+Action: Start
+BucketName: nerdctl/integration
+JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+JobKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+Tasks:
+  - TaskKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step1
+    BucketName: nerdctl/integration
+  - TaskKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2
+    BucketName: nerdctl/integration
+  - TaskKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step3
+    BucketName: nerdctl/integration
+Sync: false

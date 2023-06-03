@@ -18,11 +18,11 @@ convertExt:
     module: copyFile
 importable: 
   cibuild: [jobspec]
-  codegen: [cmd, config, genware, lib]
+  codegen: [cmd, genware, lib]
   progen: [config, lib]
 cleanToDir: 
   cibuild: [jobspec]
-  codegen: [config, genware, lib]
+  codegen: [genware, lib]
   progen: [config, lib]
 cibuild:
   jobspec:
