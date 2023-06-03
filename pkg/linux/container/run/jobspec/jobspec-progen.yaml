@@ -37,7 +37,7 @@ ProGenerate2:
 CopyFile:
   Action: CopyModExt
   Device: FileSystem
-  InputPath: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib
+  InputPath: trovedb:system/uri|github.repo/cibuild,template/linux/container/run
   OutputPath: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run
   InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
   ModifyExt: .go
