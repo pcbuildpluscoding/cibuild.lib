@@ -13,7 +13,7 @@ Import:
   Device: Trovient
   InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
   InputFile: [snipset-base.yaml, snipset-parser.yaml]
-  Protocol: "SnipTree"
+  Protocol: SnipTree
   Subject: LinuxContainerRun
   Sync: true
 ProGenerate1: 

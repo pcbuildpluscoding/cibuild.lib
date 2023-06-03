@@ -3,12 +3,12 @@ fromDir: /home/devapps/enterprise/github/cibuild
 fromPath: 
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/linux/container/run
-branches: []
+branches: [cibuild, codegen]
 convertExt:
   convertible: 
     cibuild: []
-    codegen: [cmd, genware, lib]
-    progen: [lib]
+    codegen: [cmd, lib]
+    progen: [genware, lib]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -18,12 +18,12 @@ convertExt:
     module: copyFile
 importable: 
   cibuild: [jobspec]
-  codegen: [cmd, genware, lib]
+  codegen: [cmd]
   progen: [config, lib]
 cleanToDir: 
   cibuild: [jobspec]
-  codegen: [cmd, genware, lib]
-  progen: [config, lib]
+  codegen: [cmd, lib, template]
+  progen: [config, genware, lib]
 cibuild:
   jobspec:
     copyFrom: jobspec
@@ -33,16 +33,19 @@ codegen:
     copyFrom: cmd/server
     copyTo: codegen/cmd
     exclude: [main.go]
-  genware:
-    copyFrom: genware/std
-    copyTo: codegen/genware
   lib:
     copyFrom: lib/linux/container/run
     copyTo: codegen/lib
+  template:
+    copyFrom: template/linux/container/run
+    copyTo: codegen/template
 progen:
   config:
     copyFrom: config/progen
     copyTo: progen/config
+  genware:
+    copyFrom: genware/std
+    copyTo: codegen/genware
   lib:
     copyFrom: lib/progen
     copyTo: progen/lib

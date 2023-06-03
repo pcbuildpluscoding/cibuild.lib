@@ -175,12 +175,12 @@ func (b *CigServer) Run() {
 // sendImportReq
 // ---------------------------------------------------------------//
 func (b *CigServer) sendImportReq() error {
-  jobSpecPath := os.Getenv("JOBSPEC_FILE")
-  if jobSpecPath == "" {
-    return fmt.Errorf("JOBSPEC_FILE environment var is undefined, aborting ...")
+  configPath := os.Getenv("CIBUILD_SCHEDULE")
+  if configPath == "" {
+    return fmt.Errorf("CIBUILD_SCHEDULE environment var is undefined, aborting ...")
   }
 
-  importReq, err := getImportReq(jobSpecPath)
+  importReq, err := getImportReq(configPath)
   if err != nil {
     return err
   }
@@ -194,7 +194,7 @@ func (b *CigServer) sendImportReq() error {
     return fmt.Errorf("%s - import request vendoring failed : %v", b.Desc, err)
   }
 
-  logger.Infof("%s client is sending a jobspec import request", b.Desc)
+  logger.Infof("%s client is sending a job schedule import request ...", b.Desc)
 
   resp := client.Request(aw)
   if resp.AppFailed() {

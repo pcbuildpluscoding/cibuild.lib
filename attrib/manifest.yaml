@@ -7,8 +7,8 @@ branches: [cibuild, codegen, progen]
 convertExt:
   convertible: 
     cibuild: []
-    codegen: [cmd, genware, lib]
-    progen: [lib]
+    codegen: [cmd, lib]
+    progen: [genware, lib]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -18,12 +18,12 @@ convertExt:
     module: copyFile
 importable: 
   cibuild: [jobspec]
-  codegen: [cmd, genware, lib]
-  progen: [config, lib]
+  codegen: [cmd, lib, template]
+  progen: [config, genware, lib]
 cleanToDir: 
   cibuild: [jobspec]
-  codegen: [genware, lib]
-  progen: [config, lib]
+  codegen: [lib, template]
+  progen: [config, genware, lib]
 cibuild:
   jobspec:
     copyFrom: jobspec
@@ -32,9 +32,6 @@ codegen:
   cmd:
     copyFrom: codegen/cmd
     copyTo: cmd/server
-  genware:
-    copyFrom: codegen/genware
-    copyTo: genware/std
   lib:
     copyFrom: codegen/lib
     copyTo: lib/linux/container/run
@@ -45,6 +42,9 @@ progen:
   config:
     copyFrom: progen/config
     copyTo: config/progen
+  genware:
+    copyFrom: codegen/genware
+    copyTo: genware/std
   lib:
     copyFrom: progen/lib
     copyTo: lib/progen

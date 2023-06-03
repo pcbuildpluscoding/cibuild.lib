@@ -8,6 +8,4 @@ Tasks:
     BucketName: nerdctl/integration
   - TaskKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2
     BucketName: nerdctl/integration
-  - TaskKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step3
-    BucketName: nerdctl/integration
 Sync: false

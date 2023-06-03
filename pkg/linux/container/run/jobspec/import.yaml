@@ -1,19 +1,17 @@
 ---
-Import:
-  Action: Import
-  BucketName: nerdctl/integration
-  Device: Trovient
-  InputPath: trovedb:system/uri|github.repo/cibuild,jobspec
-  InputFile: 
-    - [jobspec.yaml, jobKey]
-    - [jobspec-build.yaml, jobKey/step3]
-    - [jobspec-prepare.yaml, jobKey/step1]
-    - [jobspec-progen.yaml, jobKey/step2]
-    - [lineEditor.yaml, jobKey/LineEditor]
-    - [sectionDealer.yaml, jobKey/SectionDealer]
-    - [varDecErrTest.yaml, jobKey/VarDecErrTest]
-  JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
-  JobKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
-  Protocol: "JobSpec"
-  Subject: LinuxContainerRun
-  Sync: true
+Action: Import
+BucketName: nerdctl/integration
+Device: Trovient
+InputPath: trovedb:system/uri|github.repo/cibuild,jobspec
+InputFile: 
+  - [jobspec.yaml, jobKey]
+  - [jobspec-build.yaml, jobKey/step2]
+  - [jobspec-progen.yaml, jobKey/step1]
+  - [lineEditor.yaml, jobKey/LineEditor]
+  - [sectionDealer.yaml, jobKey/SectionDealer]
+  - [varDecErrTest.yaml, jobKey/VarDecErrTest]
+JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+JobKey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+Protocol: "JobSpec"
+Subject: LinuxContainerRun
+Sync: true
