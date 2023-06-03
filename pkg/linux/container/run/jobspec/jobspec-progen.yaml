@@ -21,7 +21,7 @@ ProGenerate1:
   BucketName: nerdctl/integration
   DbPrefix: cibuild/progen/std/Base
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib/base.tpl
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/base.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/base.go
   Sync: false
@@ -30,7 +30,7 @@ ProGenerate2:
   BucketName: nerdctl/integration
   DbPrefix: cibuild/progen/std/Parser
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/lib/parser.tpl
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/parser.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/parser.go
   Sync: false
