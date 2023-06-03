@@ -43,7 +43,7 @@ progen:
     copyFrom: progen/config
     copyTo: config/progen
   genware:
-    copyFrom: codegen/genware
+    copyFrom: progen/genware
     copyTo: genware/std
   lib:
     copyFrom: progen/lib

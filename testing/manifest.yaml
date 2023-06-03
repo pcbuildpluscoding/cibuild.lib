@@ -3,7 +3,7 @@ fromDir: /home/devapps/enterprise/github/cibuild
 fromPath: 
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/linux/container/run
-branches: [cibuild, codegen]
+branches: []
 convertExt:
   convertible: 
     cibuild: []
@@ -45,7 +45,7 @@ progen:
     copyTo: progen/config
   genware:
     copyFrom: genware/std
-    copyTo: codegen/genware
+    copyTo: progen/genware
   lib:
     copyFrom: lib/progen
     copyTo: progen/lib
