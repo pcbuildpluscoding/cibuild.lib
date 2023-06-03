@@ -3,7 +3,7 @@ JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
 RemoteAddr: 127.0.0.1:4499
 Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step3
 Tasks:
-  - CopyFile1
+  # - CopyFile1
   - ScanVars
   - Generate
   # - CopyFile2
