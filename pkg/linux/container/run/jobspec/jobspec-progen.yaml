@@ -6,6 +6,7 @@ Tasks:
   - ProGenerate1
   - ProGenerate2
   - CopyFile
+  - ResumeRequest
 Import:
   Action: Import
   BucketName: nerdctl/integration
@@ -44,6 +45,7 @@ CopyFile:
   Subject: LinuxContainerRun
   Sync: true
 ResumeRequest:
+  Action: Resume
   Device: MessageProxy
   RemoteAddr: 127.0.0.1:7799
   Subject: LinuxContainerRun
