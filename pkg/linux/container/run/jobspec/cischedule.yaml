@@ -9,8 +9,7 @@ Specified:
     InputFile:
     - [jobspec.yaml, _JobKey_]
     - [jobspec-progen.yaml, _JobKey_/step1]
-    - [jobspec-restart.yaml, _JobKey_/step2]
-    - [jobspec-build.yaml, _JobKey_/step3]
+    - [jobspec-build.yaml, _JobKey_/step2]
   _JobKey_:
     PurgePrefix:
     InputFile:

@@ -5,8 +5,10 @@ Tasks:
   - Import
   - ProGenerate1
   - ProGenerate2
-  - CopyFile
-  - CiNotify
+  - CopyFile1
+  - CopyFile2
+  - CopyFile3
+  # - CiNotify
 Import:
   Action: Import
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
@@ -35,7 +37,7 @@ ProGenerate2:
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/parser.go
   Sync: false
-CopyFile:
+CopyFile1:
   Action: CopyModExt
   Device: FileSystem
   InputPath: trovedb:system/uri|github.repo/cibuild,template/linux/container/run
@@ -44,6 +46,20 @@ CopyFile:
   ModifyExt: .go
   Subject: LinuxContainerRun
   Sync: true
+CopyFile2:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/editCiProfile.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
+  Subject: LinuxContainerRun
+  Sync: true
+CopyFile3:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
+  Subject: LinuxContainerRun
+  Sync: false
 CiNotify:
   Action: Resume
   Device: MessageProxy

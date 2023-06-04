@@ -1,1 +1,1 @@
-unit testing results show end-to-end testing should pass on the next test
+cischedule.yaml is now reduced to 2 steps instead of 3
