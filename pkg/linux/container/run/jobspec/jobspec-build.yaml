@@ -5,7 +5,6 @@ Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step3
 Tasks:
   - ScanVars
   - Generate
-  - CiNotify
   # - CopyFile
 ScanVars:
   Action: ScanVars
@@ -36,12 +35,6 @@ Generate:
     VarDecErrTest: step2/Generate/VarDecErrTest
     Workers: ["Default","VarDec"]
   Sync: false
-CiNotify:
-  Action: Resume
-  Device: MessageProxy
-  RemoteAddr: 127.0.0.1:7799
-  Subject: LinuxContainerRun
-  Sync: true
 CopyFile:
   Action: CopyFileWithTmsp
   Device: FileSystem
