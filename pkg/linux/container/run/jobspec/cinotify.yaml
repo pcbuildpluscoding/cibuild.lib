@@ -1,0 +1,6 @@
+---
+tasks: [runCiNotify]
+runCiNotify:
+  baseDir: /home/devapps/enterprise/github/cibuild
+  jobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  action: Resume

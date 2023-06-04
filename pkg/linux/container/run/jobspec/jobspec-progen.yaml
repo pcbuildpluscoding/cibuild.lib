@@ -1,16 +1,16 @@
 ---
 RemoteAddr: 127.0.0.1:4499
-Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step2
+Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step1
 Tasks:
   - Import
   - ProGenerate1
   - ProGenerate2
   - CopyFile
-  - ResumeRequest
+  - CiNotify
 Import:
   Action: Import
-  BucketName: nerdctl/integration
-  DbPrefix: cibuild/progen/std
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: step1/progen/std
   Device: Trovient
   InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
   InputFile: [snipset-base.yaml, snipset-parser.yaml]
@@ -19,8 +19,8 @@ Import:
   Sync: true
 ProGenerate1: 
   Action: Generate
-  BucketName: nerdctl/integration
-  DbPrefix: cibuild/progen/std/Base
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: step1/progen/std/Base
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/base.tpl
   PluginKey: cibuild/progen/std
@@ -28,8 +28,8 @@ ProGenerate1:
   Sync: false
 ProGenerate2: 
   Action: Generate
-  BucketName: nerdctl/integration
-  DbPrefix: cibuild/progen/std/Parser
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: step1/progen/std/Parser
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/parser.tpl
   PluginKey: cibuild/progen/std
@@ -44,7 +44,7 @@ CopyFile:
   ModifyExt: .go
   Subject: LinuxContainerRun
   Sync: true
-ResumeRequest:
+CiNotify:
   Action: Resume
   Device: MessageProxy
   RemoteAddr: 127.0.0.1:7799

@@ -1,22 +1,28 @@
 ---
-0/Workers: [LineCopier]
-0/Starting: ['^import \(', false]
-0/Ending: ['^\)$', 1, false]
-1/Workers: [LineCopier]
-1/Starting: ['^func WithoutRunMount', true]
-1/Ending: ['^\}$', 1, true]
-2/Workers: [VarDecParser, LineEditor]
-2/Starting: ['^func setPlatformOptions', true]
-2/Ending: ['^\}$', 1, true]
-3/Workers: [VarDecParser, LineEditor]
-3/Starting: ['^func generateNamespaceOpts', true]
-3/Ending: ['^\}$', 1, true]
-4/Workers: [VarDecParser, LineEditor]
-4/Starting: ['^func setOOMScoreAdj', true]
-4/Ending: ['^\}$', 1, true]
-5/Workers: [LineCopier]
-5/Starting: ['^func withOOMScoreAdj', true]
-5/Ending: [EOF, 1, true]
+import:
+  Workers: [LineCopier]
+  Starting: ['^import \(', false]
+  Ending: ['^\)$', 1, false]
+WithoutRunMount:
+  Workers: [LineCopier]
+  Starting: ['^func WithoutRunMount', true]
+  Ending: ['^\}$', 1, true]
+setPlatformOptions:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func setPlatformOptions', true]
+  Ending: ['^\}$', 1, true]
+generateNamespaceOpts:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func generateNamespaceOpts', true]
+  Ending: ['^\}$', 1, true]
+setOOMScoreAdj:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func setOOMScoreAdj', true]
+  Ending: ['^\}$', 1, true]
+withOOMScoreAdj:
+  Workers: [LineCopier]
+  Starting: ['^func withOOMScoreAdj', true]
+  Ending: [EOF, 1, true]
 Sections: 
   - import
   - WithoutRunMount

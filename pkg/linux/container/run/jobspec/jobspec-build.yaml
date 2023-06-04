@@ -1,22 +1,14 @@
 ---
-JobId: 84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f
+JobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
 RemoteAddr: 127.0.0.1:4499
-Step: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/step3
+Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step2
 Tasks:
-  # - CopyFile1
   - ScanVars
   - Generate
-  # - CopyFile2
-CopyFile1:
-  Action: CopyFileWithTmsp
-  Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
-  OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
-  Subject: LinuxContainerRun
-  Sync: false
+  # - CopyFile
 ScanVars:
   Action: ScanVars
-  BucketName: system/testing
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: linux/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run_linux.go
@@ -25,32 +17,28 @@ ScanVars:
   Subject: LinuxContainerRun
   Arrangement:
     Blacklist:
-    BucketName: nerdctl/integration
-    LineEditor:
-      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/LineEditor
-    SectionDealer:
-      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/SectionDealer
+    LineEditor: step2/ScanVars/LineEditor
+    SectionDealer: step2/ScanVars/SectionDealer
     Workers: ["VarDecParser","LineEditor"]
   Sync: false
 Generate: 
   Action: Generate
-  BucketName: system/testing
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: linux/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerLinux.tpl
   OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerLinux.go
   PluginKey: linux/container/run
-  Workers: ["Default","VarDec"]
   Subject: LinuxContainerRun
   Arrangement:
-    BucketName: nerdctl/integration
-    VarDecErrTest:
-      Dbkey: scanify/84c8a33e-f6e5-11ed-984e-e7ae2cb0d52f/VarDecErrTest
+    SectionDealer: step2/Generate/SectionPrintDealer
+    VarDecErrTest: step2/Generate/VarDecErrTest
+    Workers: ["Default","VarDec"]
   Sync: false
-CopyFile2:
+CopyFile:
   Action: CopyFileWithTmsp
   Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cleanup/dev01/manifest.yaml
-  OutputFile: trovedb:system/uri|incron/dropzone,cleanup/dev01/manifest.yaml
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/cinotify.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   Subject: LinuxContainerRun
   Sync: false

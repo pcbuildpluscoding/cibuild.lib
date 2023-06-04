@@ -7,7 +7,7 @@ branches: [cibuild]
 convertExt:
   convertible: 
     cibuild: []
-    codegen: [cmd, lib]
+    codegen: [cmd, template]
     progen: [genware, lib]
   defaultRef: golang
   golang:
@@ -18,12 +18,12 @@ convertExt:
     module: copyFile
 importable: 
   cibuild: [jobspec]
-  codegen: [cmd]
-  progen: [config, lib]
+  codegen: [cmd, template]
+  progen: [config, genware]
 cleanToDir: 
   cibuild: [jobspec]
-  codegen: [cmd, lib, template]
-  progen: [config, genware, lib]
+  codegen: [cmd, template]
+  progen: [config]
 cibuild:
   jobspec:
     copyFrom: jobspec
@@ -33,11 +33,8 @@ codegen:
     copyFrom: cmd/server
     copyTo: codegen/cmd
     exclude: [main.go]
-  lib:
-    copyFrom: lib/linux/container/run
-    copyTo: codegen/lib
   template:
-    copyFrom: template/linux/container/run
+    copyFrom: lib/linux/container/run
     copyTo: codegen/template
 progen:
   config:
