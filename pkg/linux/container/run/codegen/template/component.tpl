@@ -1,11 +1,11 @@
 package run
 
 import (
-  "fmt"
-  "regexp"
-  "strings"
+	"fmt"
+	"regexp"
+	"strings"
 
-  stx "github.com/pcbuildpluscoding/strucex/std"
+	stx "github.com/pcbuildpluscoding/strucex/std"
 )
 
 //================================================================//
@@ -163,10 +163,7 @@ type LineEditor struct {
 //----------------------------------------------------------------//
 func (p *LineEditor) Arrange(spec Runware) error {
   logger.Debugf("%s is arranging ...", p.Desc)
-  dbkey := spec.SubNode("LineEditor").String("Dbkey")
-  if dbkey == "" {
-    return fmt.Errorf("%s - required Arrangement.LineEditor.Dbkey parameter is undefined", p.Desc)
-  }
+  dbkey := spec.String("LineEditor")
   rw,_ := stx.NewRunware(nil)
   err := p.dd.GetWithKey(dbkey, rw)
   if err != nil {

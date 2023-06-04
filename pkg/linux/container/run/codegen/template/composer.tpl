@@ -20,6 +20,23 @@ type PrintProvider struct {
 }
 
 //----------------------------------------------------------------//
+// Arrange
+//----------------------------------------------------------------//
+func (p *PrintProvider) Arrange(spec Runware) error {
+  if !spec.HasKeys("Workers") {
+    return fmt.Errorf("required taskSpec property Workers is undefined")
+  }
+  elist := ab.NewErrorlist(true)
+  var err error
+  for _, kind := range spec.StringList("Workers") {
+    p.cache[kind], err = p.newPrinter(kind)
+    elist.Add(err)
+  }
+  p.spec = spec
+  return elist.Unwrap()
+}
+
+//----------------------------------------------------------------//
 // Printer
 //----------------------------------------------------------------//
 func (p *PrintProvider) Print(kind, sectionName string) error {
@@ -42,26 +59,14 @@ func (p *PrintProvider) Print(kind, sectionName string) error {
 func (p *PrintProvider) newPrinter(kind string) (Printer, error) {
   switch kind {
   case "VarDec":
-    return elm.NewVardecPrinter(p.dd, p.spec, p.writer)
+    vdet, err := NewVarDecErrTest(p.dd, p.spec)
+    if err != nil {
+      return nil, err
+    }
+    return elm.NewVardecPrinterA(p.dd, vdet, p.writer)
   default:
     return elm.NewStdPrinter(p.dd, p.writer)
   }
-}
-
-//----------------------------------------------------------------//
-// Arrange
-//----------------------------------------------------------------//
-func (p *PrintProvider) Arrange(spec Runware) error {
-  if !spec.HasKeys("Workers") {
-    return fmt.Errorf("required taskSpec property Workers is undefined")
-  }
-  elist := ab.NewErrorlist(true)
-  var err error
-  for _, kind := range spec.StringList("Workers") {
-    p.cache[kind], err = p.newPrinter(kind)
-    elist.Add(err)
-  }
-  return elist.Unwrap()
 }
 
 //----------------------------------------------------------------//
@@ -83,120 +88,53 @@ func (p *PrintProvider) String() string {
 }
 
 //================================================================//
-// CRComposer
+// Composer
 //================================================================//
-type LineParser_CRC func(*CRComposer, string) LineParser_CRC
-type TokenParser_CRC func(*CRComposer, *ScanData) TokenParser_CRC
-type CRComposer struct {
+type Composer struct {
   Component
-  lineParser LineParser_CRC
-  lineState int
-  skipLineCount *int
-  tokenParser TokenParser_CRC
-  tokenState int
+  dealer SectionDealer
   provider PrintProvider
+  sectionName string
+  skipLineCount  *int
   writer LineWriter
 }
 
 //----------------------------------------------------------------//
 // EditLine
 //----------------------------------------------------------------//
-func (c *CRComposer) EditLine(line *string, lineNum int) {}
-
-//----------------------------------------------------------------//
-// composeL0
-//----------------------------------------------------------------//
-func (c *CRComposer) composeL0(line string) (LineParser_CRC) {
-  switch c.lineState {
-  case 1:
-    c.provider.Print("Default", "import")
-  case 2:
-    c.provider.Print("Default", "WithoutRunMount")
-  case 3:
-    c.provider.Print("VarDec", "setPlatformOptions")
-  case 4:
-    c.provider.Print("VarDec", "generateNamespaceOpts")
-  case 5:
-    c.provider.Print("VarDec", "setOOMScoreAdj")
-  case 6:
-    c.provider.Print("Default", "withOOMScoreAdj")
+func (c *Composer) EditLine(line *string, lineNum int) {
+  if c.dealer.SectionStart(*line) {
+    c.PrintSection()
   }
-  c.lineState = 0
-  return (*CRComposer).composeL0
 }
-
-//----------------------------------------------------------------//
-// composeT0
-//----------------------------------------------------------------//
-func (c *CRComposer) composeT0(sd *ScanData) TokenParser_CRC {
-  switch c.tokenState {
-  case 0:
-    if sd.Token == "// compose:import" {
-      logger.Debugf("$$$$$$$$$ compose:import tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 1
-      c.lineState = 1
-    } 
-  case 1:
-    if sd.Token == "// compose:WithoutRunMount" {
-      logger.Debugf("$$$$$$$$$ compose:WithoutRunMount tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 2
-      c.lineState = 2
-    } 
-  case 2:
-    if sd.Token == "// compose:setPlatformOptions" {
-      logger.Debugf("$$$$$$$$$ compose:setPlatformOptions tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 3
-      c.lineState = 3
-    } 
-  case 3:
-    if sd.Token == "// compose:generateNamespaceOpts" {
-      logger.Debugf("$$$$$$$$$ compose:generateNamespaceOpts tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 4
-      c.lineState = 4
-    } 
-  case 4:
-    if sd.Token == "// compose:setOOMScoreAdj" {
-      logger.Debugf("$$$$$$$$$ compose:setOOMScoreAdj tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 5
-      c.lineState = 5
-    } 
-  case 5:
-    if sd.Token == "// compose:withOOMScoreAdj" {
-      logger.Debugf("$$$$$$$$$ compose:withOOMScoreAdj tag detected $$$$$$$$$$")
-      c.skipLines(1)
-      c.tokenState = 0
-      c.lineState = 6
-      return nil
-    }
-  }
-  return (*CRComposer).composeT0
-}
-
 
 //----------------------------------------------------------------//
 // EndOfFile
 //----------------------------------------------------------------//
-func (c *CRComposer) EndOfFile(...string) {
-  switch c.lineState {
-  case 6:
-    // this means the 'compose:withOOMScoreAdj' token was detected and lineState
-    // set = 9 but the lineParser did not run since EOF happened
-    c.provider.Print("default", "withOOMScoreAdj")
+func (c *Composer) EndOfFile(lines ...string) {
+  if c.dealer.hasNext() {
+    c.PrintSection()
   }
+}
+
+//----------------------------------------------------------------//
+// PrintSection
+//----------------------------------------------------------------//
+func (c *Composer) PrintSection() {
+  sectionName, kinds := c.dealer.getSectionProps()
+  if len(kinds) == 0 {
+    logger.Errorf("%s section parser kindList is empty", sectionName)
+    return
+  }
+  logger.Debugf("%s - section %s start", c.Desc, sectionName)
+  c.provider.Print(kinds[0], sectionName)
+  c.dealer.setNext()
 }
 
 //----------------------------------------------------------------//
 // PutLine
 //----------------------------------------------------------------//
-func (c *CRComposer) PutLine(line string) {
-  if c.lineParser != nil {
-    c.lineParser = c.lineParser(c, line)
-  }
+func (c *Composer) PutLine(line string) {
   if *c.skipLineCount == 0 {
     c.writer.Write(line)
   }
@@ -205,14 +143,11 @@ func (c *CRComposer) PutLine(line string) {
 //----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-func (c *CRComposer) Run(reader io.Reader) ApiRecord {
+func (c *Composer) Run(reader io.Reader) ApiRecord {
   err := c.provider.Start()
   if err != nil {
     return c.WithErr(err)
   }
-
-  c.lineParser = (*CRComposer).composeL0
-  c.tokenParser = (*CRComposer).composeT0
 
   handler := han.NewScanHandler(c, c.skipLineCount)
 
@@ -223,22 +158,18 @@ func (c *CRComposer) Run(reader io.Reader) ApiRecord {
 //----------------------------------------------------------------//
 // String
 //----------------------------------------------------------------//
-func (c *CRComposer) String() string {
+func (c *Composer) String() string {
   return c.Desc
 }
 
 //----------------------------------------------------------------//
 // skipLines
 //----------------------------------------------------------------//
-func (c *CRComposer) skipLines(skipLineCount int) {
+func (c *Composer) skipLines(skipLineCount int) {
   *c.skipLineCount = skipLineCount
 }
 
 //----------------------------------------------------------------//
 // UseToken
 //----------------------------------------------------------------//
-func (c *CRComposer) UseToken(sd *ScanData) {
-  if c.tokenParser != nil {
-    c.tokenParser = c.tokenParser(c, sd)
-  }
-}
+func (c *Composer) UseToken(sd *ScanData) {}

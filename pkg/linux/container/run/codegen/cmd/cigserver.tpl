@@ -156,7 +156,6 @@ func (b *CigServer) newClient(remoteAddr string) (ApiClient, error) {
 // Run
 // ---------------------------------------------------------------//
 func (b *CigServer) Run() {
-
   if b.ciAction == "Start" {
     err := b.sendImportReq()
     if err != nil {
@@ -175,9 +174,9 @@ func (b *CigServer) Run() {
 // sendImportReq
 // ---------------------------------------------------------------//
 func (b *CigServer) sendImportReq() error {
-  configPath := os.Getenv("CIBUILD_SCHEDULE")
+  configPath := os.Getenv("CI_SCHEDULE")
   if configPath == "" {
-    return fmt.Errorf("CIBUILD_SCHEDULE environment var is undefined, aborting ...")
+    return fmt.Errorf("CI_SCHEDULE environment var is undefined, aborting ...")
   }
 
   importReq, err := getImportReq(configPath)
@@ -254,14 +253,14 @@ func (b *CigServer) Start(ctx context.Context, superCh chan ApiRecord) error {
 // newCigServer
 // ---------------------------------------------------------------//
 func newCigServer() (CigServer, error) {
-  jobId := os.Getenv("CIBUILD_JOB_ID")
+  jobId := os.Getenv("CI_JOB_ID")
   if jobId == "" {
-    return CigServer{}, fmt.Errorf("CIBUILD_JOB_ID environment var is undefined, aborting ...")
+    return CigServer{}, fmt.Errorf("CI_JOB_ID environment var is undefined, aborting ...")
   }
 
-  action := os.Getenv("CIBUILD_ACTION")
+  action := os.Getenv("CI_ACTION")
   if action == "" {
-    return CigServer{}, fmt.Errorf("CIBUILD_ACTION environment var is undefined, aborting ...")
+    return CigServer{}, fmt.Errorf("CI_ACTION environment var is undefined, aborting ...")
   }
 
   server, err := newServer()

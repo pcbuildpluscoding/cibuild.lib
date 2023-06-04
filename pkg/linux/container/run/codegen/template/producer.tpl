@@ -10,9 +10,9 @@ import (
 )
 
 //================================================================//
-// TCProvider
+// ParserProvider
 //================================================================//
-type TCProvider struct {
+type ParserProvider struct {
   dd *DataDealer
   cache map[string]TextParser
   skipLineCount *int
@@ -22,7 +22,7 @@ type TCProvider struct {
 //----------------------------------------------------------------//
 // newParser
 //----------------------------------------------------------------//
-func (p *TCProvider) newParser(kind string) (TextParser, error) {
+func (p *ParserProvider) newParser(kind string) (TextParser, error) {
   switch kind {
   case "VarDecParser":
     return NewVarDecParser(p.dd, p.skipLineCount, p.spec)
@@ -38,7 +38,7 @@ func (p *TCProvider) newParser(kind string) (TextParser, error) {
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (p *TCProvider) Arrange(spec Runware) error {
+func (p *ParserProvider) Arrange(spec Runware) error {
   if !spec.HasKeys("Workers") {
     return fmt.Errorf("required taskSpec property Workers is undefined")
   }
@@ -58,7 +58,7 @@ func (p *TCProvider) Arrange(spec Runware) error {
 //----------------------------------------------------------------//
 // getEditor
 //----------------------------------------------------------------//
-func (p *TCProvider) getParser(kind string) (TextParser, error) {
+func (p *ParserProvider) getParser(kind string) (TextParser, error) {
   var err error
   editor, found := p.cache[kind]
   if ! found {
@@ -73,7 +73,7 @@ func (p *TCProvider) getParser(kind string) (TextParser, error) {
 //----------------------------------------------------------------//
 // Start
 //----------------------------------------------------------------//
-func (p *TCProvider) Start() error {
+func (p *ParserProvider) Start() error {
   rules := elm.FlowRule{
     "Sync": true,
     "UNCLUSTERED": true,
@@ -87,7 +87,7 @@ func (p *TCProvider) Start() error {
 type CRProducer struct {
   Component
   dealer SectionDealer
-  provider TCProvider
+  provider ParserProvider
   sectionName string
   parser TextParser
   skipLineCount  *int

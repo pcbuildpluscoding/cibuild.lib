@@ -3,7 +3,7 @@ Content:
   Keys: 
     - 1/VarDecParser
     - 1/LineCopier
-DbPrefix: Base
+DbKey: Base
 SnipTree:
   Root: 0/Base
   0/Base:
@@ -13,7 +13,7 @@ SnipTree:
   constructor: |
     desc := "VarDecParser-" + time.Now().Format("150405.000000")
     dd.Desc = desc
-    blacklist, err := elm.NewBlacklist(spec.SubNode("Arrangement"))
+    blacklist, err := elm.NewBlacklist(spec)
     if err != nil {
       return nil, err
     }
