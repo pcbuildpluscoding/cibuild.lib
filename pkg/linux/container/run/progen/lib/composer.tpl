@@ -1,10 +1,10 @@
 package run
 
 import (
-  "bufio"
-  "io"
+	"bufio"
+	"io"
 
-  cwt "github.com/pcbuildpluscoding/types/connware"
+	cwt "github.com/pcbuildpluscoding/types/connware"
 )
 
 //================================================================//
@@ -49,13 +49,6 @@ func (c *PGComposer) Receive(readCh chan string) error {
     }
   }
   close(readCh)
-  return nil
-}
-
-//----------------------------------------------------------------//
-// Reset
-//----------------------------------------------------------------//
-func (c *PGComposer) Reset(spec Runware) error {
   return nil
 }
 

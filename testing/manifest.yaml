@@ -19,11 +19,11 @@ convertExt:
 importable: 
   cibuild: [jobspec]
   codegen: [cmd, template]
-  progen: [config, genware]
+  progen: [config, lib]
 cleanToDir: 
   cibuild: [jobspec]
   codegen: [cmd, template]
-  progen: [config]
+  progen: [config, lib]
 cibuild:
   jobspec:
     copyFrom: jobspec

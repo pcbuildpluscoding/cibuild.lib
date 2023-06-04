@@ -13,6 +13,7 @@ import (
 // ParserProvider
 //================================================================//
 type ParserProvider struct {
+  Desc string
   dd *DataDealer
   cache map[string]TextParser
   skipLineCount *int
@@ -20,31 +21,15 @@ type ParserProvider struct {
 }
 
 //----------------------------------------------------------------//
-// newParser
-//----------------------------------------------------------------//
-func (p *ParserProvider) newParser(kind string) (TextParser, error) {
-  switch kind {
-  case "VarDecParser":
-    return NewVarDecParser(p.dd, p.skipLineCount, p.spec)
-  case "LineEditor":
-    return NewLineEditor(p.dd, p.skipLineCount)
-  default:
-    logger.Debugf("$$$$$$$$ %s is not a registered parser kind, default assigned instead", kind)
-    parser := NewLineCopier(p.dd, p.skipLineCount)
-    return &parser, nil
-  }
-}
-
-//----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
 func (p *ParserProvider) Arrange(spec Runware) error {
   if !spec.HasKeys("Workers") {
-    return fmt.Errorf("required taskSpec property Workers is undefined")
+    return fmt.Errorf("%s - required taskSpec property Workers is undefined", p.Desc)
   }
   elist := ab.NewErrorlist(true)
   for _, kind := range spec.StringList("Workers") {
-    parser, err := p.newParser(kind)
+    parser, err := p.newParser(kind, spec)
     if err != nil {
       return err
     }
@@ -52,7 +37,24 @@ func (p *ParserProvider) Arrange(spec Runware) error {
     p.cache[kind] = parser
     elist.Add(err)
   }
+  p.spec = spec
   return elist.Unwrap()
+}
+
+//----------------------------------------------------------------//
+// newParser
+//----------------------------------------------------------------//
+func (p *ParserProvider) newParser(kind string, spec Runware) (TextParser, error) {
+  switch kind {
+  case "VarDecParser":
+    return NewVarDecParser(p.dd, p.skipLineCount, spec)
+  case "LineEditor":
+    return NewLineEditor(p.dd, p.skipLineCount)
+  default:
+    logger.Debugf("%s - %s is not a registered parser kind, default assigned instead", p.Desc, kind)
+    parser := NewLineCopier(p.dd, p.skipLineCount)
+    return &parser, nil
+  }
 }
 
 //----------------------------------------------------------------//
@@ -62,7 +64,7 @@ func (p *ParserProvider) getParser(kind string) (TextParser, error) {
   var err error
   editor, found := p.cache[kind]
   if ! found {
-    editor, err = p.newParser(kind)
+    editor, err = p.newParser(kind, p.spec)
     if err == nil {
       p.cache[kind] = editor
     }

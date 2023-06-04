@@ -246,6 +246,7 @@ func (b *CigServer) sendCiReq() {
 // Start
 // ---------------------------------------------------------------//
 func (b *CigServer) Start(ctx context.Context, superCh chan ApiRecord) error {
+  logger.Debugf("%s is starting ...", b.Desc)
   return b.server.Start(ctx, bindAddr, superCh)
 }
 
@@ -253,6 +254,8 @@ func (b *CigServer) Start(ctx context.Context, superCh chan ApiRecord) error {
 // newCigServer
 // ---------------------------------------------------------------//
 func newCigServer() (CigServer, error) {
+  logger.Debugf("creating cigserver ...")
+
   jobId := os.Getenv("CI_JOB_ID")
   if jobId == "" {
     return CigServer{}, fmt.Errorf("CI_JOB_ID environment var is undefined, aborting ...")

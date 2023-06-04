@@ -73,11 +73,12 @@ func NewCRProducer(connex *Trovian, spec Runware) (*CRProducer, error) {
   logger.Debugf("$$$$$$$$$$$ creating CRProducer with spec : %v $$$$$$$$$$$", spec.AsMap())
   desc := "CRProducer-" + time.Now().Format("150405.000000")
   count := 0
-  rw := spec.SubNode("Arrangement")
-  provider, err := NewParserProvider(connex, rw, &count)
+  dd, err := elm.NewDataDealer(desc, connex, spec)
   if err != nil {
     return nil, err
   }
+  provider := NewParserProvider(&dd, &count)
+  rw := spec.SubNode("Arrangement")
   err = provider.Arrange(rw)
   if err != nil {
     return nil, err
@@ -102,11 +103,12 @@ func NewCRComposer(connex *Trovian, spec Runware, writer LineWriter) (*Composer,
   logger.Debugf("$$$$$$$$$$$ creating Composer with spec : %v $$$$$$$$$$$", spec.AsMap())
   count := 0
   desc := "Composer-" + time.Now().Format("150405.000000")
-  rw := spec.SubNode("Arrangement")
-  provider, err := NewPrintProvider(connex, rw, writer)
+  dd, err := elm.NewDataDealer(desc, connex, spec)
   if err != nil {
     return nil, err
   }
+  provider := NewPrintProvider(&dd, writer)
+  rw := spec.SubNode("Arrangement")
   err = provider.Arrange(rw)
   if err != nil {
     return nil, err
@@ -129,28 +131,27 @@ func NewCRComposer(connex *Trovian, spec Runware, writer LineWriter) (*Composer,
 //----------------------------------------------------------------//
 // NewPrintProvider
 //----------------------------------------------------------------//
-func NewPrintProvider(connex *Trovian, spec Runware, writer LineWriter) (PrintProvider, error) {
+func NewPrintProvider(dd *DataDealer, writer LineWriter) PrintProvider {
   desc := "PrintProvider-" + time.Now().Format("150405.000000")
-  dd, err := elm.NewDataDealer(desc, connex, spec)
   return PrintProvider{
-    dd: &dd,
+    Desc: desc,
+    dd: dd,
     cache: map[string]Printer{},
     writer: writer,
-  }, err
+  }
 }
 
 //----------------------------------------------------------------//
 // NewParserProvider
 //----------------------------------------------------------------//
-func NewParserProvider(connex *Trovian, spec Runware, count *int) (ParserProvider, error) {
+func NewParserProvider(dd *DataDealer, count *int) ParserProvider {
   desc := "ParserProvider-" + time.Now().Format("150405.000000")
-  dd, err := elm.NewDataDealer(desc, connex, spec)
   return ParserProvider{
-    dd: &dd,
+    Desc: desc,
+    dd: dd,
     cache: map[string]TextParser{},
     skipLineCount: count,
-    spec: spec,
-  }, err
+  }
 }
 
 //----------------------------------------------------------------//

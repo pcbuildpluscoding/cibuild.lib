@@ -13,6 +13,7 @@ import (
 // PrintProvider
 //================================================================//
 type PrintProvider struct {
+  Desc string
   dd *DataDealer
   cache map[string]Printer
   spec Runware
@@ -24,16 +25,32 @@ type PrintProvider struct {
 //----------------------------------------------------------------//
 func (p *PrintProvider) Arrange(spec Runware) error {
   if !spec.HasKeys("Workers") {
-    return fmt.Errorf("required taskSpec property Workers is undefined")
+    return fmt.Errorf("%s - required taskSpec property Workers is undefined", p.Desc)
   }
   elist := ab.NewErrorlist(true)
   var err error
   for _, kind := range spec.StringList("Workers") {
-    p.cache[kind], err = p.newPrinter(kind)
+    p.cache[kind], err = p.newPrinter(kind, spec)
     elist.Add(err)
   }
   p.spec = spec
   return elist.Unwrap()
+}
+
+//----------------------------------------------------------------//
+// newPrinter
+//----------------------------------------------------------------//
+func (p *PrintProvider) newPrinter(kind string, spec Runware) (Printer, error) {
+  switch kind {
+  case "VarDec":
+    vdet, err := NewVarDecErrTest(p.dd, spec)
+    if err != nil {
+      return nil, err
+    }
+    return elm.NewVardecPrinterA(p.dd, vdet, p.writer)
+  default:
+    return elm.NewStdPrinter(p.dd, p.writer)
+  }
 }
 
 //----------------------------------------------------------------//
@@ -43,30 +60,14 @@ func (p *PrintProvider) Print(kind, sectionName string) error {
   var err error
   printer, found := p.cache[kind]
   if !found {
-    printer, err = p.newPrinter(kind)
+    printer, err = p.newPrinter(kind, p.spec)
     if err != nil {
-      return fmt.Errorf("%s printer creation failed : %v", kind, err)
+      return fmt.Errorf("%s - %s printer creation failed : %v", p.Desc, kind, err)
     }
     p.cache[kind] = printer
   }
   printer.SetProperty("SectionName", sectionName)
   return printer.Print()
-}
-
-//----------------------------------------------------------------//
-// newPrinter
-//----------------------------------------------------------------//
-func (p *PrintProvider) newPrinter(kind string) (Printer, error) {
-  switch kind {
-  case "VarDec":
-    vdet, err := NewVarDecErrTest(p.dd, p.spec)
-    if err != nil {
-      return nil, err
-    }
-    return elm.NewVardecPrinterA(p.dd, vdet, p.writer)
-  default:
-    return elm.NewStdPrinter(p.dd, p.writer)
-  }
 }
 
 //----------------------------------------------------------------//
