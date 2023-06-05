@@ -48,7 +48,7 @@ CopyFile1:
 CopyFile2:
   Action: CopyFileWithTmsp
   Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/rebuildRestart.yaml
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/requestResume.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   Subject: LinuxContainerRun
   Sync: true
