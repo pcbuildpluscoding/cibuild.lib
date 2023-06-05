@@ -5,7 +5,7 @@ Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step3
 Tasks:
   - ScanVars
   - Generate
-  # - CopyFile
+  - CopyFile1
 ScanVars:
   Action: ScanVars
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
@@ -26,7 +26,6 @@ Generate:
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: linux/container/run
   Device: Genware
-  Final: true
   InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerLinux.tpl
   OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerLinux.go
   PluginKey: linux/container/run
@@ -36,7 +35,14 @@ Generate:
     VarDecErrTest: step3/Generate/VarDecErrTest
     Workers: ["Default","VarDec"]
   Sync: false
-CopyFile:
+CopyFile1:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/finalCleanup.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
+  Subject: LinuxContainerRun
+  Sync: true
+CopyFile2:
   Action: CopyFileWithTmsp
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/cinotify.yaml

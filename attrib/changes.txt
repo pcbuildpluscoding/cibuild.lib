@@ -1,1 +1,1 @@
-improved cibuild/cmd/cinotify, using it to notify after ciutility modules are run
+added jobspec/finalCleanup as the final step in the program
