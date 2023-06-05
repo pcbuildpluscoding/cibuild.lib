@@ -9,14 +9,15 @@ Specified:
     InputFile:
     - [jobspec.yaml, _JobKey_]
     - [jobspec-progen.yaml, _JobKey_/step1]
-    - [jobspec-build.yaml, _JobKey_/step2]
+    - [jobspec-restart.yaml, _JobKey_/step2]
+    - [jobspec-build.yaml, _JobKey_/step3]
   _JobKey_:
     PurgePrefix:
     InputFile:
-    - [lineEditor.yaml, step2/ScanVars/LineEditor]
-    - [sectionDealer.yaml, step2/ScanVars/SectionDealer]
-    - [sectionPrintDealer.yaml, step2/Generate/SectionPrintDealer]
-    - [varDecErrTest.yaml, step2/Generate/VarDecErrTest]
+    - [lineEditor.yaml, step3/ScanVars/LineEditor]
+    - [sectionDealer.yaml, step3/ScanVars/SectionDealer]
+    - [sectionPrintDealer.yaml, step3/Generate/SectionPrintDealer]
+    - [varDecErrTest.yaml, step3/Generate/VarDecErrTest]
 JobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
 JobKey: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
 MarkupRef: [_JobKey_, JobKey]

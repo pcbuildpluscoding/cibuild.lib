@@ -1,4 +1,5 @@
 ---
+Title: Progenerate codegen source code golang files
 RemoteAddr: 127.0.0.1:4499
 Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step1
 Tasks:
@@ -7,8 +8,6 @@ Tasks:
   - ProGenerate2
   - CopyFile1
   - CopyFile2
-  - CopyFile3
-  # - CiNotify
 Import:
   Action: Import
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
@@ -49,20 +48,7 @@ CopyFile1:
 CopyFile2:
   Action: CopyFileWithTmsp
   Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/editCiProfile.yaml
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/rebuildRestart.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
-  Subject: LinuxContainerRun
-  Sync: true
-CopyFile3:
-  Action: CopyFileWithTmsp
-  Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
-  OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
-  Subject: LinuxContainerRun
-  Sync: false
-CiNotify:
-  Action: Resume
-  Device: MessageProxy
-  RemoteAddr: 127.0.0.1:7799
   Subject: LinuxContainerRun
   Sync: true

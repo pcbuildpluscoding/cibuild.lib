@@ -1,6 +1,0 @@
----
-tasks: [editCiProfile]
-editCiProfile:
-  inputFile: /home/devapps/enterprise/github/cibuild/incron.profile/cibuild/dev01/.profile
-  findWith: CI_ACTION=.*
-  replaceWith: CI_ACTION=Resume

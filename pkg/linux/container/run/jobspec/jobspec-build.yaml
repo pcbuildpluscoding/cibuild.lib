@@ -1,5 +1,5 @@
 ---
-JobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+Title: Generate linux/container/run source code files exporting to the cntrize.lib package
 RemoteAddr: 127.0.0.1:4499
 Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/step3
 Tasks:
@@ -17,8 +17,8 @@ ScanVars:
   Subject: LinuxContainerRun
   Arrangement:
     Blacklist:
-    LineEditor: step2/ScanVars/LineEditor
-    SectionDealer: step2/ScanVars/SectionDealer
+    LineEditor: step3/ScanVars/LineEditor
+    SectionDealer: step3/ScanVars/SectionDealer
     Workers: ["VarDecParser","LineEditor"]
   Sync: false
 Generate: 
@@ -26,13 +26,14 @@ Generate:
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: linux/container/run
   Device: Genware
+  Final: true
   InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerLinux.tpl
   OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerLinux.go
   PluginKey: linux/container/run
   Subject: LinuxContainerRun
   Arrangement:
-    SectionDealer: step2/Generate/SectionPrintDealer
-    VarDecErrTest: step2/Generate/VarDecErrTest
+    SectionDealer: step3/Generate/SectionPrintDealer
+    VarDecErrTest: step3/Generate/VarDecErrTest
     Workers: ["Default","VarDec"]
   Sync: false
 CopyFile:

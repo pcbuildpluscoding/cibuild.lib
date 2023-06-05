@@ -1,1 +1,1 @@
-removed final CiNotify subtask in jobspec-build.yaml
+improved cibuild/cmd/cinotify, using it to notify after ciutility modules are run
