@@ -21,7 +21,7 @@ ScanVars:
   PluginKey: linux/container/run
   StartReceipt: false
   Subject: LinuxContainerRun
-  TaskRef: 
+  ResumeRef: 
     Kind: MicroSync
     TaskId: Task2A
 Generate: 
@@ -38,7 +38,7 @@ Generate:
   PluginKey: linux/container/run
   StartReceipt: false
   Subject: LinuxContainerRun
-  TaskRef: 
+  ResumeRef: 
     Kind: MicroSync 
     TaskId: Task2B
 CopyFile1:
@@ -48,16 +48,6 @@ CopyFile1:
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   StartReceipt: false
   Subject: LinuxContainerRun
-  TaskRef: 
+  ResumeRef: 
     Kind: MacroAsync
     TaskId: Task2C
-CopyFile2:
-  Action: CopyFileWithTmsp
-  Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/cinotify.yaml
-  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
-  StartReceipt: false
-  Subject: LinuxContainerRun
-  TaskRef: 
-    Kind: MacroAsync
-    TaskId: Task2D

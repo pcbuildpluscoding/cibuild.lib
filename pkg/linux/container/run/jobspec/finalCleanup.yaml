@@ -1,15 +1,5 @@
 ---
-tasks: [runCiNotify, copyFiles, runGoTidy, stopServer]
-stopServer:
-  binaryName: cigserver
-removeAll:
-  baseDir: /home/devapps/enterprise/github/cibuild
-  subDir:
-    - config
-    - downloads
-    - jobspec
-    - lib
-    - template/linux
+tasks: [copyFiles, runGoTidy, stopServer, runCiNotify]
 copyFiles:
   fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
@@ -20,8 +10,19 @@ copyFiles:
       to: genware/std/genware.go
     - from: template/default/incron.profile/.profile
       to: incron.profile/cibuild/dev01/.profile
-runGoTidy:
+removeAll:
   baseDir: /home/devapps/enterprise/github/cibuild
+  subDir:
+    - config
+    - downloads
+    - jobspec
+    - lib
+    - template/linux
 runCiNotify:
   jobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   action: Resume
+  resumableTaskId: Task2B
+runGoTidy:
+  baseDir: /home/devapps/enterprise/github/cibuild
+stopServer:
+  binaryName: cigserver
