@@ -21,5 +21,8 @@ JobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
 JobKey: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
 MarkupRef: [_JobKey_, JobKey]
 Protocol: JobSpec
+ResumeRef: 
+  Kind: MicroSync
+  TaskId: Startup
 Subject: LinuxContainerRun
 Sync: true

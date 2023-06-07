@@ -17,11 +17,11 @@ Import:
   InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
   InputFile: [snipset-base.yaml, snipset-parser.yaml]
   Protocol: SnipTree
-  StartReceipt: false
-  Subject: LinuxContainerRun
   ResumeRef: 
     Kind: MicroSync
     TaskId: Task1A
+  StartReceipt: false
+  Subject: LinuxContainerRun
 ProGenerate1: 
   Action: Generate
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
@@ -30,10 +30,11 @@ ProGenerate1:
   InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/base.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/base.go
-  StartReceipt: false
   ResumeRef: 
     Kind: MicroSync
     TaskId: Task1B
+  StartReceipt: false
+  Subject: LinuxContainerRun
 ProGenerate2: 
   Action: Generate
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
@@ -42,10 +43,11 @@ ProGenerate2:
   InputFile: trovedb:system/uri|github.repo/cibuild,template/linux/container/run/parser.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run/parser.go
-  StartReceipt: false
   ResumeRef: 
     Kind: MicroSync
     TaskId: Task1C
+  StartReceipt: false
+  Subject: LinuxContainerRun
 CopyModFile:
   Action: CopyModExt
   Device: FileSystem
@@ -53,21 +55,21 @@ CopyModFile:
   OutputPath: trovedb:system/uri|github.repo/cibuild,lib/linux/container/run
   InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
   ModifyExt: .go
-  Subject: LinuxContainerRun
-  StartReceipt: false
   ResumeRef: 
     Kind: MicroSync
     TaskId: Task1D
+  StartReceipt: false
+  Subject: LinuxContainerRun
 CopyFile1:
   Action: CopyFileWithTmsp
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/requestResume.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
-  StartReceipt: false
-  Subject: LinuxContainerRun
   ResumeRef: 
     Kind: MacroAsync
     TaskId: Task1E
+  StartReceipt: false
+  Subject: LinuxContainerRun
 CopyFile2:
   Action: CopyFileWithTmsp
   Advice:
@@ -76,8 +78,8 @@ CopyFile2:
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
-  StartReceipt: false
-  Subject: LinuxContainerRun
   ResumeRef: 
     Kind: MacroAsync
     TaskId: Task1F
+  StartReceipt: false
+  Subject: LinuxContainerRun
