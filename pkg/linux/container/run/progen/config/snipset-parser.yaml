@@ -34,7 +34,7 @@ SnipTree:
     p.dd.Put("vardec/%02d", line, p.varId)
     p.varId += 1
   Arrange: |
-    elist := ab.NewErrorlist(true)
+    elist := ert.NewErrorlist(true)
     var err error
     p.regex = map[string]*regexp.Regexp{}
     p.regex["IfCmdGetErr"], err = regexp.Compile(`if.+err.+cmd\.Flags\(\).Get.+\{`)

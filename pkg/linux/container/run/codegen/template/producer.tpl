@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	ab "github.com/pcbuildpluscoding/apibase/std"
+	ert "github.com/pcbuildpluscoding/errorlist"
 	elm "github.com/pcbuildpluscoding/genware/lib/element"
 	han "github.com/pcbuildpluscoding/genware/lib/handler"
 )
@@ -27,7 +27,7 @@ func (p *ParserProvider) Arrange(spec Runware) error {
   if !spec.HasKeys("Workers") {
     return fmt.Errorf("%s - required taskSpec property Workers is undefined", p.Desc)
   }
-  elist := ab.NewErrorlist(true)
+  elist := ert.NewErrorlist(true)
   for _, kind := range spec.StringList("Workers") {
     parser, err := p.newParser(kind, spec)
     if err != nil {
