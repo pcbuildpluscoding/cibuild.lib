@@ -215,6 +215,9 @@ func (b *CigServer) sendCiReq() {
   request := map[string]interface{}{
     "JobId": b.jobId,
     "Action": b.ciAction,
+    "ResumeRef": map[string]interface{}{
+      "TaskId": os.Getenv("CI_RESUMABLE_TASK_ID"),
+    },
   }
 
   if b.ciAction == "Start" {

@@ -18,7 +18,7 @@ convertExt:
     module: copyFile
 importable: 
   cibuild: [jobspec]
-  codegen: [template]
+  codegen: [cmd, template]
   progen: [config]
 cleanToDir: 
   cibuild: [jobspec]
