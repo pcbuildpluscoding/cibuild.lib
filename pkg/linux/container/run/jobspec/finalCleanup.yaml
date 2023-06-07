@@ -1,5 +1,5 @@
 ---
-tasks: [runCiNotify, removeAll, copyFiles, runGoTidy, stopServer]
+tasks: [runCiNotify, copyFiles, runGoTidy, stopServer]
 stopServer:
   binaryName: cigserver
 removeAll:
@@ -7,17 +7,18 @@ removeAll:
   subDir:
     - config
     - downloads
+    - jobspec
     - lib
     - template/linux
 copyFiles:
-  fromDir: /home/devapps/enterprise/github/cibuild
+  fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
   fileSet:
-    - from: template/cmd/server/cigserver.tpl
+    - from: template/default/cmd/server/cigserver.tpl
       to: cmd/server/cigserver.go
-    - from: template/genware/std/genware.tpl
+    - from: template/default/genware/std/genware.tpl
       to: genware/std/genware.go
-    - from: template/incron.profile/cibuild/dev01/.profile
+    - from: template/default/incron.profile/.profile
       to: incron.profile/cibuild/dev01/.profile
 runGoTidy:
   baseDir: /home/devapps/enterprise/github/cibuild

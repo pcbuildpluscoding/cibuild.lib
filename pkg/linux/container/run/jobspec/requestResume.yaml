@@ -1,9 +1,9 @@
 ---
-tasks: [editCiProfile, runCiNotify]
+tasks: [editCiProfile]
 editCiProfile:
   inputFile: /home/devapps/enterprise/github/cibuild/incron.profile/cibuild/dev01/.profile
-  findWith: CI_ACTION=.*
-  replaceWith: CI_ACTION=Resume
-runCiNotify:
-  jobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  action: Resume
+  setEnvVars:
+    - findWith: CI_ACTION=.*
+      replaceWith: CI_ACTION=Resume
+    - findWith: CI_RESUMABLE_TASK_ID=.*
+      replaceWith: CI_RESUMABLE_TASK_ID=Task1F

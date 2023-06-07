@@ -1,1 +1,1 @@
-added jobspec/finalCleanup as the final step in the program
+new release after introduction of ResumeRef.TaskId for managing resuming a cibuild program
