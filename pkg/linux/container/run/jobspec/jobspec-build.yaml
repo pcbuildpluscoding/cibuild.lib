@@ -5,7 +5,7 @@ Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task2
 Tasks:
   - ScanVars
   - Generate
-  - CopyFile1
+  - CopyFile
 ScanVars:
   Action: ScanVars
   Arrangement:
@@ -41,7 +41,7 @@ Generate:
     TaskId: Task2B
   StartReceipt: false
   Subject: LinuxContainerRun
-CopyFile1:
+CopyFile:
   Action: CopyFileWithTmsp
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/finalCleanup.yaml

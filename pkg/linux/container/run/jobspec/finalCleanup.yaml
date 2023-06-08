@@ -1,5 +1,5 @@
 ---
-tasks: [copyFiles, runGoTidy, stopServer, runCiNotify]
+tasks: [stopServer, runCiNotify, removeAll, copyFiles, runGoTidy]
 copyFiles:
   fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
@@ -21,7 +21,7 @@ removeAll:
 runCiNotify:
   jobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   action: Resume
-  resumableTaskId: Task2B
+  resumableTaskId: Task2C
 runGoTidy:
   baseDir: /home/devapps/enterprise/github/cibuild
 stopServer:

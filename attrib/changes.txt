@@ -1,1 +1,1 @@
-new release after introduction of ResumeRef.TaskId for managing resuming a cibuild program
+adjustments to jobspec/finalCleanup.yaml
