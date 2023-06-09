@@ -1,16 +1,16 @@
 package run
 
 import (
-	"io"
-	"os"
-	"time"
+  "io"
+  "os"
+  "time"
 
-	"github.com/pcbuildpluscoding/apibase/loggar"
-	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	rdt "github.com/pcbuildpluscoding/types/apirecord"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	"github.com/sirupsen/logrus"
+  "github.com/pcbuildpluscoding/logroll"
+  elm "github.com/pcbuildpluscoding/genware/lib/element"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  rdt "github.com/pcbuildpluscoding/types/apirecord"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  "github.com/sirupsen/logrus"
 )
 
 type ApiRecord = rdt.ApiRecord
@@ -19,7 +19,7 @@ type Runware = rwt.Runware
 type Trovian = tdb.Trovian
 
 var (
-  logger = loggar.Get()
+  logger = logroll.Get()
   logfd *os.File
 )
 

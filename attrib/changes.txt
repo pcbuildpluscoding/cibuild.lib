@@ -1,1 +1,1 @@
-adjustments to jobspec/finalCleanup.yaml
+updated template code source replacing apibase/loggar import with new logroll package

@@ -1,19 +1,19 @@
 package run
 
 import (
-	"fmt"
-	"os"
-	"time"
+  "fmt"
+  "os"
+  "time"
 
-	"github.com/pcbuildpluscoding/apibase/loggar"
-	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
-	stx "github.com/pcbuildpluscoding/strucex/std"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	rdt "github.com/pcbuildpluscoding/types/apirecord"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	"github.com/sirupsen/logrus"
+  "github.com/pcbuildpluscoding/logroll"
+  elm "github.com/pcbuildpluscoding/genware/lib/element"
+  fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
+  han "github.com/pcbuildpluscoding/genware/lib/handler"
+  stx "github.com/pcbuildpluscoding/strucex/std"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  rdt "github.com/pcbuildpluscoding/types/apirecord"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  "github.com/sirupsen/logrus"
 )
 
 type ApiRecord = rdt.ApiRecord
@@ -31,7 +31,7 @@ type VarDecErrTest = elm.VarDecErrTest
 type XString = fs.XString
 
 var (
-  logger = loggar.Get()
+  logger = logroll.Get()
   logfd *os.File
 )
 
