@@ -1,0 +1,11 @@
+---
+Sections:
+  - processImageSignOptions
+  - processImageVerifyOptions
+  - processRootCmdFlags
+processImageSignOptions:
+  - [TextEditorB, 'func processImageSignOptions', 'cmd *cobra.Command', 'cspec *CntrSpec']
+processImageVerifyOptions:
+  - [TextEditorB, 'func processImageVerifyOptions', 'cmd *cobra.Command', 'cspec *CntrSpec']
+processRootCmdFlags:
+  - [TextEditorB, 'func processRootCmdFlags', 'cmd *cobra.Command', 'cspec *CntrSpec']
