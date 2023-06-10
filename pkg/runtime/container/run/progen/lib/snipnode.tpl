@@ -1,11 +1,11 @@
 package run
 
 import (
-	"fmt"
-	"os"
-	"strings"
+  "fmt"
+  "os"
+  "strings"
 
-	stx "github.com/pcbuildpluscoding/strucex/std"
+  stx "github.com/pcbuildpluscoding/strucex/std"
 )
 
 //================================================================//
@@ -223,8 +223,11 @@ func (d *SnipDealer) Arrange(spec Runware) error {
     return err
   }
   d.rootNode, err = d.newRootNode(dbPrefix)
+  if err != nil {
+    return err
+  }
   logger.Debugf("$$$$$$ got root keyset length : %d $$$$$$", len(d.rootNode.keySet))
-  return err
+  return nil
 }
 
 //----------------------------------------------------------------//
