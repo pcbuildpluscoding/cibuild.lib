@@ -28,6 +28,7 @@ cibuild:
   jobspec:
     copyFrom: jobspec
     copyTo: jobspec
+    exclude: [create, linux]
   jobspec/create:
     copyFrom: jobspec/create
     copyTo: jobspec/create
