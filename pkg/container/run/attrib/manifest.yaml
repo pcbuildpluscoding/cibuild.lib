@@ -7,7 +7,7 @@ branches: [cibuild, codegen, progen]
 convertExt:
   convertible: 
     cibuild: []
-    codegen: [cmd, lib]
+    codegen: [cmd, lib/create, lib/linux]
     progen: [genware, lib]
   defaultRef: golang
   golang:
