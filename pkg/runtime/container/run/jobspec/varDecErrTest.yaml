@@ -1,0 +1,15 @@
+---
+Content:
+  - ''
+  - '  if err |1| cspec.Err(); err != nil {'
+  - '    |2|'
+  - '  }'
+  - '  cspec.ErrReset()'
+  - ''
+InsertTags: ['|1|', '|2|']
+ContentIndex:
+  '|1|': 1
+  '|2|': 2
+generateRuntimeCOpts:
+  '|1|': :=
+  '|2|': return nil, err

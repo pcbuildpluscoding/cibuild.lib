@@ -1,0 +1,53 @@
+---
+Title: Generate runtime/container/run source code files exporting to the cntrize.lib package
+RemoteAddr: 127.0.0.1:4499
+Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task2
+Tasks:
+  - ScanVars
+  - Generate
+  - CopyFile
+ScanVars:
+  Action: ScanVars
+  Arrangement:
+    Blacklist:
+    LineEditor: task2/runtime/ScanVars/LineEditor
+    SectionDealer: task2/runtime/ScanVars/SectionDealer
+    Workers: ["VarDecParser","LineEditor"]
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: runtime/container/run
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run_runtime.go
+  OutputFile: Stdout
+  PluginKey: runtime/container/run
+  StartReceipt: false
+  Subject: runtime/container/run
+  ResumeRef: 
+    Kind: MicroSync
+    TaskId: runtime/container/run/ScanVars
+Generate: 
+  Action: Generate
+  Arrangement:
+    SectionDealer: task2/runtime/Generate/SectionPrintDealer
+    VarDecErrTest: task2/runtime/Generate/VarDecErrTest
+    Workers: ["Default","VarDec"]
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: runtime/container/run
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerRuntime.tpl
+  OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerRuntime.go
+  PluginKey: runtime/container/run
+  ResumeRef: 
+    Kind: MicroSync 
+    TaskId: runtime/container/run/Generate
+  StartReceipt: false
+  Subject: runtime/container/run
+CopyFile:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/finalCleanup.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
+  ResumeRef: 
+    Kind: MacroAsync
+    TaskId: runtime/container/run/CopyFile
+  StartReceipt: false
+  Subject: runtime/container/run

@@ -1,0 +1,85 @@
+---
+Title: Progenerate codegen source code golang files
+RemoteAddr: 127.0.0.1:4499
+Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task1
+Tasks:
+  - Import
+  - ProGenerate1
+  - ProGenerate2
+  - CopyModFile
+  - CopyFile1
+  - CopyFile2
+Import:
+  Action: Import
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: task1/progen
+  Device: Trovient
+  InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
+  InputFile: [snipset-base.yaml, snipset-parser.yaml]
+  Protocol: SnipTree
+  ResumeRef: 
+    Kind: MicroSync
+    TaskId: runtime/container/run/Import
+  StartReceipt: false
+  Subject: runtime/container/run
+ProGenerate1: 
+  Action: Generate
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: task1/progen/runtime/container/run/Base
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/runtime/container/run/base.tpl
+  PluginKey: cibuild/progen/std
+  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/runtime/container/run/base.go
+  ResumeRef: 
+    Kind: MicroSync
+    TaskId: runtime/container/run/ProGenerate1
+  StartReceipt: false
+  Subject: runtime/container/run
+ProGenerate2: 
+  Action: Generate
+  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  DbPrefix: task1/progen/runtime/container/run/Parser
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/runtime/container/run/parser.tpl
+  PluginKey: cibuild/progen/std
+  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/runtime/container/run/parser.go
+  ResumeRef: 
+    Kind: MicroSync
+    TaskId: runtime/container/run/ProGenerate2
+  StartReceipt: false
+  Subject: runtime/container/run
+CopyModFile:
+  Action: CopyModExt
+  Device: FileSystem
+  InputPath: trovedb:system/uri|github.repo/cibuild,template/runtime/container/run
+  OutputPath: trovedb:system/uri|github.repo/cibuild,lib/runtime/container/run
+  InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
+  ModifyExt: .go
+  ResumeRef: 
+    Kind: MicroSync
+    TaskId: runtime/container/run/CopyModFile
+  StartReceipt: false
+  Subject: runtime/container/run
+CopyFile1:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/requestResume.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
+  ResumeRef: 
+    Kind: MacroAsync
+    TaskId: runtime/container/run/CopyFile1
+  StartReceipt: false
+  Subject: runtime/container/run
+CopyFile2:
+  Action: CopyFileWithTmsp
+  Advice:
+    ClosePeerConnections: true
+    RemoteAddr: 127.0.0.1:4499
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
+  ResumeRef: 
+    Kind: MacroAsync
+    TaskId: runtime/container/run/CopyFile2
+  StartReceipt: false
+  Subject: runtime/container/run
