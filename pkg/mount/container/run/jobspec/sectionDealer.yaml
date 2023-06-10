@@ -1,0 +1,17 @@
+---
+Sections: 
+  - import
+  - parseMountFlags
+  - generateMountOpts
+import:
+  Workers: [LineCopier]
+  Starting: ['^import \(', false]
+  Ending: ['^\)$', 1, false]
+parseMountFlags:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func parseMountFlags', true]
+  Ending: ['^\}$', 1, true]
+generateMountOpts:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func generateMountOpts', true]
+  Ending: ['^\}$', 1, true]

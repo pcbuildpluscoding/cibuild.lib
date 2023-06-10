@@ -1,0 +1,14 @@
+---
+Sections: 
+  - import
+  - parseMountFlags
+  - generateMountOpts
+import:
+  Workers: [Default]
+  Starting: ['compose:import', false]
+parseMountFlags:
+  Workers: [VarDec]
+  Starting: ['compose:parseMountFlags', false]
+generateMountOpts:
+  Workers: [VarDec]
+  Starting: ['compose:generateMountOpts', false]
