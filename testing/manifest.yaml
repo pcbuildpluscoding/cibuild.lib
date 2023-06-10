@@ -2,7 +2,7 @@
 fromDir: /home/devapps/enterprise/github/cibuild
 fromPath: 
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/create/container/run
+basePath: pkg/container/run
 branches: []
 convertExt:
   convertible: 

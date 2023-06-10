@@ -1,6 +1,6 @@
 ---
 fromDir:
-fromPath: pkg/create/container/run
+fromPath: pkg/container/run
 baseDir:
 basePath:
 branches: [cibuild, codegen, progen]
@@ -17,27 +17,36 @@ convertExt:
   notApplicable:
     module: copyFile
 importable: 
-  cibuild: [jobspec]
-  codegen: [cmd, lib, template]
+  cibuild: [jobspec, jobspec/create, jobspec/linux]
+  codegen: [cmd, lib/create, lib/linux, template]
   progen: [config, genware, lib]
 cleanToDir: 
-  cibuild: [jobspec]
-  codegen: [lib, template]
+  cibuild: [jobspec, jobspec/create, jobspec/linux]
+  codegen: [lib/create, lib/linux, template]
   progen: [config, genware, lib]
 cibuild:
   jobspec:
     copyFrom: jobspec
     copyTo: jobspec
+  jobspec/create:
+    copyFrom: jobspec/create
+    copyTo: jobspec/create
+  jobspec/linux:
+    copyFrom: jobspec/linux
+    copyTo: jobspec/linux
 codegen:
   cmd:
     copyFrom: codegen/cmd
     copyTo: cmd/server
-  lib:
+  lib/create:
     copyFrom: codegen/lib
     copyTo: lib/create/container/run
+  lib/linux:
+    copyFrom: codegen/lib
+    copyTo: lib/linux/container/run
   template:
     copyFrom: codegen/template
-    copyTo: template/create/container/run
+    copyTo: template/container/run
 progen:
   config:
     copyFrom: progen/config
