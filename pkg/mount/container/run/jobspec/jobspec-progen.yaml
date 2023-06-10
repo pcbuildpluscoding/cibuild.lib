@@ -27,7 +27,7 @@ ProGenerate1:
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: task1/progen/mount/container/run/Base
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/container/run/base.tpl
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/mount/container/run/base.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/mount/container/run/base.go
   ResumeRef: 
@@ -40,7 +40,7 @@ ProGenerate2:
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: task1/progen/mount/container/run/Parser
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/container/run/parser.tpl
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/mount/container/run/parser.tpl
   PluginKey: cibuild/progen/std
   OutputFile: trovedb:system/uri|github.repo/cibuild,lib/mount/container/run/parser.go
   ResumeRef: 
@@ -51,7 +51,7 @@ ProGenerate2:
 CopyModFile:
   Action: CopyModExt
   Device: FileSystem
-  InputPath: trovedb:system/uri|github.repo/cibuild,template/container/run
+  InputPath: trovedb:system/uri|github.repo/cibuild,template/mount/container/run
   OutputPath: trovedb:system/uri|github.repo/cibuild,lib/mount/container/run
   InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
   ModifyExt: .go
