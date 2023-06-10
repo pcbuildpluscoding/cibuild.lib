@@ -12,6 +12,6 @@ parseMountFlags:
   Starting: ['^func parseMountFlags', true]
   Ending: ['^\}$', 1, true]
 generateMountOpts:
-  Workers: [VarDecParser, LineEditor]
+  Workers: [LineEditor]
   Starting: ['^func generateMountOpts', true]
   Ending: ['^\}$', 1, true]

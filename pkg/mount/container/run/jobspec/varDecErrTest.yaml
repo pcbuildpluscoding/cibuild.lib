@@ -13,6 +13,3 @@ ContentIndex:
 parseMountFlags:
   '|1|': :=
   '|2|': return nil, err
-generateMountOpts:
-  '|1|': :=
-  '|2|': return nil, nil, nil, err

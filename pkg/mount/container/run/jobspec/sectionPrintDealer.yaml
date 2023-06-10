@@ -10,5 +10,5 @@ parseMountFlags:
   Workers: [VarDec]
   Starting: ['compose:parseMountFlags', false]
 generateMountOpts:
-  Workers: [VarDec]
+  Workers: [Default]
   Starting: ['compose:generateMountOpts', false]
