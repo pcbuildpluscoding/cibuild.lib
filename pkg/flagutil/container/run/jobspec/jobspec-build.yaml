@@ -16,7 +16,7 @@ ScanVars:
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: flagutil/container/run
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run_mount.go
+  InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/flagutil.go
   OutputFile: Stdout
   PluginKey: flagutil/container/run
   StartReceipt: false
