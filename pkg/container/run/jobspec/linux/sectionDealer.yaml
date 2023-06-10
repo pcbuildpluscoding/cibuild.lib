@@ -1,0 +1,32 @@
+---
+Sections: 
+  - import
+  - WithoutRunMount
+  - setPlatformOptions
+  - generateNamespaceOpts
+  - setOOMScoreAdj
+  - withOOMScoreAdj
+import:
+  Workers: [LineCopier]
+  Starting: ['^import \(', false]
+  Ending: ['^\)$', 1, false]
+WithoutRunMount:
+  Workers: [LineCopier]
+  Starting: ['^func WithoutRunMount', true]
+  Ending: ['^\}$', 1, true]
+setPlatformOptions:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func setPlatformOptions', true]
+  Ending: ['^\}$', 1, true]
+generateNamespaceOpts:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func generateNamespaceOpts', true]
+  Ending: ['^\}$', 1, true]
+setOOMScoreAdj:
+  Workers: [VarDecParser, LineEditor]
+  Starting: ['^func setOOMScoreAdj', true]
+  Ending: ['^\}$', 1, true]
+withOOMScoreAdj:
+  Workers: [LineCopier]
+  Starting: ['^func withOOMScoreAdj', true]
+  Ending: [EOF, 1, true]

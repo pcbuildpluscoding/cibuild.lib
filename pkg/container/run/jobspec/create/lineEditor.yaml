@@ -1,0 +1,32 @@
+---
+Sections:
+  - createContainer
+  - processPullCommandFlagsInRun
+  - generateRootfsOpts
+  - withContainerLabels
+  - readKVStringsMapfFromLabel
+  - parseKVStringsMapFromLogOpt
+createContainer:
+  - [TextEditorB, 'func createContainer', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, setPlatformOptions, cmd, cspec]
+  - [TextEditorA, generateRootfsOpts, cmd, cspec]
+  - [TextEditorA, generateMountOpts, cmd, cspec]
+  - [TextEditorA, parseKVStringsMapFromLogOpt, cmd, cspec]
+  - [TextEditorA, withNerdctlOCIHook, 'withNerdctlOCIHook(cmd, id)', 'WithCntrizeOCIHook(id, dataStore, cspec)']
+  - [TextEditorA, generateRuntimeCOpts, cmd, cspec]
+  - [TextEditorA, withContainerLabels, cmd, cspec]
+processPullCommandFlagsInRun:
+  - [TextEditorB, 'func processPullCommandFlagsInRun', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, processImageVerifyOptions, cmd, cspec]
+  - [TextEditorA, cmd.OutOrStdout, cmd.OutOrStdout(), os.Stdout]
+  - [TextEditorA, cmd.ErrOrStderr, cmd.ErrOrStderr(), os.Stderr]
+generateRootfsOpts:
+  - [TextEditorB, 'func generateRootfsOpts', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, processPullCommandFlagsInRun, cmd, cspec]
+withContainerLabels:
+  - [TextEditorB, 'func withContainerLabels', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, readKVStringsMapfFromLabel, cmd, cspec]
+readKVStringsMapfFromLabel:
+  - [TextEditorB, 'func readKVStringsMapfFromLabel', 'cmd *cobra.Command', 'cspec *CntrSpec']
+parseKVStringsMapFromLogOpt:
+  - [TextEditorB, 'func parseKVStringsMapFromLogOpt', 'cmd *cobra.Command', 'cspec *CntrSpec']

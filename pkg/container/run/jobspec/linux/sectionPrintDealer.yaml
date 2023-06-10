@@ -1,0 +1,26 @@
+---
+import:
+  Workers: [Default]
+  Starting: ['compose:import', false]
+WithoutRunMount:
+  Workers: [Default]
+  Starting: ['compose:WithoutRunMount', false]
+setPlatformOptions:
+  Workers: [VarDec]
+  Starting: ['compose:setPlatformOptions', false]
+generateNamespaceOpts:
+  Workers: [VarDec]
+  Starting: ['compose:generateNamespaceOpts', false]
+setOOMScoreAdj:
+  Workers: [VarDec]
+  Starting: ['compose:setOOMScoreAdj', false]
+withOOMScoreAdj:
+  Workers: [Default]
+  Starting: ['compose:withOOMScoreAdj', false]
+Sections: 
+  - import
+  - WithoutRunMount
+  - setPlatformOptions
+  - generateNamespaceOpts
+  - setOOMScoreAdj
+  - withOOMScoreAdj

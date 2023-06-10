@@ -1,0 +1,32 @@
+---
+Action: Import
+Device: Trovient
+InputPath: trovedb:system/uri|github.repo/cibuild,jobspec
+Specified:
+  Buckets: [nerdctl/integration, _JobKey_]
+  nerdctl/integration:
+    PurgePrefix: _JobKey_
+    InputFile:
+    - [jobspec.yaml, _JobKey_]
+    - [jobspec-progen.yaml, _JobKey_/task1]
+    - [jobspec-build.yaml, _JobKey_/task2]
+  _JobKey_:
+    PurgePrefix:
+    InputFile:
+    - [create/lineEditor.yaml, task2/create/ScanVars/LineEditor]
+    - [create/sectionDealer.yaml, task2/create/ScanVars/SectionDealer]
+    - [create/sectionPrintDealer.yaml, task2/create/Generate/SectionPrintDealer]
+    - [create/varDecErrTest.yaml, task2/create/Generate/VarDecErrTest]
+    - [linux/lineEditor.yaml, task2/linux/ScanVars/LineEditor]
+    - [linux/sectionDealer.yaml, task2/linux/ScanVars/SectionDealer]
+    - [linux/sectionPrintDealer.yaml, task2/linux/Generate/SectionPrintDealer]
+    - [linux/varDecErrTest.yaml, task2/linux/Generate/VarDecErrTest]
+JobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+JobKey: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+MarkupRef: [_JobKey_, JobKey]
+Protocol: JobSpec
+ResumeRef: 
+  Kind: MicroSync
+  TaskId: InitB
+Subject: LinuxContainerRun
+Sync: true
