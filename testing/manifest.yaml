@@ -2,7 +2,7 @@
 fromDir: /home/devapps/enterprise/github/cibuild
 fromPath: 
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/linux/container/run
+basePath: pkg/create/container/run
 branches: []
 convertExt:
   convertible: 
@@ -34,7 +34,7 @@ codegen:
     copyTo: codegen/cmd
     exclude: [main.go]
   template:
-    copyFrom: lib/linux/container/run
+    copyFrom: lib/create/container/run
     copyTo: codegen/template
 progen:
   config:

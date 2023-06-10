@@ -1,0 +1,34 @@
+---
+Sections: 
+  - import
+  - createContainer
+  - processPullCommandFlagsInRun
+  - generateRootfsOpts
+  - withContainerLabels
+  - readKVStringsMapfFromLabel
+  - parseKVStringsMapFromLogOpt
+  - withStop
+import:
+  Workers: [Default]
+  Starting: ['compose:import', false]
+createContainer:
+  Workers: [VarDec]
+  Starting: ['compose:createContainer', false]
+processPullCommandFlagsInRun:
+  Workers: [VarDec]
+  Starting: ['compose:processPullCommandFlagsInRun', false]
+generateRootfsOpts:
+  Workers: [VarDec]
+  Starting: ['compose:generateRootfsOpts', false]
+withContainerLabels:
+  Workers: [Default]
+  Starting: ['compose:withContainerLabels', false]
+readKVStringsMapfFromLabel:
+  Workers: [VarDec]
+  Starting: ['compose:readKVStringsMapfFromLabel', false]
+parseKVStringsMapFromLogOpt:
+  Workers: [VarDec]
+  Starting: ['compose:parseKVStringsMapFromLogOpt', false]
+withStop:
+  Workers: [Default]
+  Starting: ['compose:withStop', false]

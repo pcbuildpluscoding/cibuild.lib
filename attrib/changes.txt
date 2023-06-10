@@ -1,1 +1,1 @@
-updated template code source replacing apibase/loggar import with new logroll package
+updated create/container/run configuration to match the current linux/container/run design standard

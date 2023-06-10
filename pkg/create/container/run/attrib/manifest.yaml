@@ -3,8 +3,12 @@ fromDir:
 fromPath: pkg/create/container/run
 baseDir:
 basePath:
+branches: [cibuild, codegen, progen]
 convertExt:
-  convertible: [cmd, genware, lib]
+  convertible: 
+    cibuild: []
+    codegen: [cmd, lib]
+    progen: [genware, lib]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -12,21 +16,35 @@ convertExt:
     toExt: .go
   notApplicable:
     module: copyFile
-importable: [cmd, config, genware, lib]
-cleanToDir: [config, lib, genware]
-cmd:
-  copyFrom: cmd
-  copyTo: cmd/server
-  exclude: ''
-config:
-  copyFrom: config
-  copyTo: config/create/container/run
-  exclude: ''
-genware:
-  copyFrom: genware
-  copyTo: genware/std
-  exclude: ''
-lib:
-  copyFrom: lib
-  copyTo: lib/create/container/run
-  exclude: ''
+importable: 
+  cibuild: [jobspec]
+  codegen: [cmd, lib, template]
+  progen: [config, genware, lib]
+cleanToDir: 
+  cibuild: [jobspec]
+  codegen: [lib, template]
+  progen: [config, genware, lib]
+cibuild:
+  jobspec:
+    copyFrom: jobspec
+    copyTo: jobspec
+codegen:
+  cmd:
+    copyFrom: codegen/cmd
+    copyTo: cmd/server
+  lib:
+    copyFrom: codegen/lib
+    copyTo: lib/create/container/run
+  template:
+    copyFrom: codegen/template
+    copyTo: template/create/container/run
+progen:
+  config:
+    copyFrom: progen/config
+    copyTo: config/progen
+  genware:
+    copyFrom: progen/genware
+    copyTo: genware/std
+  lib:
+    copyFrom: progen/lib
+    copyTo: lib/progen

@@ -15,6 +15,7 @@ import (
 
 type ApiRecord = rdt.ApiRecord
 type Component = elm.Component
+type LineWriter = elm.LineWriter
 type Runware = rwt.Runware
 type Trovian = tdb.Trovian
 
@@ -32,48 +33,50 @@ func SetLogger(super *logrus.Logger, superfd *os.File) {
 }
 
 //----------------------------------------------------------------//
-// NewPGComposer
+// NewCRProducer
 //----------------------------------------------------------------//
-func NewPGComposer(connex *Trovian, dealer SnipDealer) (*PGComposer, error) {
-  desc := "PGComposer-" + time.Now().Format("150405.000000")
-  return &PGComposer{
-    Component: elm.Component{Desc: desc},
+func NewCRProducer(connex *Trovian, spec Runware) (*CRProducer, error) {
+  desc := "CRProducer-" + time.Now().Format("150405.000000")
+  return &CRProducer{
+    Component: Component{Desc: desc},
   }, nil
 }
 
-//----------------------------------------------------------------//
-// NewSnipDealer
-//----------------------------------------------------------------//
-func NewSnipDealer(connex *Trovian) SnipDealer {
-  return SnipDealer{
-    Desc: "SnipDealer-" + time.Now().Format("150405.000000"),
-  }
-}
-
 //================================================================//
-// PGComposer
+// CRProducer
 //================================================================//
-type PGComposer struct {
+type CRProducer struct {
   Component
 }
 
 //----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-func (c *PGComposer) Run(reader io.Reader) ApiRecord {
-  return c.With(200)
-}
-
-//================================================================//
-// SnipDealer
-//================================================================//
-type SnipDealer struct {
-  Desc string
+func (p *CRProducer) Run(reader io.Reader) ApiRecord {
+  return p.With(200)
 }
 
 //----------------------------------------------------------------//
-// Arrange
+// NewCRComposer
 //----------------------------------------------------------------//
-func (d *SnipDealer) Arrange(spec Runware) error {
-  return nil
+func NewCRComposer(connex *Trovian, spec Runware, writer LineWriter) (*CRComposer, error) {
+  desc := "CRComposer-" + time.Now().Format("150405.000000")
+  return &CRComposer{
+    Component: Component{Desc: desc},
+  }, nil
 }
+
+//================================================================//
+// CRComposer
+//================================================================//
+type CRComposer struct {
+  Component
+}
+
+//----------------------------------------------------------------//
+// Run
+//----------------------------------------------------------------//
+func (p *CRComposer) Run(reader io.Reader) ApiRecord {
+  return p.With(200)
+}
+
