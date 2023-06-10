@@ -25,7 +25,7 @@ generateRootfsOpts:
   Starting: ['^func generateRootfsOpts', true]
   Ending: ['^\}$', 3, true]
 withContainerLabels:
-  Workers: [LineParserB]
+  Workers: [LineEditor]
   Starting: ['^func withContainerLabels', true]
   Ending: ['^\}$', 1, true]
 readKVStringsMapfFromLabel:
