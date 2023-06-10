@@ -1,5 +1,5 @@
 ---
-Title: Generate linux/container/run source code files exporting to the cntrize.lib package
+Title: Generate create/container/run source code files exporting to the cntrize.lib package
 RemoteAddr: 127.0.0.1:4499
 Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task2
 Tasks:
@@ -17,11 +17,11 @@ ScanVars:
     SectionDealer: task2/ScanVars/SectionDealer
     Workers: ["VarDecParser","LineEditor"]
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  DbPrefix: linux/container/run
+  DbPrefix: create/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run.go
   OutputFile: Stdout
-  PluginKey: linux/container/run
+  PluginKey: create/container/run
   StartReceipt: false
   Subject: create/container/run
   ResumeRef: 
@@ -34,11 +34,11 @@ Generate:
     VarDecErrTest: task2/Generate/VarDecErrTest
     Workers: ["Default","VarDec"]
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  DbPrefix: linux/container/run
+  DbPrefix: create/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerRun.tpl
   OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerRun.go
-  PluginKey: linux/container/run
+  PluginKey: create/container/run
   ResumeRef: 
     Kind: MicroSync 
     TaskId: Task2B

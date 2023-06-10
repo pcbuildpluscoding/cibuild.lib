@@ -8,7 +8,7 @@ import (
   "net"
 
   "github.com/pcbuildpluscoding/logroll"
-  crg "github.com/pcbuildpluscoding/cibuild/lib/linux/container/run"
+  crg "github.com/pcbuildpluscoding/cibuild/lib/create/container/run"
   prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
   gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
   elm "github.com/pcbuildpluscoding/genware/lib/element"
@@ -44,7 +44,7 @@ func init() {
   pkey = "cibuild/progen/std"
   vendorA := NewPGGenVendor(pkey)
   gwt.RegisterGenware(pkey, vendorA)
-  pkey = "linux/container/run"
+  pkey = "create/container/run"
   vendorC := NewCRGenVendor(pkey)
   gwt.RegisterGenware(pkey, vendorC)
 }
