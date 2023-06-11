@@ -1,1 +1,1 @@
-reproof of mount specific configuration as code
+reproof of linux specific configuration as code
