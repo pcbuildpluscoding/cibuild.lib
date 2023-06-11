@@ -145,14 +145,6 @@ SnipTree:
       flagName.Replace(`.Changed`,"",1)
       return prefix.String() + "Applied" + flagName.String()
     case "IfCmdGetErr":
-      if p.varDec.firstParam {
-        switch p.sectionName {
-        case "processImageSignOptions":
-          p.buffer = append(p.buffer, "var opt types.ImageSignOptions")
-        case "processImageVerifyOptions":
-          p.buffer = append(p.buffer, "var opt types.ImageVerifyOptions")
-        }
-      }
       line_ := p.varDec.ParseGetter(line).GetParamSetter()
       p.buffer = append(p.buffer, line_)
       return p.varDec.GetParamValue()
@@ -189,12 +181,19 @@ SnipTree:
       } else if p.regex["IfCmdChanged"].MatchString(*line) {
       *line = p.rewriteLine("IfCmdChanged", *line)
       } else if p.regex["IfCmdGetErr"].MatchString(*line) {
+        if p.varDec.firstParam {
+          line_ := "var opt types.ImageSignOptions"
+          if p.sectionName == "processImageVerifyOptions" {
+            line_ = "var opt types.ImageVerifyOptions"
+          }
+          p.buffer = append(p.buffer, p.varDec.IndentLine(line_))
+        }
         *line = p.rewriteLine("IfCmdGetErr", *line)
         p.state = "IfCmdGetErr"
       }
       p.buffer = append(p.buffer, *line)
     case p.regex["Return"].MatchString(*line):
-      *line = "return opt, nil"
+      *line = p.varDec.IndentLine("return opt, nil")
     default:
       if p.regex["CmdGet"].MatchString(*line) {
         p.addVarDec(p.varDec.ParseGetter(*line).GetVarSetter())
