@@ -9,11 +9,41 @@ import (
 )
 
 //================================================================//
+// LineFilter
+//================================================================//
+type LineFilter struct {
+  matchText string
+  times int
+}
+
+//----------------------------------------------------------------//
+// Matches
+//----------------------------------------------------------------//
+func (f *LineFilter) Matches(line string) bool {
+  return strings.Contains(line, f.matchText)
+}
+
+//----------------------------------------------------------------//
+// Complete
+//----------------------------------------------------------------//
+func (f *LineFilter) Complete() bool {
+  if f.times < 0 {
+    return false
+  } else if f.times == 0 {
+    return true
+  }
+  f.times -= 1
+  return false
+}
+
+//================================================================//
 // LineCopier
 //================================================================//
 type LineCopier struct {
   Desc string
+  cache map[string][]*LineFilter
   dd *DataDealer
+  filters []*LineFilter
   next TextParser
   skipLineCount *int
 }
@@ -21,14 +51,49 @@ type LineCopier struct {
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (c *LineCopier) Arrange(rw Runware) error {
+func (p *LineCopier) Arrange(spec Runware) error {
+  logger.Debugf("%s is arranging ...", p.Desc)
+  dbkey := spec.String("LineCopier")
+  rw,_ := stx.NewRunware(nil)
+  err := p.dd.GetWithKey(dbkey, rw)
+  if err != nil {
+    return err
+  }
+  logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
+  w := rw.StringList("Sections")
+  p.filters = make(map[string][]*LineFilter, len(w))
+  for _, sectionName := range w {
+    x := rw.ParamList(sectionName)
+    logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
+    y := make([]*LineFilter, len(x))
+    for i, p_ := range x {
+      params := p_.ParamList()
+      if len(params) < 3 {
+        return fmt.Errorf("LineCopier.Arrange failed : LineFilter requires two parameters - got : %v", params)
+      }
+      switch params[0].String() {
+      case "LineFilter":
+        y[i] = &LineFilter{matchText: params[1].String(), times: params[2].Int()}
+      default:
+        return fmt.Errorf("Unsupported LineCopier filter type : %s", params[0])
+      }
+      logger.Debugf("%s got TextEditor : %v", p.Desc, y[i])
+    }
+    p.cache[sectionName] = y
+  }
   return nil
 }
 
 //----------------------------------------------------------------//
 // EditLine
 //----------------------------------------------------------------//
-func (c *LineCopier) EditLine(line *string) {}
+func (c *LineCopier) EditLine(line *string) {
+  for _, filter := range c.filters {
+    if filter.Matches() && !filter.Complete() {
+      *c.skipLineCount = 1
+    }
+  }
+}
 
 //----------------------------------------------------------------//
 // Next()
@@ -88,7 +153,13 @@ func (c *LineCopier) SectionEnd() {
 //----------------------------------------------------------------//
 // Start
 //----------------------------------------------------------------//
-func (p *LineCopier) SectionStart(string) {}
+func (c *LineCopier) SectionStart(sectionName string) {
+  var found bool
+  if c.filters, found = c.cache[sectionName]; !found {
+    logger.Warnf("############ %s no LineFilters are setup for %s section ###########", p.Desc, sectionName)
+    c.filters = []*LineFilter{}
+  }
+}
 
 //----------------------------------------------------------------//
 // String
