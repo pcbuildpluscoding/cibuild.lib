@@ -156,7 +156,7 @@ func NewParserProvider(dd *DataDealer, count *int) ParserProvider {
   return ParserProvider{
     Desc: desc,
     dd: dd,
-    cache: map[string]TextParser{},
+    cache: map[string]LineParser{},
     skipLineCount: count,
   }
 }

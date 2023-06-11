@@ -48,7 +48,7 @@ func (f *LineFilter) complete() bool {
 type LineAdder struct {
   dd *DataDealer
   matchText string
-  inserts []string
+  inserts []interface{}
   times int
 }
 
@@ -73,8 +73,20 @@ func (a *LineAdder) Parse(line *string) {
     return
   }
   if strings.Contains(*line, a.matchText) {
-    dd.AddLines(a.inserts...)
+    logger.Debugf("$$$$$$$$$$ LineAdder matches line $$$$$$$$$$")
+    a.dd.AddLines(a.inserts...)
   }
+}
+
+//----------------------------------------------------------------//
+// toInterfaceList
+//----------------------------------------------------------------//
+func toInterfaceList(x []string) []interface{} {
+  y := make([]interface{}, len(x))
+  for i, z := range x {
+    y[i] = z
+  }
+  return y
 }
 
 //================================================================//
@@ -122,7 +134,7 @@ func (p *LineCopier) Arrange(spec Runware) error {
       case "LineAdder":
         objkey := fmt.Sprintf("%d/LineAdder", i)
         inserts := strings.Split(rw.String(objkey), "\n")
-        y[i] = &LineAdder{p.dd, params[1].String(), inserts, params[2].Int()}
+        y[i] = &LineAdder{p.dd, params[1].String(), toInterfaceList(inserts), params[2].Int()}
       default:
         return fmt.Errorf("Unsupported SectionParser type : %s", params[0])
       }
@@ -137,8 +149,8 @@ func (p *LineCopier) Arrange(spec Runware) error {
 // EditLine
 //----------------------------------------------------------------//
 func (c *LineCopier) EditLine(line *string) {
-  for _, parser := range c.filters {
-    parser.Parse(*line)
+  for _, parser := range c.parsers {
+    parser.Parse(line)
   }
 }
 
@@ -191,8 +203,8 @@ func (c *LineCopier) SectionEnd() {
 //----------------------------------------------------------------//
 func (c *LineCopier) SectionStart(sectionName string) {
   var found bool
-  if c.filters, found = c.cache[sectionName]; !found {
-    c.filters = []SectionParser{}
+  if c.parsers, found = c.cache[sectionName]; !found {
+    c.parsers = []SectionParser{}
   }
 }
 
