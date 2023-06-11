@@ -186,14 +186,14 @@ SnipTree:
           if p.sectionName == "processImageVerifyOptions" {
             line_ = "var opt types.ImageVerifyOptions"
           }
-          p.buffer = append(p.buffer, p.varDec.IndentLine(line_))
+          p.buffer = append(p.buffer, p.varDec.FormatLine(line_))
         }
         *line = p.rewriteLine("IfCmdGetErr", *line)
         p.state = "IfCmdGetErr"
       }
       p.buffer = append(p.buffer, *line)
     case p.regex["Return"].MatchString(*line):
-      *line = p.varDec.IndentLine("return opt, nil")
+      *line = p.varDec.FormatLine("return opt, nil")
     default:
       if p.regex["CmdGet"].MatchString(*line) {
         p.addVarDec(p.varDec.ParseGetter(*line).GetVarSetter())

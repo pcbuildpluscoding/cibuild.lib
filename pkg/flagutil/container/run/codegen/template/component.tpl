@@ -238,6 +238,14 @@ func (d *VarDec) DecIndent() {
 }
 
 //----------------------------------------------------------------//
+// FormatLine
+//----------------------------------------------------------------//
+func (d VarDec) FormatLine(line string) string {
+  indent := d.getIndent()
+  return fmt.Sprintf("%s%s", indent, line)
+}
+
+//----------------------------------------------------------------//
 // getIndent
 //----------------------------------------------------------------//
 func (d VarDec) getIndent() string {
