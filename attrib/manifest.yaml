@@ -1,6 +1,6 @@
 ---
 fromDir:
-fromPath: pkg/mount/container/run
+fromPath: pkg/linux/container/run
 baseDir:
 basePath:
 branches: [cibuild, codegen, progen]
@@ -34,10 +34,10 @@ codegen:
     copyTo: cmd/server
   lib:
     copyFrom: codegen/lib
-    copyTo: lib/mount/container/run
+    copyTo: lib/linux/container/run
   template:
     copyFrom: codegen/template
-    copyTo: template/mount/container/run
+    copyTo: template/linux/container/run
 progen:
   config:
     copyFrom: progen/config
