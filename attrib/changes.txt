@@ -1,1 +1,1 @@
-adjusted mount specific configuration as code
+adjusted linux specific configuration as code
