@@ -1,19 +1,49 @@
 package run
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	stx "github.com/pcbuildpluscoding/strucex/std"
+  stx "github.com/pcbuildpluscoding/strucex/std"
 )
+
+//================================================================//
+// LineFilter
+//================================================================//
+type LineFilter struct {
+  matchText string
+  times int
+}
+
+//----------------------------------------------------------------//
+// Matches
+//----------------------------------------------------------------//
+func (f *LineFilter) Matches(line string) bool {
+  return strings.Contains(line, f.matchText)
+}
+
+//----------------------------------------------------------------//
+// Complete
+//----------------------------------------------------------------//
+func (f *LineFilter) Complete() bool {
+  if f.times < 0 {
+    return false
+  } else if f.times == 0 {
+    return true
+  }
+  f.times -= 1
+  return false
+}
 
 //================================================================//
 // LineCopier
 //================================================================//
 type LineCopier struct {
   Desc string
+  cache map[string][]*LineFilter
   dd *DataDealer
+  filters []*LineFilter
   next TextParser
   skipLineCount *int
 }
@@ -21,14 +51,52 @@ type LineCopier struct {
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (c *LineCopier) Arrange(rw Runware) error {
+func (p *LineCopier) Arrange(spec Runware) error {
+  logger.Debugf("%s is arranging ...", p.Desc)
+  if !spec.HasKeys("LineCopier") {
+    p.cache = map[string][]*LineFilter{}
+  }
+  dbkey := spec.String("LineCopier")
+  rw,_ := stx.NewRunware(nil)
+  err := p.dd.GetWithKey(dbkey, rw)
+  if err != nil {
+    return err
+  }
+  logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
+  w := rw.StringList("Sections")
+  p.cache = make(map[string][]*LineFilter, len(w))
+  for _, sectionName := range w {
+    x := rw.ParamList(sectionName)
+    logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
+    y := make([]*LineFilter, len(x))
+    for i, p_ := range x {
+      params := p_.ParamList()
+      if len(params) < 3 {
+        return fmt.Errorf("LineCopier.Arrange failed : LineFilter requires two parameters - got : %v", params)
+      }
+      switch params[0].String() {
+      case "LineFilter":
+        y[i] = &LineFilter{matchText: params[1].String(), times: params[2].Int()}
+      default:
+        return fmt.Errorf("Unsupported LineCopier filter type : %s", params[0])
+      }
+      logger.Debugf("%s got TextEditor : %v", p.Desc, y[i])
+    }
+    p.cache[sectionName] = y
+  }
   return nil
 }
 
 //----------------------------------------------------------------//
 // EditLine
 //----------------------------------------------------------------//
-func (c *LineCopier) EditLine(line *string) {}
+func (c *LineCopier) EditLine(line *string) {
+  for _, filter := range c.filters {
+    if filter.Matches(*line) && !filter.Complete() {
+      *c.skipLineCount = 1
+    }
+  }
+}
 
 //----------------------------------------------------------------//
 // Next()
@@ -88,7 +156,12 @@ func (c *LineCopier) SectionEnd() {
 //----------------------------------------------------------------//
 // Start
 //----------------------------------------------------------------//
-func (p *LineCopier) SectionStart(string) {}
+func (c *LineCopier) SectionStart(sectionName string) {
+  var found bool
+  if c.filters, found = c.cache[sectionName]; !found {
+    c.filters = []*LineFilter{}
+  }
+}
 
 //----------------------------------------------------------------//
 // String
@@ -227,6 +300,7 @@ type VarDec struct {
   indentSize int
   inlineErr bool
   isSlice *regexp.Regexp
+  firstParam bool
 }
 
 //----------------------------------------------------------------//
@@ -234,6 +308,14 @@ type VarDec struct {
 //----------------------------------------------------------------//
 func (d *VarDec) DecIndent() {
   d.indentFactor -= 1
+}
+
+//----------------------------------------------------------------//
+// FormatLine
+//----------------------------------------------------------------//
+func (d VarDec) FormatLine(line string) string {
+  indent := d.getIndent()
+  return fmt.Sprintf("%s%s", indent, line)
 }
 
 //----------------------------------------------------------------//
@@ -254,9 +336,14 @@ func (d *VarDec) GetIndentFactor() int {
 //----------------------------------------------------------------//
 // GetParamSetter
 //----------------------------------------------------------------//
-func (d VarDec) GetParamSetter() string {
+func (d *VarDec) GetParamSetter() string {
   indent := d.getIndent()
-  return fmt.Sprintf("%sp := cspec.Parameter(\"%s\")", indent, d.flagName)
+  equalToken := "="
+  if d.firstParam {
+    equalToken = ":="
+    d.firstParam = false
+  }
+  return fmt.Sprintf("%sp %s cspec.Parameter(\"%s\")", indent, equalToken, d.flagName)
 }
 
 //----------------------------------------------------------------//
@@ -363,6 +450,9 @@ func (d *VarDec) parseVarType(varType XString) {
 //----------------------------------------------------------------//
 func (d *VarDec) Start() error {
   var err error
-  d.isSlice, err = regexp.Compile("Slice|Array")
+  if d.isSlice == nil {
+    d.isSlice, err = regexp.Compile("Slice|Array")
+  }
+  d.firstParam = true
   return err
 }

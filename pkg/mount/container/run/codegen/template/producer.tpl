@@ -1,12 +1,12 @@
 package run
 
 import (
-	"fmt"
-	"io"
+  "fmt"
+  "io"
 
-	ert "github.com/pcbuildpluscoding/errorlist"
-	elm "github.com/pcbuildpluscoding/genware/lib/element"
-	han "github.com/pcbuildpluscoding/genware/lib/handler"
+  ert "github.com/pcbuildpluscoding/errorlist"
+  elm "github.com/pcbuildpluscoding/genware/lib/element"
+  han "github.com/pcbuildpluscoding/genware/lib/handler"
 )
 
 //================================================================//
@@ -62,14 +62,18 @@ func (p *ParserProvider) newParser(kind string, spec Runware) (TextParser, error
 //----------------------------------------------------------------//
 func (p *ParserProvider) getParser(kind string) (TextParser, error) {
   var err error
-  editor, found := p.cache[kind]
+  parser, found := p.cache[kind]
   if ! found {
-    editor, err = p.newParser(kind, p.spec)
+    parser, err = p.newParser(kind, p.spec)
+    if err != nil {
+      return nil, err
+    }
+    err = parser.Arrange(p.spec)
     if err == nil {
-      p.cache[kind] = editor
+      p.cache[kind] = parser
     }
   }
-  return editor, err
+  return parser, err
 }
 
 //----------------------------------------------------------------//

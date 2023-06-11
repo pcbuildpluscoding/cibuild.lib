@@ -158,32 +158,14 @@ func NewParserProvider(dd *DataDealer, count *int) ParserProvider {
 // NewVarDecParser
 //----------------------------------------------------------------//
 func NewVarDecParser(dd *DataDealer, count *int, spec Runware) (*VarDecParser, error) {
-  desc := "VarDecParser-" + time.Now().Format("150405.000000")
-  dd.Desc = desc
-  blacklist, err := elm.NewBlacklist(spec)
-  if err != nil {
-    return nil, err
-  }
-  return &VarDecParser{
-    LineCopier: NewLineCopier(dd, count, desc),
-    blacklist: blacklist,
-    buffer: []interface{}{},
-  }, nil
+  snip:1/VarDecParser/constructor
 }
 
 //----------------------------------------------------------------//
 // NewLineCopier
 //----------------------------------------------------------------//
 func NewLineCopier(dd *DataDealer, count *int, darg ...string) LineCopier {
-  desc := "LineCopier-" + time.Now().Format("150405.000000")
-  if darg != nil {
-    desc = darg[0]
-  }
-  return LineCopier{
-    Desc: desc,
-    dd: dd,
-    skipLineCount: count,
-  }
+  snip:1/LineCopier/constructor
 }
 
 //----------------------------------------------------------------//

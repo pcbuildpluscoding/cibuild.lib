@@ -53,6 +53,9 @@ type LineCopier struct {
 //----------------------------------------------------------------//
 func (p *LineCopier) Arrange(spec Runware) error {
   logger.Debugf("%s is arranging ...", p.Desc)
+  if !spec.HasKeys("LineCopier") {
+    p.cache = map[string][]*LineFilter{}
+  }
   dbkey := spec.String("LineCopier")
   rw,_ := stx.NewRunware(nil)
   err := p.dd.GetWithKey(dbkey, rw)
@@ -156,7 +159,6 @@ func (c *LineCopier) SectionEnd() {
 func (c *LineCopier) SectionStart(sectionName string) {
   var found bool
   if c.filters, found = c.cache[sectionName]; !found {
-    logger.Warnf("############ %s no LineFilters are setup for %s section ###########", c.Desc, sectionName)
     c.filters = []*LineFilter{}
   }
 }
