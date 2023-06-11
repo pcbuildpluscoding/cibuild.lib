@@ -13,20 +13,26 @@ import (
 //================================================================//
 type LineFilter struct {
   matchText string
+  skipLineCount *int
   times int
 }
 
 //----------------------------------------------------------------//
-// Matches
+// Parse
 //----------------------------------------------------------------//
-func (f *LineFilter) Matches(line string) bool {
-  return strings.Contains(line, f.matchText)
+func (f *LineFilter) Parse(line *string) {
+  if f.complete() {
+    return
+  }
+  if strings.Contains(*line, f.matchText) {
+    *f.skipLineCount = 1
+  }
 }
 
 //----------------------------------------------------------------//
-// Complete
+// complete
 //----------------------------------------------------------------//
-func (f *LineFilter) Complete() bool {
+func (f *LineFilter) complete() bool {
   if f.times < 0 {
     return false
   } else if f.times == 0 {
@@ -37,14 +43,49 @@ func (f *LineFilter) Complete() bool {
 }
 
 //================================================================//
+// LineAdder
+//================================================================//
+type LineAdder struct {
+  dd *DataDealer
+  matchText string
+  inserts []string
+  times int
+}
+
+//----------------------------------------------------------------//
+// complete
+//----------------------------------------------------------------//
+func (a *LineAdder) complete() bool {
+  if a.times < 0 {
+    return false
+  } else if a.times == 0 {
+    return true
+  }
+  a.times -= 1
+  return false
+}
+
+//----------------------------------------------------------------//
+// Parse
+//----------------------------------------------------------------//
+func (a *LineAdder) Parse(line *string) {
+  if a.complete() {
+    return
+  }
+  if strings.Contains(*line, a.matchText) {
+    dd.AddLines(a.inserts...)
+  }
+}
+
+//================================================================//
 // LineCopier
 //================================================================//
 type LineCopier struct {
   Desc string
-  cache map[string][]*LineFilter
+  cache map[string][]SectionParser
   dd *DataDealer
-  filters []*LineFilter
-  next TextParser
+  parsers []SectionParser
+  next LineParser
   skipLineCount *int
 }
 
@@ -54,7 +95,7 @@ type LineCopier struct {
 func (p *LineCopier) Arrange(spec Runware) error {
   logger.Debugf("%s is arranging ...", p.Desc)
   if !spec.HasKeys("LineCopier") {
-    p.cache = map[string][]*LineFilter{}
+    p.cache = map[string][]SectionParser{}
     return nil
   }
   dbkey := spec.String("LineCopier")
@@ -65,11 +106,11 @@ func (p *LineCopier) Arrange(spec Runware) error {
   }
   logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
   w := rw.StringList("Sections")
-  p.cache = make(map[string][]*LineFilter, len(w))
+  p.cache = make(map[string][]SectionParser, len(w))
   for _, sectionName := range w {
     x := rw.ParamList(sectionName)
     logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
-    y := make([]*LineFilter, len(x))
+    y := make([]SectionParser, len(x))
     for i, p_ := range x {
       params := p_.ParamList()
       if len(params) < 3 {
@@ -77,11 +118,15 @@ func (p *LineCopier) Arrange(spec Runware) error {
       }
       switch params[0].String() {
       case "LineFilter":
-        y[i] = &LineFilter{matchText: params[1].String(), times: params[2].Int()}
+        y[i] = &LineFilter{params[1].String(), p.skipLineCount, params[2].Int()}
+      case "LineAdder":
+        objkey := fmt.Sprintf("%d/LineAdder", i)
+        inserts := strings.Split(rw.String(objkey), "\n")
+        y[i] = &LineAdder{p.dd, params[1].String(), inserts, params[2].Int()}
       default:
-        return fmt.Errorf("Unsupported LineCopier filter type : %s", params[0])
+        return fmt.Errorf("Unsupported SectionParser type : %s", params[0])
       }
-      logger.Debugf("%s got TextEditor : %v", p.Desc, y[i])
+      logger.Debugf("%s got SectionParser : %v", p.Desc, y[i])
     }
     p.cache[sectionName] = y
   }
@@ -92,17 +137,22 @@ func (p *LineCopier) Arrange(spec Runware) error {
 // EditLine
 //----------------------------------------------------------------//
 func (c *LineCopier) EditLine(line *string) {
-  for _, filter := range c.filters {
-    if filter.Matches(*line) && !filter.Complete() {
-      *c.skipLineCount = 1
-    }
+  for _, parser := range c.filters {
+    parser.Parse(*line)
   }
+}
+
+//----------------------------------------------------------------//
+// EndOfFile
+//----------------------------------------------------------------//
+func (c *LineCopier) EndOfFile(...string) {
+  c.dd.AddSectionCount()
 }
 
 //----------------------------------------------------------------//
 // Next()
 //----------------------------------------------------------------//
-func (c *LineCopier) Next() TextParser {
+func (c *LineCopier) Next() LineParser {
   return c.next
 }
 
@@ -118,24 +168,6 @@ func (c *LineCopier) RemoveNext() {
     c.next.RemoveNext()
     c.next = nil
   }
-}
-
-//----------------------------------------------------------------//
-// SetNext
-//----------------------------------------------------------------//
-func (c *LineCopier) SetNext(x TextParser) {
-  if c.next != nil {
-    c.next.SetNext(x)
-    return
-  }
-  c.next = x
-}
-
-//----------------------------------------------------------------//
-// EndOfFile
-//----------------------------------------------------------------//
-func (c *LineCopier) EndOfFile(...string) {
-  c.dd.AddSectionCount()
 }
 
 //----------------------------------------------------------------//
@@ -160,8 +192,19 @@ func (c *LineCopier) SectionEnd() {
 func (c *LineCopier) SectionStart(sectionName string) {
   var found bool
   if c.filters, found = c.cache[sectionName]; !found {
-    c.filters = []*LineFilter{}
+    c.filters = []SectionParser{}
   }
+}
+
+//----------------------------------------------------------------//
+// SetNext
+//----------------------------------------------------------------//
+func (c *LineCopier) SetNext(x LineParser) {
+  if c.next != nil {
+    c.next.SetNext(x)
+    return
+  }
+  c.next = x
 }
 
 //----------------------------------------------------------------//

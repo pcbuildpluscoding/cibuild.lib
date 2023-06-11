@@ -58,7 +58,7 @@ func (p *VarDecParser) flushBuffer(line_ string) {
 //----------------------------------------------------------------//
 // Next
 //----------------------------------------------------------------//
-func (p *VarDecParser) Next() TextParser {
+func (p *VarDecParser) Next() LineParser {
   snip:1/VarDecParser/Next
 }
 

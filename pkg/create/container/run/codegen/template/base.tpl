@@ -44,26 +44,33 @@ func SetLogger(super *logrus.Logger, superfd *os.File) {
 }
 
 //================================================================//
+// LineParser
+//================================================================//
+type LineParser interface {
+  EditLine(*string)
+  Arrange(Runware) error
+  Next() LineParser
+  PutLine(string)
+  RemoveNext()
+  SectionEnd()
+  SectionStart(string)
+  SetNext(LineParser)
+  String() string
+}
+
+//================================================================//
+// SectionParser
+//================================================================//
+type SectionParser interface {
+  Parse(*string)
+}
+
+//================================================================//
 // TextEditor
 //================================================================//
 type TextEditor interface {
   Replace(*string)
   Start()
-}
-
-//================================================================//
-// TextParser
-//================================================================//
-type TextParser interface {
-  EditLine(*string)
-  Arrange(Runware) error
-  Next() TextParser
-  PutLine(string)
-  RemoveNext()
-  SectionEnd()
-  SectionStart(string)
-  SetNext(TextParser)
-  String() string
 }
 
 //----------------------------------------------------------------//

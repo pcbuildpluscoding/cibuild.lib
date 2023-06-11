@@ -15,7 +15,7 @@ import (
 type ParserProvider struct {
   Desc string
   dd *DataDealer
-  cache map[string]TextParser
+  cache map[string]LineParser
   skipLineCount *int
   spec Runware
 }
@@ -44,7 +44,7 @@ func (p *ParserProvider) Arrange(spec Runware) error {
 //----------------------------------------------------------------//
 // newParser
 //----------------------------------------------------------------//
-func (p *ParserProvider) newParser(kind string, spec Runware) (TextParser, error) {
+func (p *ParserProvider) newParser(kind string, spec Runware) (LineParser, error) {
   switch kind {
   case "VarDecParser":
     return NewVarDecParser(p.dd, p.skipLineCount, spec)
@@ -60,7 +60,7 @@ func (p *ParserProvider) newParser(kind string, spec Runware) (TextParser, error
 //----------------------------------------------------------------//
 // getEditor
 //----------------------------------------------------------------//
-func (p *ParserProvider) getParser(kind string) (TextParser, error) {
+func (p *ParserProvider) getParser(kind string) (LineParser, error) {
   var err error
   parser, found := p.cache[kind]
   if ! found {
@@ -95,7 +95,7 @@ type CRProducer struct {
   dealer SectionDealer
   provider ParserProvider
   sectionName string
-  parser TextParser
+  parser LineParser
   skipLineCount  *int
 }
 
