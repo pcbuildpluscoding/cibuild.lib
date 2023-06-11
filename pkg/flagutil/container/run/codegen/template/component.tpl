@@ -156,7 +156,7 @@ func (c *LineCopier) SectionEnd() {
 func (c *LineCopier) SectionStart(sectionName string) {
   var found bool
   if c.filters, found = c.cache[sectionName]; !found {
-    logger.Warnf("############ %s no LineFilters are setup for %s section ###########", p.Desc, sectionName)
+    logger.Warnf("############ %s no LineFilters are setup for %s section ###########", c.Desc, sectionName)
     c.filters = []*LineFilter{}
   }
 }
