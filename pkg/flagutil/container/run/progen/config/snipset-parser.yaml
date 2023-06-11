@@ -3,7 +3,7 @@ Content:
   Keys:
     - 1/VarDecParser
     - 2/VarDecParser
-DbKey: flagutil/container/run/Parser
+DbKey: Parser
 SnipTree:
   Root: 0/Parser
   0/Parser:

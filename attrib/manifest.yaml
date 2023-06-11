@@ -1,6 +1,6 @@
 ---
 fromDir:
-fromPath: pkg/flagutil/container/run
+fromPath: pkg/mount/container/run
 baseDir:
 basePath:
 branches: [cibuild, codegen, progen]
@@ -34,10 +34,10 @@ codegen:
     copyTo: cmd/server
   lib:
     copyFrom: codegen/lib
-    copyTo: lib/flagutil/container/run
+    copyTo: lib/mount/container/run
   template:
     copyFrom: codegen/template
-    copyTo: template/flagutil/container/run
+    copyTo: template/mount/container/run
 progen:
   config:
     copyFrom: progen/config
