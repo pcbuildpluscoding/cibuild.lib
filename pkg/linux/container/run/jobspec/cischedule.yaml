@@ -13,6 +13,7 @@ Specified:
   _JobKey_:
     PurgePrefix:
     InputFile:
+    - [lineCopier.yaml, task2/ScanVars/LineCopier]
     - [lineEditor.yaml, task2/ScanVars/LineEditor]
     - [sectionDealer.yaml, task2/ScanVars/SectionDealer]
     - [sectionPrintDealer.yaml, task2/Generate/SectionPrintDealer]

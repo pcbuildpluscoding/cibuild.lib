@@ -1,4 +1,10 @@
 ---
+Sections: 
+  - import
+  - setPlatformOptions
+  - generateNamespaceOpts
+  - setOOMScoreAdj
+  - withOOMScoreAdj
 import:
   Workers: [Default]
   Starting: ['compose:import', false]
@@ -14,9 +20,3 @@ setOOMScoreAdj:
 withOOMScoreAdj:
   Workers: [Default]
   Starting: ['compose:withOOMScoreAdj', false]
-Sections: 
-  - import
-  - setPlatformOptions
-  - generateNamespaceOpts
-  - setOOMScoreAdj
-  - withOOMScoreAdj
