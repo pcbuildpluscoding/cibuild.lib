@@ -36,6 +36,7 @@ codegen:
   template:
     copyFrom: lib/create/container/run
     copyTo: codegen/template
+    exclude: [base.go, parser.go]
 progen:
   config:
     copyFrom: config/progen

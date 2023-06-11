@@ -1,1 +1,1 @@
-fixed wrong template name in jobspec-build.yaml
+adjusted flagutil specific configuration as code

@@ -1,11 +1,11 @@
 package run
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	stx "github.com/pcbuildpluscoding/strucex/std"
+  stx "github.com/pcbuildpluscoding/strucex/std"
 )
 
 //================================================================//
@@ -227,6 +227,7 @@ type VarDec struct {
   indentSize int
   inlineErr bool
   isSlice *regexp.Regexp
+  firstParam bool
 }
 
 //----------------------------------------------------------------//
@@ -256,7 +257,12 @@ func (d *VarDec) GetIndentFactor() int {
 //----------------------------------------------------------------//
 func (d VarDec) GetParamSetter() string {
   indent := d.getIndent()
-  return fmt.Sprintf("%sp := cspec.Parameter(\"%s\")", indent, d.flagName)
+  equalToken := "="
+  if d.firstParam {
+    equalToken = ":="
+    d.firstParam = false
+  }
+  line := fmt.Sprintf("%sp %s cspec.Parameter(\"%s\")", indent, equalToken, d.flagName)
 }
 
 //----------------------------------------------------------------//
@@ -363,6 +369,9 @@ func (d *VarDec) parseVarType(varType XString) {
 //----------------------------------------------------------------//
 func (d *VarDec) Start() error {
   var err error
-  d.isSlice, err = regexp.Compile("Slice|Array")
+  if d.isSlice == nil {
+    d.isSlice, err = regexp.Compile("Slice|Array")
+  }
+  d.firstParam = true
   return err
 }
