@@ -262,7 +262,7 @@ func (d VarDec) GetParamSetter() string {
     equalToken = ":="
     d.firstParam = false
   }
-  line := fmt.Sprintf("%sp %s cspec.Parameter(\"%s\")", indent, equalToken, d.flagName)
+  return fmt.Sprintf("%sp %s cspec.Parameter(\"%s\")", indent, equalToken, d.flagName)
 }
 
 //----------------------------------------------------------------//
