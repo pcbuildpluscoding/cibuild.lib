@@ -143,6 +143,14 @@ SnipTree:
       flagName.Replace(`.Changed`,"",1)
       return prefix.String() + "Applied" + flagName.String()
     case "IfCmdGetErr":
+      if p.varDec.firstParam {
+        switch p.sectionName {
+        case "processImageSignOptions":
+          p.buffer = append(p.buffer, p.IndentLine("var opt types.ImageSignOptions"))
+        case "processImageVerifyOptions":
+          p.buffer = append(p.buffer, p.IndentLine("var opt types.ImageVerifyOptions"))
+        }
+      }
       line_ := p.varDec.ParseGetter(line).GetParamSetter()
       p.buffer = append(p.buffer, line_)
       return p.varDec.GetParamValue()
@@ -192,16 +200,14 @@ SnipTree:
   editLine/1: |
     switch p.state {
     case "IfCmdGetErr":
-      var line_ string
+      line_ := "return nil, p.Err()"
       switch p.sectionName {
       case "processImageSignOptions":
-        line_ = p.varDec.IndentLine("return types.ImageSignOptions{}, p.Err()")
+        line_ = "return types.ImageSignOptions{}, p.Err()"
       case "processImageVerifyOptions":
-        line_ = p.varDec.IndentLine("return types.ImageVerifyOptions{}, p.Err()")
+        line_ = "return types.ImageVerifyOptions{}, p.Err()"
       }
-      if line_ != "" {
-        p.buffer = append(p.buffer, line_)
-      }
+      p.buffer = append(p.buffer, p.varDec.IndentLine(line_))
       p.state="IfElseBlock"
       logger.Debugf("$$$$$$ switching from IfCmdGetErr back to IfElseBlock - current indent factor : %d", p.varDec.GetIndentFactor())
     case "IfElseBlock":
