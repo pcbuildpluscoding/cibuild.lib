@@ -2,9 +2,6 @@
 import:
   Workers: [Default]
   Starting: ['compose:import', false]
-WithoutRunMount:
-  Workers: [Default]
-  Starting: ['compose:WithoutRunMount', false]
 setPlatformOptions:
   Workers: [VarDec]
   Starting: ['compose:setPlatformOptions', false]
@@ -19,7 +16,6 @@ withOOMScoreAdj:
   Starting: ['compose:withOOMScoreAdj', false]
 Sections: 
   - import
-  - WithoutRunMount
   - setPlatformOptions
   - generateNamespaceOpts
   - setOOMScoreAdj
