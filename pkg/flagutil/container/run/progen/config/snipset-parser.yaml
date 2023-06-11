@@ -49,6 +49,8 @@ SnipTree:
     elist.Add(err)
     p.regex["IfBlock"], err = regexp.Compile(`if.+\{`)
     elist.Add(err)
+    p.regex["Return"], err = regexp.Compile(`return$`)
+    elist.Add(err)
     isSlice, err := regexp.Compile(`Slice|Array`)
     p.varDec = VarDec{
       isSlice: isSlice,
@@ -146,9 +148,9 @@ SnipTree:
       if p.varDec.firstParam {
         switch p.sectionName {
         case "processImageSignOptions":
-          p.buffer = append(p.buffer, p.varDec.IndentLine("var opt types.ImageSignOptions"))
+          p.buffer = append(p.buffer, "var opt types.ImageSignOptions")
         case "processImageVerifyOptions":
-          p.buffer = append(p.buffer, p.varDec.IndentLine("var opt types.ImageVerifyOptions"))
+          p.buffer = append(p.buffer, "var opt types.ImageVerifyOptions")
         }
       }
       line_ := p.varDec.ParseGetter(line).GetParamSetter()
@@ -191,6 +193,8 @@ SnipTree:
         p.state = "IfCmdGetErr"
       }
       p.buffer = append(p.buffer, *line)
+    case p.regex["Return"].MatchString(*line):
+      *line = "return opt, nil"
     default:
       if p.regex["CmdGet"].MatchString(*line) {
         p.addVarDec(p.varDec.ParseGetter(*line).GetVarSetter())
