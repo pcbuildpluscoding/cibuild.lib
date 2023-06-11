@@ -61,7 +61,7 @@ func (p *LineCopier) Arrange(spec Runware) error {
   }
   logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
   w := rw.StringList("Sections")
-  p.filters = make(map[string][]*LineFilter, len(w))
+  p.cache = make(map[string][]*LineFilter, len(w))
   for _, sectionName := range w {
     x := rw.ParamList(sectionName)
     logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
@@ -89,7 +89,7 @@ func (p *LineCopier) Arrange(spec Runware) error {
 //----------------------------------------------------------------//
 func (c *LineCopier) EditLine(line *string) {
   for _, filter := range c.filters {
-    if filter.Matches() && !filter.Complete() {
+    if filter.Matches(*line) && !filter.Complete() {
       *c.skipLineCount = 1
     }
   }
