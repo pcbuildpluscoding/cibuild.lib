@@ -155,6 +155,7 @@ SnipTree:
   SectionEnd: |
     p.addSectionCount()
   SectionStart: |
+    p.sectionName = sectionName
     p.state = "Parse"
     p.varId = 0
     p.varDec.Start()
@@ -164,6 +165,7 @@ SnipTree:
     buffer []interface{}
     blacklist Blacklist
     regex map[string]*regexp.Regexp
+    sectionName string
     state string
     varId int
     varDec VarDec
@@ -190,8 +192,16 @@ SnipTree:
   editLine/1: |
     switch p.state {
     case "IfCmdGetErr":
-      line_ := p.varDec.IndentLine("return nil, p.Err()")
-      p.buffer = append(p.buffer, line_)
+      var line_ string
+      switch p.sectionName {
+      case "processImageSignOptions":
+        line_ = p.varDec.IndentLine("return types.ImageSignOptions{}, p.Err()")
+      case "processImageVerifyOptions":
+        line_ = p.varDec.IndentLine("return types.ImageVerifyOptions{}, p.Err()")
+      }
+      if line_ != "" {
+        p.buffer = append(p.buffer, line_)
+      }
       p.state="IfElseBlock"
       logger.Debugf("$$$$$$ switching from IfCmdGetErr back to IfElseBlock - current indent factor : %d", p.varDec.GetIndentFactor())
     case "IfElseBlock":

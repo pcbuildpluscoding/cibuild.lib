@@ -255,7 +255,7 @@ func (d *VarDec) GetIndentFactor() int {
 //----------------------------------------------------------------//
 // GetParamSetter
 //----------------------------------------------------------------//
-func (d VarDec) GetParamSetter() string {
+func (d *VarDec) GetParamSetter() string {
   indent := d.getIndent()
   equalToken := "="
   if d.firstParam {

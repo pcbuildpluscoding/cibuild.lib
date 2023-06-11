@@ -5,7 +5,9 @@ Sections:
   - processRootCmdFlags
 processImageSignOptions:
   - [TextEditorB, 'func processImageSignOptions', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, 'func processImageSignOptions', 'opt types.ImageSignOptions, err error', 'types.ImageSignOptions, error']
 processImageVerifyOptions:
   - [TextEditorB, 'func processImageVerifyOptions', 'cmd *cobra.Command', 'cspec *CntrSpec']
+  - [TextEditorA, 'func processImageVerifyOptions', 'opt types.ImageVerifyOptions, err error', 'types.ImageVerifyOptions, error']
 processRootCmdFlags:
   - [TextEditorB, 'func processRootCmdFlags', 'cmd *cobra.Command', 'cspec *CntrSpec']

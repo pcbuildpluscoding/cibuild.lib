@@ -1,5 +1,6 @@
 ---
-tasks: [stopServer, runCiNotify, removeAll, copyFiles, runGoTidy]
+# tasks: [stopServer, runCiNotify, removeAll, copyFiles, runGoTidy]
+tasks: [stopServer, runCiNotify]
 copyFiles:
   fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
