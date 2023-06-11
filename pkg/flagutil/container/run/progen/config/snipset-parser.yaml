@@ -146,9 +146,9 @@ SnipTree:
       if p.varDec.firstParam {
         switch p.sectionName {
         case "processImageSignOptions":
-          p.buffer = append(p.buffer, p.IndentLine("var opt types.ImageSignOptions"))
+          p.buffer = append(p.buffer, p.varDec.IndentLine("var opt types.ImageSignOptions"))
         case "processImageVerifyOptions":
-          p.buffer = append(p.buffer, p.IndentLine("var opt types.ImageVerifyOptions"))
+          p.buffer = append(p.buffer, p.varDec.IndentLine("var opt types.ImageVerifyOptions"))
         }
       }
       line_ := p.varDec.ParseGetter(line).GetParamSetter()
