@@ -13,9 +13,10 @@ ScanVars:
       createContainer:
         - [var umask string, 1]
         - [var pidFile string, 1]
+    LineCopier: task2/ScanVars/LineCopier
     LineEditor: task2/ScanVars/LineEditor
     SectionDealer: task2/ScanVars/SectionDealer
-    Workers: ["VarDecParser","LineEditor"]
+    Workers: [VarDecParser,LineCopier,LineEditor]
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: create/container/run
   Device: Genware

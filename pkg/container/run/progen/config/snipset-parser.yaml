@@ -3,7 +3,7 @@ Content:
   Keys:
     - 1/VarDecParser
     - 2/VarDecParser
-DbKey: container/run/Parser
+DbKey: Parser
 SnipTree:
   Root: 0/Parser
   0/Parser:
@@ -157,6 +157,7 @@ SnipTree:
   SectionStart: |
     p.state = "Parse"
     p.varId = 0
+    p.varDec.Start()
     p.blacklist.SetList(sectionName)
   TypeDec: |
     LineCopier

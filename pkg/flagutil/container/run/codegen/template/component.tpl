@@ -55,6 +55,7 @@ func (p *LineCopier) Arrange(spec Runware) error {
   logger.Debugf("%s is arranging ...", p.Desc)
   if !spec.HasKeys("LineCopier") {
     p.cache = map[string][]*LineFilter{}
+    return nil
   }
   dbkey := spec.String("LineCopier")
   rw,_ := stx.NewRunware(nil)

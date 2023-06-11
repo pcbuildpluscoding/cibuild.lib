@@ -1,1 +1,1 @@
-reproof of linux specific configuration as code
+reproof of create specific configuration as code

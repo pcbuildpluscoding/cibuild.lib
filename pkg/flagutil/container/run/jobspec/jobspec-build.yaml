@@ -13,7 +13,7 @@ ScanVars:
     LineCopier: task2/flagutil/ScanVars/LineCopier
     LineEditor: task2/flagutil/ScanVars/LineEditor
     SectionDealer: task2/flagutil/ScanVars/SectionDealer
-    Workers: ["VarDecParser","LineCopier","LineEditor"]
+    Workers: [VarDecParser,LineCopier,LineEditor]
   BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
   DbPrefix: flagutil/container/run
   Device: Genware
