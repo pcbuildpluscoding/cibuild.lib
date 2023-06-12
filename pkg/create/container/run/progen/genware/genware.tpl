@@ -4,18 +4,18 @@
 package std
 
 import (
-  "fmt"
-  "net"
+	"fmt"
+	"net"
 
-  "github.com/pcbuildpluscoding/logroll"
-  crg "github.com/pcbuildpluscoding/cibuild/lib/create/container/run"
-  prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
-  gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
-  elm "github.com/pcbuildpluscoding/genware/lib/element"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  gwt "github.com/pcbuildpluscoding/types/genware"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  "github.com/sirupsen/logrus"
+	crg "github.com/pcbuildpluscoding/cibuild/lib/create/container/run"
+	prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
+	gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
+	elm "github.com/pcbuildpluscoding/genware/lib/element"
+	"github.com/pcbuildpluscoding/logroll"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	gwt "github.com/pcbuildpluscoding/types/genware"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	"github.com/sirupsen/logrus"
 )
 
 var logger = logroll.Get()
@@ -106,7 +106,7 @@ func NewEditProfileVendor() GenworkVendor {
     if err != nil {
       return nil, err
     }
-    return gwk.NewProfileEditor(connex), nil
+    return gwk.NewProfileEditor(connex)
   }
 }
 

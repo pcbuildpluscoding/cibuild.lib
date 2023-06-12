@@ -5,10 +5,10 @@ import (
   "os"
   "time"
 
-  "github.com/pcbuildpluscoding/logroll"
   elm "github.com/pcbuildpluscoding/genware/lib/element"
   fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
   han "github.com/pcbuildpluscoding/genware/lib/handler"
+  "github.com/pcbuildpluscoding/logroll"
   stx "github.com/pcbuildpluscoding/strucex/std"
   tdb "github.com/pcbuildpluscoding/trovedb/std"
   rdt "github.com/pcbuildpluscoding/types/apirecord"
@@ -47,30 +47,23 @@ func SetLogger(super *logrus.Logger, superfd *os.File) {
 // LineParser
 //================================================================//
 type LineParser interface {
-  EditLine(*string)
-  Arrange(Runware) error
-  Next() LineParser
-  PutLine(string)
-  RemoveNext()
-  SectionEnd()
-  SectionStart(string)
-  SetNext(LineParser)
-  String() string
+  Parse(*string)
+  Start()
 }
 
 //================================================================//
 // SectionParser
 //================================================================//
 type SectionParser interface {
+  Arrange(Runware) error
+  Next() SectionParser
   Parse(*string)
-}
-
-//================================================================//
-// TextEditor
-//================================================================//
-type TextEditor interface {
-  Replace(*string)
-  Start()
+  PutLine(string)
+  RemoveNext()
+  SectionEnd()
+  SectionStart(string)
+  SetNext(SectionParser)
+  String() string
 }
 
 //----------------------------------------------------------------//
@@ -156,7 +149,7 @@ func NewParserProvider(dd *DataDealer, count *int) ParserProvider {
   return ParserProvider{
     Desc: desc,
     dd: dd,
-    cache: map[string]LineParser{},
+    cache: map[string]SectionParser{},
     skipLineCount: count,
   }
 }
@@ -165,14 +158,32 @@ func NewParserProvider(dd *DataDealer, count *int) ParserProvider {
 // NewVarDecParser
 //----------------------------------------------------------------//
 func NewVarDecParser(dd *DataDealer, count *int, spec Runware) (*VarDecParser, error) {
-  snip:1/VarDecParser/constructor
+  desc := "VarDecParser-" + time.Now().Format("150405.000000")
+  dd.Desc = desc
+  blacklist, err := elm.NewBlacklist(spec)
+  if err != nil {
+    return nil, err
+  }
+  return &VarDecParser{
+    LineCopier: NewLineCopier(dd, count, desc),
+    blacklist: blacklist,
+    buffer: []interface{}{},
+  }, nil
 }
 
 //----------------------------------------------------------------//
 // NewLineCopier
 //----------------------------------------------------------------//
 func NewLineCopier(dd *DataDealer, count *int, darg ...string) LineCopier {
-  snip:1/LineCopier/constructor
+  desc := "LineCopier-" + time.Now().Format("150405.000000")
+  if darg != nil {
+    desc = darg[0]
+  }
+  return LineCopier{
+    Desc: desc,
+    dd: dd,
+    skipLineCount: count,
+  }
 }
 
 //----------------------------------------------------------------//
@@ -182,6 +193,17 @@ func NewLineEditor(dd *DataDealer, count *int) (*LineEditor, error) {
   desc := "LineEditor-" + time.Now().Format("150405.000000")
   dd.Desc = desc
   return &LineEditor{
+    LineCopier: NewLineCopier(dd, count, desc),
+  }, nil
+}
+
+//----------------------------------------------------------------//
+// LineJudge
+//----------------------------------------------------------------//
+func NewLineJudge(dd *DataDealer, count *int) (*LineJudge, error) {
+  desc := "LineJudge-" + time.Now().Format("150405.000000")
+  dd.Desc = desc
+  return &LineJudge{
     LineCopier: NewLineCopier(dd, count, desc),
   }, nil
 }
@@ -208,3 +230,17 @@ func NewVarDecErrTest(dd *DataDealer, spec Runware) (VarDecErrTest, error) {
   err := dd.GetWithKey(dbkey, rw)
   return elm.NewVarDecErrTestA(rw), err
   }
+
+//----------------------------------------------------------------//
+// toInterfaceList
+//----------------------------------------------------------------//
+func toInterfaceList(indentSize int, x []string) []interface{} {
+  indentFmt := "%" + fmt.Sprintf("%ds", indentSize)
+  indent := fmt.Sprintf(indentFmt, " ")
+
+  y := make([]interface{}, len(x))
+  for i, z := range x {
+    y[i] = indent + z
+  }
+  return y
+}

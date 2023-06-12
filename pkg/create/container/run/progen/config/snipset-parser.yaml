@@ -11,10 +11,10 @@ SnipTree:
     - [1/VarDecParser/addSectionCount, 2, true]
     - [1/VarDecParser/addVarDec, 2, true]
     - [1/VarDecParser/Arrange, 2, true]
-    - [1/VarDecParser/EditLine, 2, true]
     - [1/VarDecParser/editLine, 2, false]
     - [1/VarDecParser/flushBuffer, 2, true]
     - [1/VarDecParser/Next, 2, true]
+    - [1/VarDecParser/Parse, 2, true]
     - [1/VarDecParser/PutLine, 2, true]
     - [1/VarDecParser/rewriteLine, 2, true]
     - [1/VarDecParser/skipLines, 2, true]
@@ -57,14 +57,6 @@ SnipTree:
     }
     elist.Add(err)
     return elist.Unwrap()
-  EditLine: |
-    if p.blacklist.Matches(*line) {
-      return
-    }
-    p.editLine(line)
-    if p.next != nil {
-      p.next.EditLine(line)
-    }
   editLine: |
     switch p.state {
     case "Parse":
@@ -100,6 +92,14 @@ SnipTree:
       return p.next
     default:
       return nil
+    }
+  Parse: |
+    if p.blacklist.Matches(*line) {
+      return
+    }
+    p.editLine(line)
+    if p.next != nil {
+      p.next.Parse(line)
     }
   PutLine: |
     if p.blacklist.Excluded {

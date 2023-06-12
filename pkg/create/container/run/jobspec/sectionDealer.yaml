@@ -9,7 +9,7 @@ Sections:
   - parseKVStringsMapFromLogOpt
   - withStop
 import:
-  Workers: [LineCopier]
+  Workers: [LineJudge]
   Starting: ['^import \(', false]
   Ending: ['^\)$', 1, false]
 createContainer:

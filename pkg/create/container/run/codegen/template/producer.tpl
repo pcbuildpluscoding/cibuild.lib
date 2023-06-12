@@ -15,7 +15,7 @@ import (
 type ParserProvider struct {
   Desc string
   dd *DataDealer
-  cache map[string]LineParser
+  cache map[string]SectionParser
   skipLineCount *int
   spec Runware
 }
@@ -44,12 +44,14 @@ func (p *ParserProvider) Arrange(spec Runware) error {
 //----------------------------------------------------------------//
 // newParser
 //----------------------------------------------------------------//
-func (p *ParserProvider) newParser(kind string, spec Runware) (LineParser, error) {
+func (p *ParserProvider) newParser(kind string, spec Runware) (SectionParser, error) {
   switch kind {
   case "VarDecParser":
     return NewVarDecParser(p.dd, p.skipLineCount, spec)
   case "LineEditor":
     return NewLineEditor(p.dd, p.skipLineCount)
+  case "LineJudge":
+    return NewLineJudge(p.dd, p.skipLineCount)
   default:
     logger.Debugf("%s - %s is not a registered parser kind, default assigned instead", p.Desc, kind)
     parser := NewLineCopier(p.dd, p.skipLineCount)
@@ -60,7 +62,7 @@ func (p *ParserProvider) newParser(kind string, spec Runware) (LineParser, error
 //----------------------------------------------------------------//
 // getEditor
 //----------------------------------------------------------------//
-func (p *ParserProvider) getParser(kind string) (LineParser, error) {
+func (p *ParserProvider) getParser(kind string) (SectionParser, error) {
   var err error
   parser, found := p.cache[kind]
   if ! found {
@@ -95,7 +97,7 @@ type CRProducer struct {
   dealer SectionDealer
   provider ParserProvider
   sectionName string
-  parser LineParser
+  parser SectionParser
   skipLineCount  *int
 }
 
@@ -113,7 +115,7 @@ func (p *CRProducer) EditLine(line *string, lineNum int) {
     }
   }
   if p.parser != nil {
-    p.parser.EditLine(line)
+    p.parser.Parse(line)
   }
 }
 

@@ -37,13 +37,6 @@ func (p *VarDecParser) Arrange(rw Runware) error {
 //----------------------------------------------------------------//
 // EditLine
 //----------------------------------------------------------------//
-func (p *VarDecParser) EditLine(line *string) {
-  snip:1/VarDecParser/EditLine
-}
-
-//----------------------------------------------------------------//
-// EditLine
-//----------------------------------------------------------------//
 func (p *VarDecParser) editLine(line *string) {
   snip:1/VarDecParser/editLine
 }
@@ -58,8 +51,15 @@ func (p *VarDecParser) flushBuffer(line_ string) {
 //----------------------------------------------------------------//
 // Next
 //----------------------------------------------------------------//
-func (p *VarDecParser) Next() LineParser {
+func (p *VarDecParser) Next() SectionParser {
   snip:1/VarDecParser/Next
+}
+
+//----------------------------------------------------------------//
+// Parse
+//----------------------------------------------------------------//
+func (p *VarDecParser) Parse(line *string) {
+  snip:1/VarDecParser/Parse
 }
 
 //----------------------------------------------------------------//

@@ -5,16 +5,14 @@ InputPath: trovedb:system/uri|github.repo/cibuild,jobspec
 Specified:
   Buckets: [nerdctl/integration, _JobKey_]
   nerdctl/integration:
-    PurgePrefix: _JobKey_
     InputFile:
-    # - [jobspec.yaml, _JobKey_]
     - [jobspec-progen.yaml, _JobKey_/task1]
     - [jobspec-build.yaml, _JobKey_/task2]
   _JobKey_:
     PurgePrefix:
     InputFile:
-    - [lineCopier.yaml, task2/ScanVars/LineCopier]
     - [lineEditor.yaml, task2/ScanVars/LineEditor]
+    - [lineJudge.yaml, task2/ScanVars/LineJudge]
     - [sectionDealer.yaml, task2/ScanVars/SectionDealer]
     - [sectionPrintDealer.yaml, task2/Generate/SectionPrintDealer]
     - [varDecErrTest.yaml, task2/Generate/VarDecErrTest]

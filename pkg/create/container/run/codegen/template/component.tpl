@@ -21,10 +21,11 @@ type LineFilter struct {
 // Parse
 //----------------------------------------------------------------//
 func (f *LineFilter) Parse(line *string) {
-  if f.complete() {
+  if f.times == 0 {
     return
   }
   if strings.Contains(*line, f.matchText) {
+    // logger.Debugf("$$$$$$$$$$ LineFilter matches with %s $$$$$$$$$$", f.matchText)
     *f.skipLineCount = 1
     if f.times > 0 {
       f.times -= 1
@@ -33,11 +34,9 @@ func (f *LineFilter) Parse(line *string) {
 }
 
 //----------------------------------------------------------------//
-// complete
+// Start
 //----------------------------------------------------------------//
-func (f *LineFilter) complete() bool {
-  return f.times == 0
-}
+func (f *LineFilter) Start() {}
 
 //================================================================//
 // LineAdder
@@ -50,21 +49,14 @@ type LineAdder struct {
 }
 
 //----------------------------------------------------------------//
-// complete
-//----------------------------------------------------------------//
-func (a *LineAdder) complete() bool {
-  return a.times == 0
-}
-
-//----------------------------------------------------------------//
 // Parse
 //----------------------------------------------------------------//
 func (a *LineAdder) Parse(line *string) {
-  if a.complete() {
+  if a.times == 0 {
     return
   }
   if strings.Contains(*line, a.matchText) {
-    logger.Debugf("$$$$$$$$$$ LineAdder matches line $$$$$$$$$$")
+    // logger.Debugf("$$$$$$$$$$ LineAdder matches with %s $$$$$$$$$$", a.matchText)
     a.dd.AddLines(a.inserts...)
     if a.times > 0 {
       a.times -= 1
@@ -73,85 +65,25 @@ func (a *LineAdder) Parse(line *string) {
 }
 
 //----------------------------------------------------------------//
-// toInterfaceList
+// Start
 //----------------------------------------------------------------//
-func toInterfaceList(indentSize int, x []string) []interface{} {
-  indentFmt := "%" + fmt.Sprintf("%ds", indentSize)
-  indent := fmt.Sprintf(indentFmt, " ")
-
-  y := make([]interface{}, len(x))
-  for i, z := range x {
-    y[i] = indent + z
-  }
-  return y
-}
+func (a *LineAdder) Start()  {}
 
 //================================================================//
 // LineCopier
 //================================================================//
 type LineCopier struct {
   Desc string
-  cache map[string][]SectionParser
   dd *DataDealer
-  parsers []SectionParser
-  next LineParser
+  next SectionParser
   skipLineCount *int
 }
 
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (p *LineCopier) Arrange(spec Runware) error {
-  logger.Debugf("%s is arranging ...", p.Desc)
-  if !spec.HasKeys("LineCopier") {
-    p.cache = map[string][]SectionParser{}
-    return nil
-  }
-  dbkey := spec.String("LineCopier")
-  rw,_ := stx.NewRunware(nil)
-  err := p.dd.GetWithKey(dbkey, rw)
-  if err != nil {
-    return err
-  }
-  logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
-  w := rw.StringList("Sections")
-  p.cache = make(map[string][]SectionParser, len(w))
-  for _, sectionName := range w {
-    x := rw.ParamList(sectionName)
-    logger.Debugf("%s got %s sectional parameter list len : %d", p.Desc, sectionName, len(x))
-    y := make([]SectionParser, len(x))
-    for i, z := range x {
-      params := z.ParamList()
-      switch params[0].String() {
-      case "LineFilter":
-        if len(params) < 3 {
-          return fmt.Errorf("LineCopier.Arrange failed : LineFilter requires two parameters - got : %v", params)
-        }
-        y[i] = &LineFilter{params[1].String(), p.skipLineCount, params[2].Int()}
-      case "LineAdder":
-        if len(params) < 4 {
-          return fmt.Errorf("LineCopier.Arrange failed : LineAdder requires two parameters - got : %v", params)
-        }
-        objkey := fmt.Sprintf("%d/LineAdder", i)
-        inserts := strings.Split(rw.String(objkey), "\n")
-        y[i] = &LineAdder{p.dd, params[1].String(), toInterfaceList(params[2].Int(), inserts), params[3].Int()}
-      default:
-        return fmt.Errorf("Unsupported SectionParser type : %s", params[0])
-      }
-      logger.Debugf("%s got SectionParser : %v", p.Desc, y[i])
-    }
-    p.cache[sectionName] = y
-  }
+func (c *LineCopier) Arrange(spec Runware) error {
   return nil
-}
-
-//----------------------------------------------------------------//
-// EditLine
-//----------------------------------------------------------------//
-func (c *LineCopier) EditLine(line *string) {
-  for _, parser := range c.parsers {
-    parser.Parse(line)
-  }
 }
 
 //----------------------------------------------------------------//
@@ -164,8 +96,22 @@ func (c *LineCopier) EndOfFile(...string) {
 //----------------------------------------------------------------//
 // Next()
 //----------------------------------------------------------------//
-func (c *LineCopier) Next() LineParser {
+func (c *LineCopier) Next() SectionParser {
   return c.next
+}
+
+//----------------------------------------------------------------//
+// Parse
+//----------------------------------------------------------------//
+func (c *LineCopier) Parse(line *string) {}
+
+//----------------------------------------------------------------//
+// PutLine
+//----------------------------------------------------------------//
+func (c *LineCopier) PutLine(line string) {
+  if *c.skipLineCount == 0 {
+    c.dd.AddLines(line)
+  }
 }
 
 //----------------------------------------------------------------//
@@ -183,15 +129,6 @@ func (c *LineCopier) RemoveNext() {
 }
 
 //----------------------------------------------------------------//
-// PutLine
-//----------------------------------------------------------------//
-func (p *LineCopier) PutLine(line string) {
-  if *p.skipLineCount == 0 {
-    p.dd.AddLines(line)
-  }
-}
-
-//----------------------------------------------------------------//
 // SectionEnd
 //----------------------------------------------------------------//
 func (c *LineCopier) SectionEnd() {
@@ -199,19 +136,14 @@ func (c *LineCopier) SectionEnd() {
 }
 
 //----------------------------------------------------------------//
-// Start
+// SectionStart
 //----------------------------------------------------------------//
-func (c *LineCopier) SectionStart(sectionName string) {
-  var found bool
-  if c.parsers, found = c.cache[sectionName]; !found {
-    c.parsers = []SectionParser{}
-  }
-}
+func (c *LineCopier) SectionStart(sectionName string) {}
 
 //----------------------------------------------------------------//
 // SetNext
 //----------------------------------------------------------------//
-func (c *LineCopier) SetNext(x LineParser) {
+func (c *LineCopier) SetNext(x SectionParser) {
   if c.next != nil {
     c.next.SetNext(x)
     return
@@ -222,125 +154,187 @@ func (c *LineCopier) SetNext(x LineParser) {
 //----------------------------------------------------------------//
 // String
 //----------------------------------------------------------------//
-func (p *LineCopier) String() string {
-  return p.Desc
+func (c LineCopier) String() string {
+  return c.Desc
 }
 
 //================================================================//
-// TextEditorA
+// LineJudge
 //================================================================//
-type TextEditorA struct {
+type LineJudge struct {
+  LineCopier
+  cache map[string][]LineParser
+  parsers []LineParser
+}
+
+//----------------------------------------------------------------//
+// Arrange
+//----------------------------------------------------------------//
+func (j *LineJudge) Arrange(spec Runware) error {
+  logger.Debugf("%s is arranging ...", j.Desc)
+  if !spec.HasKeys("LineJudge") {
+    j.cache = map[string][]LineParser{}
+    return nil
+  }
+  dbkey := spec.String("LineJudge")
+  rw,_ := stx.NewRunware(nil)
+  err := j.dd.GetWithKey(dbkey, rw)
+  if err != nil {
+    return err
+  }
+  logger.Debugf("%s got sectional data : %v", j.Desc, rw.AsMap())
+  w := rw.StringList("Sections")
+  j.cache = make(map[string][]LineParser, len(w))
+  for _, sectionName := range w {
+    x := rw.ParamList(sectionName)
+    logger.Debugf("%s got %s sectional parameter list len : %d", j.Desc, sectionName, len(x))
+    y := make([]LineParser, len(x))
+    for i, z := range x {
+      params := z.ParamList()
+      switch params[0].String() {
+      case "LineFilter":
+        if len(params) < 3 {
+          return fmt.Errorf("LineJudge.Arrange failed : LineFilter requires two parameters - got : %v", params)
+        }
+        y[i] = &LineFilter{
+                  matchText: params[1].String(),
+                  skipLineCount: j.skipLineCount,
+                  times: params[2].Int()}
+      case "LineAdder":
+        if len(params) < 4 {
+          return fmt.Errorf("LineJudge.Arrange failed : LineAdder requires two parameters - got : %v", params)
+        }
+        objkey := fmt.Sprintf("%d/LineAdder", i)
+        inserts := strings.Split(rw.String(objkey), "\n")
+        y[i] = &LineAdder{
+          dd: j.dd,
+          matchText: params[1].String(),
+          inserts: toInterfaceList(params[2].Int(), inserts),
+          times: params[3].Int()}
+      default:
+        return fmt.Errorf("Unsupported LineParser type : %s", params[0])
+      }
+      logger.Debugf("%s got LineParser : %v", j.Desc, y[i])
+    }
+    j.cache[sectionName] = y
+  }
+  return nil
+}
+
+//----------------------------------------------------------------//
+// Parse
+//----------------------------------------------------------------//
+func (j *LineJudge) Parse(line *string) {
+  for _, parser := range j.parsers {
+    parser.Parse(line)
+  }
+}
+
+//----------------------------------------------------------------//
+// Start
+//----------------------------------------------------------------//
+func (j *LineJudge) SectionStart(sectionName string) {
+  var found bool
+  if j.parsers, found = j.cache[sectionName]; !found {
+    j.parsers = []LineParser{}
+  }
+}
+
+//================================================================//
+// TextEditor
+//================================================================//
+type TextEditor struct {
   matchText string
   thisText string
   withText string
+  times int
 }
 
 //----------------------------------------------------------------//
-// Replace
+// Parse
 //----------------------------------------------------------------//
-func (r TextEditorA) Replace(line *string) {
-  if strings.Contains(*line, r.matchText) {
-    *line = strings.ReplaceAll(*line, r.thisText, r.withText)
-  }
-}
-
-//----------------------------------------------------------------//
-// Start
-//----------------------------------------------------------------//
-func (r TextEditorA) Start() {}
-
-//================================================================//
-// TextEditorB
-//================================================================//
-type TextEditorB struct {
-  TextEditorA
-  done bool
-}
-
-//----------------------------------------------------------------//
-// Replace
-//----------------------------------------------------------------//
-func (r *TextEditorB) Replace(line *string) {
-  if r.done {
+func (e *TextEditor) Parse(line *string) {
+  if e.times == 0 {
     return
   }
-  if strings.Contains(*line, r.matchText) {
-    *line = strings.ReplaceAll(*line, r.thisText, r.withText)
-    logger.Debugf("$$$$$$ TextEditorB line edit : %s", *line)
-    r.done = true
+  if strings.Contains(*line, e.matchText) {
+    // logger.Debugf("$$$$$$$$$$ TextEditor matches with %s $$$$$$$$$$", e.matchText)
+    *line = strings.ReplaceAll(*line, e.thisText, e.withText)
+    if e.times > 0 {
+      e.times -= 1
+    }
   }
 }
 
 //----------------------------------------------------------------//
 // Start
 //----------------------------------------------------------------//
-func (r *TextEditorB) Start() {
-  r.done = false
-}
+func (e TextEditor) Start() {}
 
 //================================================================//
 // LineEditor
 //================================================================//
 type LineEditor struct {
   LineCopier
-  cache map[string][]TextEditor
-  editors []TextEditor
+  cache map[string][]LineParser
+  editors []LineParser
 }
 
 //----------------------------------------------------------------//
 // Arrange
 //----------------------------------------------------------------//
-func (p *LineEditor) Arrange(spec Runware) error {
-  logger.Debugf("%s is arranging ...", p.Desc)
+func (e *LineEditor) Arrange(spec Runware) error {
+  logger.Debugf("%s is arranging ...", e.Desc)
   dbkey := spec.String("LineEditor")
   rw,_ := stx.NewRunware(nil)
-  err := p.dd.GetWithKey(dbkey, rw)
+  err := e.dd.GetWithKey(dbkey, rw)
   if err != nil {
     return err
   }
-  logger.Debugf("%s got sectional data : %v", p.Desc, rw.AsMap())
+  logger.Debugf("%s got sectional data : %v", e.Desc, rw.AsMap())
   w := rw.StringList("Sections")
-  p.cache = make(map[string][]TextEditor, len(w))
+  e.cache = make(map[string][]LineParser, len(w))
   for _, sectionName := range w {
     x := rw.ParamList(sectionName)
-    logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
-    y := make([]TextEditor, len(x))
-    for i, p_ := range x {
-      params := p_.StringList()
-      if len(params) < 4 {
-        return fmt.Errorf("LineEditor.Arrange failed : TextEditor requires two parameters - got : %v", params)
+    logger.Debugf("%s got %s sectional parameters %v", e.Desc, sectionName, x)
+    y := make([]LineParser, len(x))
+    for i, z := range x {
+      params := z.ParamList()
+      if len(params) < 5 {
+        return fmt.Errorf("LineEditor.Arrange failed : LineParser requires two parameters - got : %v", params)
       }
-      switch params[0] {
-      case "TextEditorA":
-        y[i] = &TextEditorA{matchText: params[1], thisText: params[2], withText: params[3]}
-      case "TextEditorB":
-        z := TextEditorA{matchText: params[1], thisText: params[2], withText: params[3]}
-        y[i] = &TextEditorB{TextEditorA: z}
+      switch params[0].String() {
+      case "TextEditor":
+        y[i] = &TextEditor{
+                  matchText: params[1].String(),
+                  thisText: params[2].String(),
+                  withText: params[3].String(),
+                  times: params[4].Int()}
       }
-      logger.Debugf("%s got TextEditor : %v", p.Desc, y[i])
+      logger.Debugf("%s got LineParser : %v", e.Desc, y[i])
     }
-    p.cache[sectionName] = y
+    e.cache[sectionName] = y
   }
   return nil
 }
 
 //----------------------------------------------------------------//
-// EditLine
+// Parse
 //----------------------------------------------------------------//
-func (p *LineEditor) EditLine(line *string) {
-  for _, x := range p.editors {
-    x.Replace(line)
+func (e *LineEditor) Parse(line *string) {
+  for _, x := range e.editors {
+    x.Parse(line)
   }
 }
 
 //----------------------------------------------------------------//
 // SectionStart
 //----------------------------------------------------------------//
-func (p *LineEditor) SectionStart(sectionName string) {
+func (e *LineEditor) SectionStart(sectionName string) {
   var found bool
-  if p.editors, found = p.cache[sectionName]; !found {
-    logger.Warnf("############ %s no TextEditor are setup for %s section ###########", p.Desc, sectionName)
-    p.editors = []TextEditor{}
+  if e.editors, found = e.cache[sectionName]; !found {
+    logger.Warnf("############ %s no LineParser are setup for %s section ###########", e.Desc, sectionName)
+    e.editors = []LineParser{}
   }
 }
 
