@@ -3,6 +3,6 @@ Sections:
   - import
 import:
   - [LineFilter, 'spf13/cobra', 1]
-  - [LineAdder, 'encoding/json', 1]
+  - [LineAdder, 'encoding/json', 2, 1]
 1/LineAdder: |
-  '"encoding/base64"'
+  "encoding/base64"

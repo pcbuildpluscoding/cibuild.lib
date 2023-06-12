@@ -23,11 +23,11 @@ ScanVars:
   InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run.go
   OutputFile: Stdout
   PluginKey: create/container/run
-  StartReceipt: false
-  Subject: create/container/run
   ResumeRef: 
     Kind: MicroSync
     TaskId: Task2A
+  StartReceipt: false
+  Subject: create/container/run
 Generate: 
   Action: Generate
   Arrangement:

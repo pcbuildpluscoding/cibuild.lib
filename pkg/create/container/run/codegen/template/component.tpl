@@ -26,6 +26,9 @@ func (f *LineFilter) Parse(line *string) {
   }
   if strings.Contains(*line, f.matchText) {
     *f.skipLineCount = 1
+    if f.times > 0 {
+      f.times -= 1
+    }
   }
 }
 
@@ -33,13 +36,7 @@ func (f *LineFilter) Parse(line *string) {
 // complete
 //----------------------------------------------------------------//
 func (f *LineFilter) complete() bool {
-  if f.times < 0 {
-    return false
-  } else if f.times == 0 {
-    return true
-  }
-  f.times -= 1
-  return false
+  return f.times == 0
 }
 
 //================================================================//
@@ -56,13 +53,7 @@ type LineAdder struct {
 // complete
 //----------------------------------------------------------------//
 func (a *LineAdder) complete() bool {
-  if a.times < 0 {
-    return false
-  } else if a.times == 0 {
-    return true
-  }
-  a.times -= 1
-  return false
+  return a.times == 0
 }
 
 //----------------------------------------------------------------//
@@ -75,16 +66,22 @@ func (a *LineAdder) Parse(line *string) {
   if strings.Contains(*line, a.matchText) {
     logger.Debugf("$$$$$$$$$$ LineAdder matches line $$$$$$$$$$")
     a.dd.AddLines(a.inserts...)
+    if a.times > 0 {
+      a.times -= 1
+    }
   }
 }
 
 //----------------------------------------------------------------//
 // toInterfaceList
 //----------------------------------------------------------------//
-func toInterfaceList(x []string) []interface{} {
+func toInterfaceList(indentSize int, x []string) []interface{} {
+  indentFmt := "%" + fmt.Sprintf("%ds", indentSize)
+  indent := fmt.Sprintf(indentFmt, " ")
+
   y := make([]interface{}, len(x))
   for i, z := range x {
-    y[i] = z
+    y[i] = indent + z
   }
   return y
 }
@@ -121,20 +118,23 @@ func (p *LineCopier) Arrange(spec Runware) error {
   p.cache = make(map[string][]SectionParser, len(w))
   for _, sectionName := range w {
     x := rw.ParamList(sectionName)
-    logger.Debugf("%s got %s sectional parameters %v", p.Desc, sectionName, x)
+    logger.Debugf("%s got %s sectional parameter list len : %d", p.Desc, sectionName, len(x))
     y := make([]SectionParser, len(x))
-    for i, p_ := range x {
-      params := p_.ParamList()
-      if len(params) < 3 {
-        return fmt.Errorf("LineCopier.Arrange failed : LineFilter requires two parameters - got : %v", params)
-      }
+    for i, z := range x {
+      params := z.ParamList()
       switch params[0].String() {
       case "LineFilter":
+        if len(params) < 3 {
+          return fmt.Errorf("LineCopier.Arrange failed : LineFilter requires two parameters - got : %v", params)
+        }
         y[i] = &LineFilter{params[1].String(), p.skipLineCount, params[2].Int()}
       case "LineAdder":
+        if len(params) < 4 {
+          return fmt.Errorf("LineCopier.Arrange failed : LineAdder requires two parameters - got : %v", params)
+        }
         objkey := fmt.Sprintf("%d/LineAdder", i)
         inserts := strings.Split(rw.String(objkey), "\n")
-        y[i] = &LineAdder{p.dd, params[1].String(), toInterfaceList(inserts), params[2].Int()}
+        y[i] = &LineAdder{p.dd, params[1].String(), toInterfaceList(params[2].Int(), inserts), params[3].Int()}
       default:
         return fmt.Errorf("Unsupported SectionParser type : %s", params[0])
       }

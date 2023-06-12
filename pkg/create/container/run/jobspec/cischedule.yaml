@@ -7,7 +7,7 @@ Specified:
   nerdctl/integration:
     PurgePrefix: _JobKey_
     InputFile:
-    - [jobspec.yaml, _JobKey_]
+    # - [jobspec.yaml, _JobKey_]
     - [jobspec-progen.yaml, _JobKey_/task1]
     - [jobspec-build.yaml, _JobKey_/task2]
   _JobKey_:
