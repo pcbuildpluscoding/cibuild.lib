@@ -20,7 +20,7 @@ removeAll:
     - lib
     - template/linux
 runCiNotify:
-  jobId: 3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  jobId: f002f784-09b0-11ee-b90e-d95a5b4fe5a6
   action: Resume
   resumableTaskId: Task2C
 runGoTidy:

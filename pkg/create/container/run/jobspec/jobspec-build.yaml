@@ -1,8 +1,8 @@
 ---
 Title: Generate create/container/run source code files exporting to the cntrize.lib package
 RemoteAddr: 127.0.0.1:4499
-Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task2
-Tasks:
+Step: scanify/f002f784-09b0-11ee-b90e-d95a5b4fe5a6/task2
+Schedule:
   - ScanVars
   - Generate
   - CopyFile
@@ -17,41 +17,35 @@ ScanVars:
     LineJudge: task2/ScanVars/LineJudge
     SectionDealer: task2/ScanVars/SectionDealer
     Workers: [LineEditor,LineJudge,VarDecParser]
-  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  BucketName: scanify/f002f784-09b0-11ee-b90e-d95a5b4fe5a6
   DbPrefix: create/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/container_run.go
   OutputFile: Stdout
   PluginKey: create/container/run
-  ResumeRef: 
-    Kind: MicroSync
-    TaskId: Task2A
   StartReceipt: false
   Subject: create/container/run
+  TaskId: Task2A
 Generate: 
   Action: Generate
   Arrangement:
     SectionDealer: task2/Generate/SectionPrintDealer
     VarDecErrTest: task2/Generate/VarDecErrTest
     Workers: ["Default","VarDec"]
-  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
+  BucketName: scanify/f002f784-09b0-11ee-b90e-d95a5b4fe5a6
   DbPrefix: create/container/run
   Device: Genware
   InputFile: trovedb:system/uri|github.repo/internal,template/container/run/containerRun.tpl
   OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/containerRun.go
   PluginKey: create/container/run
-  ResumeRef: 
-    Kind: MicroSync 
-    TaskId: Task2B
   StartReceipt: false
   Subject: create/container/run
+  TaskId: Task2B
 CopyFile:
   Action: CopyFileWithTmsp
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/finalCleanup.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
-  ResumeRef: 
-    Kind: MacroAsync
-    TaskId: Task2C
   StartReceipt: false
   Subject: create/container/run
+  TaskId: Task2C

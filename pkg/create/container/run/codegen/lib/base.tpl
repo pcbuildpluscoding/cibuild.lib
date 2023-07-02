@@ -1,12 +1,11 @@
 package run
 
 import (
-  "io"
   "os"
   "time"
 
-  "github.com/pcbuildpluscoding/logroll"
   elm "github.com/pcbuildpluscoding/genware/lib/element"
+  "github.com/pcbuildpluscoding/logroll"
   tdb "github.com/pcbuildpluscoding/trovedb/std"
   rdt "github.com/pcbuildpluscoding/types/apirecord"
   rwt "github.com/pcbuildpluscoding/types/runware"
@@ -52,7 +51,7 @@ type CRProducer struct {
 //----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-func (p *CRProducer) Run(reader io.Reader) ApiRecord {
+func (p *CRProducer) Run(rw Runware) ApiRecord {
   return p.With(200)
 }
 
@@ -76,7 +75,7 @@ type CRComposer struct {
 //----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-func (p *CRComposer) Run(reader io.Reader) ApiRecord {
+func (p *CRComposer) Run(rw Runware) ApiRecord {
   return p.With(200)
 }
 

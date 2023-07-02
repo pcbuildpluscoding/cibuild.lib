@@ -6,4 +6,4 @@ editCiProfile:
     - findWith: CI_ACTION=.*
       replaceWith: CI_ACTION=Resume
     - findWith: CI_RESUMABLE_TASK_ID=.*
-      replaceWith: CI_RESUMABLE_TASK_ID=Task1F
+      replaceWith: CI_RESUMABLE_TASK_ID=Task1E

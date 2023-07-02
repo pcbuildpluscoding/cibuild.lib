@@ -1,76 +1,60 @@
 ---
 Title: Progenerate codegen source code golang files
 RemoteAddr: 127.0.0.1:4499
-Step: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8/task1
-Tasks:
-  - Import
-  - ProGenerate1
-  - ProGenerate2
-  - CopyModFile
+Step: scanify/f002f784-09b0-11ee-b90e-d95a5b4fe5a6/task1
+Schedule:
   - CopyFile1
+  - ProGenerate
+  - CopyModFile
   - CopyFile2
-Import:
-  Action: Import
-  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  DbPrefix: task1/progen/std
-  Device: Trovient
-  InputPath: trovedb:system/uri|github.repo/cibuild,config/progen
-  InputFile: [snipset-base.yaml, snipset-parser.yaml]
-  Protocol: SnipTree
-  ResumeRef: 
-    Kind: MicroSync
-    TaskId: Task1A
+  - CopyFile3
+CopyFile1:
+  Action: CopyFileWithTmsp
+  Advice:
+    ResumeDependent: true
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/importSniptree.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   StartReceipt: false
   Subject: create/container/run
-ProGenerate1: 
+  TaskId: Task1A
+ProGenerate: 
   Action: Generate
-  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  DbPrefix: task1/progen/std/Base
+  BucketName: scanify/f002f784-09b0-11ee-b90e-d95a5b4fe5a6/<fileName>
   Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/create/container/run/base.tpl
+  InputFile: trovedb:system/uri|github.repo/cibuild,template/container/run/<fileName>.tpl
+  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/container/run/<package>/<fileName>.go
   PluginKey: cibuild/progen/std
-  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/create/container/run/base.go
-  ResumeRef: 
-    Kind: MicroSync
-    TaskId: Task1B
+  Repeatable:
+    # Parameter defines the request parameter name that is added to each dispatched request
+    # Parameter value list length defines the repeatable iteration count
+    # TaskRange defines the task sequence per iteration
+    Parameter: PackageFile
+    PackageFile: [create/parser, flagutil/parser]
+    TaskRange: [ProGenerate, CopyModFile]
   StartReceipt: false
   Subject: create/container/run
-ProGenerate2: 
-  Action: Generate
-  BucketName: scanify/3ff48ee4-0289-11ee-9e20-6bd9e17702a8
-  DbPrefix: task1/progen/std/Parser
-  Device: Genware
-  InputFile: trovedb:system/uri|github.repo/cibuild,template/create/container/run/parser.tpl
-  PluginKey: cibuild/progen/std
-  OutputFile: trovedb:system/uri|github.repo/cibuild,lib/create/container/run/parser.go
-  ResumeRef: 
-    Kind: MicroSync
-    TaskId: Task1C
-  StartReceipt: false
-  Subject: create/container/run
+  TaskId: Task1B
 CopyModFile:
   Action: CopyModExt
   Device: FileSystem
-  InputPath: trovedb:system/uri|github.repo/cibuild,template/create/container/run
-  OutputPath: trovedb:system/uri|github.repo/cibuild,lib/create/container/run
-  InputFile: [component.tpl, composer.tpl, producer.tpl, sectional.tpl]
+  InputPath: trovedb:system/uri|github.repo/cibuild,template/container/run
+  InputFile: [base.tpl, component.tpl, composer.tpl, producer.tpl, sectional.tpl]
+  OutputPath: trovedb:system/uri|github.repo/cibuild,lib/container/run/<package>
+  MarkupRef: [OutputPath, <package>, Package]
   ModifyExt: .go
-  ResumeRef: 
-    Kind: MicroSync
-    TaskId: Task1D
   StartReceipt: false
   Subject: create/container/run
-CopyFile1:
+  TaskId: Task1C
+CopyFile2:
   Action: CopyFileWithTmsp
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/cibuild,jobspec/requestResume.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
-  ResumeRef: 
-    Kind: MacroAsync
-    TaskId: Task1E
   StartReceipt: false
   Subject: create/container/run
-CopyFile2:
+  TaskId: Task1D
+CopyFile3:
   Action: CopyFileWithTmsp
   Advice:
     ClosePeerConnections: true
@@ -78,8 +62,6 @@ CopyFile2:
   Device: FileSystem
   InputFile: trovedb:system/uri|github.repo/internal,dropzone/cibuild/dev01/manifest.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,cibuild/dev01/manifest.yaml
-  ResumeRef: 
-    Kind: MacroAsync
-    TaskId: Task1F
   StartReceipt: false
   Subject: create/container/run
+  TaskId: Task1E

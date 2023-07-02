@@ -2,59 +2,10 @@
 fromDir:
 fromPath: pkg/container/run
 baseDir:
-basePath:
-branches: [cibuild, codegen, progen]
-convertExt:
-  convertible: 
-    cibuild: []
-    codegen: [cmd, lib/create, lib/linux]
-    progen: [genware, lib]
-  defaultRef: golang
-  golang:
-    module: copyFileModExt
-    fromExt: .tpl
-    toExt: .go
-  notApplicable:
-    module: copyFile
-importable: 
-  cibuild: [jobspec, jobspec/create, jobspec/linux]
-  codegen: [cmd, lib/create, lib/linux, template]
-  progen: [config, genware, lib]
-cleanToDir: 
-  cibuild: [jobspec, jobspec/create, jobspec/linux]
-  codegen: [lib/create, lib/linux, template]
-  progen: [config, genware, lib]
-cibuild:
-  jobspec:
-    copyFrom: jobspec
-    copyTo: jobspec
-    exclude: [create, linux]
-  jobspec/create:
-    copyFrom: jobspec/create
-    copyTo: jobspec/create
-  jobspec/linux:
-    copyFrom: jobspec/linux
-    copyTo: jobspec/linux
-codegen:
-  cmd:
-    copyFrom: codegen/cmd
-    copyTo: cmd/server
-  lib/create:
-    copyFrom: codegen/lib
-    copyTo: lib/create/container/run
-  lib/linux:
-    copyFrom: codegen/lib
-    copyTo: lib/linux/container/run
-  template:
-    copyFrom: codegen/template
-    copyTo: template/container/run
-progen:
-  config:
-    copyFrom: progen/config
-    copyTo: config/progen
-  genware:
-    copyFrom: progen/genware
-    copyTo: genware/std
-  lib:
-    copyFrom: progen/lib
-    copyTo: lib/progen
+basePath: lib
+distro:
+  copyFrom: default
+  copyTo: [create, flagutil, linux, mount, runtime]
+  fromExt: .tpl
+  toExt: .go
+subModule: copyDistroFiles

@@ -1,23 +1,23 @@
 package run
 
 import (
-  "errors"
-  "fmt"
-  "os"
-  "path/filepath"
-  "strings"
-  "time"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
-  "github.com/pcbuildpluscoding/logroll"
-  ac "github.com/pcbuildpluscoding/apicore/std"
-  elm "github.com/pcbuildpluscoding/genware/lib/element"
-  fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
-  han "github.com/pcbuildpluscoding/genware/lib/handler"
-  stx "github.com/pcbuildpluscoding/strucex/std"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  rdt "github.com/pcbuildpluscoding/types/apirecord"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  "github.com/sirupsen/logrus"
+	ac "github.com/pcbuildpluscoding/apicore/std"
+	elm "github.com/pcbuildpluscoding/genware/lib/element"
+	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
+	han "github.com/pcbuildpluscoding/genware/lib/handler"
+	"github.com/pcbuildpluscoding/logroll"
+	stx "github.com/pcbuildpluscoding/strucex/std"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	rdt "github.com/pcbuildpluscoding/types/apirecord"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	"github.com/sirupsen/logrus"
 )
 
 type ApiRecord = rdt.ApiRecord
@@ -68,31 +68,22 @@ func NewPGComposer(connex *Trovian, dealer SnipDealer) (*PGComposer, error) {
 }
 
 //----------------------------------------------------------------//
-// NewScanHandler
-//----------------------------------------------------------------//
-func NewScanHandler(readCh chan string) ScanHandler {
-  return ScanHandler{
-    readCh: readCh,
-    Desc: "ScanHandler-" + time.Now().Format("150405.000000"),
-  }
-}
-
-//----------------------------------------------------------------//
 // NewSnipDealer
 //----------------------------------------------------------------//
-func NewSnipDealer(connex *Trovian) SnipDealer {
+func NewSnipDealer(connex *Trovian, writer SnipWriter) SnipDealer {
   return SnipDealer{
     Desc: "SnipDealer-" + time.Now().Format("150405.000000"),
     connex: connex,
+    writer: writer,
   }
 }
 
 // -------------------------------------------------------------- //
 // NewWriter
 // ---------------------------------------------------------------//
-func NewSnipWriter(connex *Trovian, outputPath string, index ...int) (SnipWriter, error) {
+func NewSnipWriter(connex *Trovian, outputPath string) (SnipWriter, error) {
 
-  writer, err := createFile(connex, outputPath, index...)
+  writer, err := fs.CreateFile(connex, outputPath, false)
   return SnipWriter{writer: writer}, err
 }
 

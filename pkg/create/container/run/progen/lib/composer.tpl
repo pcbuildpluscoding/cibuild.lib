@@ -2,9 +2,7 @@ package run
 
 import (
 	"bufio"
-	"io"
-
-	cwt "github.com/pcbuildpluscoding/types/connware"
+	"os"
 )
 
 //================================================================//
@@ -24,43 +22,18 @@ func (c *PGComposer) EndOfFile(...string) {
 }
 
 //----------------------------------------------------------------//
-// Receive
-//----------------------------------------------------------------//
-func (c *PGComposer) Receive(readCh chan string) error {
-  logger.Debugf("%s is receiving ...", c.Desc)
-  for !c.Is(cwt.Stopped) {
-    switch c.Status() {
-    case cwt.Starting:
-      c.SetStatus(cwt.Running)
-    case cwt.Running:
-      select {
-      case line, ok := <-readCh:
-        if !ok {
-          logger.Errorf("%s - input data channel closed before scanning was complete", c.Desc)
-          c.SetStatus(cwt.Stopped)
-        }
-        if line == "EOF" {
-          logger.Debugf("!!!! %s got EOF, stopping ...", c.Desc)
-          c.SetStatus(cwt.Stopped)
-        } else {
-          c.dealer.Read(line)
-        }
-      }
-    }
-  }
-  close(readCh)
-  return nil
-}
-
-//----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-func (c *PGComposer) Run(reader io.Reader) ApiRecord {
+func (c *PGComposer) Run(rw Runware) ApiRecord {
   err := c.dealer.Start()
   if err != nil {
     return c.WithErr(err)
   }
 
+  reader, err := os.Open(rw.String("InputFile"))
+  if err != nil {
+    return c.WithErr(err, 400)
+  }
   scanner := bufio.NewScanner(reader)
   scanner.Split(bufio.ScanLines)
 

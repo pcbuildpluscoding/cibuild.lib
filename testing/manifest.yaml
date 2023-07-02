@@ -1,48 +1,11 @@
 ---
 fromDir: /home/devapps/enterprise/github/cibuild
-fromPath: 
+fromPath: lib
 baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: pkg/create/container/run
-branches: [cibuild, codegen, progen]
-convertExt:
-  convertible: 
-    cibuild: []
-    codegen: [cmd, template]
-    progen: [genware, lib]
-  defaultRef: golang
-  golang:
-    module: copyFileModExt
-    fromExt: .go
-    toExt: .tpl
-  notApplicable:
-    module: copyFile
-importable: 
-  cibuild: [jobspec]
-  codegen: [cmd, template]
-  progen: [config, genware]
-cleanToDir: 
-  cibuild: [jobspec]
-  codegen: [cmd, template]
-  progen: [config, lib]
-cibuild:
-  jobspec:
-    copyFrom: jobspec
-    copyTo: jobspec
-codegen:
-  cmd:
-    copyFrom: cmd/server
-    copyTo: codegen/cmd
-    exclude: [main.go]
-  template:
-    copyFrom: template/create/container/run
-    copyTo: codegen/template
-progen:
-  config:
-    copyFrom: config/progen
-    copyTo: progen/config
-  genware:
-    copyFrom: genware/std
-    copyTo: progen/genware
-  lib:
-    copyFrom: lib/progen
-    copyTo: progen/lib
+basePath: pkg/container/run
+distro:
+  copyFrom: default
+  copyTo: []
+  fromExt: .go
+  toExt: .tpl
+subModule: copyDistroFiles
