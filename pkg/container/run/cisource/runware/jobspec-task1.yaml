@@ -1,0 +1,46 @@
+---
+Title: Generate create/container/run source code files exporting to the cntrize.lib package
+RemoteAddr: 127.0.0.1:4499
+Step: cibuild/<jobId>/task2
+Schedule:
+  - SetRepeatable
+  - Generate
+  - CopyFile
+SetRepeatable:
+  Repeatable:
+    # Parameter defines the request parameter name that is added to each dispatched request
+    # Parameter value list length defines the repeatable iteration count
+    # TaskRange defines the task sequence per iteration
+    Parameter: FileName
+    FileName: [cgroup,create,flagutil,gpus,linux,mount,restart,runtime,security,ulimit,volume]
+    TaskRange: [Generate]
+  Subject: container/run
+  TaskId: Task1A
+Generate: 
+  Action: Generate
+  Device: Genware
+  InputFile: trovedb:system/uri|github.repo/nerdctl,cmd/nerdctl/<inputFile>
+  ParamValue: trovedb:system/uri|github.repo/cibuild,runware/paramValue.yaml
+  PluginKey: cibuild/codegen/streamium
+  StartReceipt: false
+  StreamClient:
+    StreamAddr: 127.0.0.1:8899
+  Streamium:
+    Action: Init
+    InputFile: trovedb:system/uri|github.repo/internal,template/container/run/<inputFile>
+    JobId: <jobId>
+    OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/<outputFile>
+  Tokenic:
+    CacheSize: 4
+  Subject: container/run
+  SyncTask: true
+  TaskId: Task1B
+CopyFile:
+  Action: CopyFileWithTmsp
+  Device: FileSystem
+  InputFile: trovedb:system/uri|github.repo/cibuild,runware/finalCleanup.yaml
+  OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
+  StartReceipt: false
+  Subject: container/run
+  SyncTask: true
+  TaskId: Task1C

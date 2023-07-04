@@ -3,9 +3,24 @@ fromDir: /home/devapps/enterprise/github/cibuild
 fromPath: lib
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/container/run
-distro:
-  copyFrom: default
-  copyTo: []
-  fromExt: .go
-  toExt: .tpl
-subModule: copyDistroFiles
+branches: [codegen]
+cleanToDir:
+  codegen: []
+convertExt:
+  convertible: 
+    cisource: [cmd, genware]
+    codegen: []
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .tpl
+    toExt: .go
+  notApplicable:
+    module: copyFile
+importable:
+  codegen: [default]
+codegen:
+  default:
+    fromDir: /home/devapps/enterprise/github/cibuild.lib
+    copyFrom: pkg/codegen/v1/default
+    copyTo: codegen/default

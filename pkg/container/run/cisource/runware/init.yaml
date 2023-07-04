@@ -1,0 +1,27 @@
+---
+modules: [utility.module]
+schedule: [runCiUpload, runCiBuild, runCiExec, runCiNotify]
+runCiUpload:
+  baseDir: /home/devapps/enterprise/github/cibuild/runware
+  jobId: <jobId>
+  protocol: JobSpec
+  specPath: /home/devapps/enterprise/github/cibuild/runware/cischedule.yaml
+runCiBuild:
+  binDir: /home/devapps/enterprise/github/cibuild/bin
+  binaryDependency:
+    - /home/devapps/enterprise/github/genware
+  binaryName: cigserver
+  packageDir: /home/devapps/enterprise/github/cibuild
+  packageRef: github.com/pcbuildpluscoding/cibuild
+  waitAfterBuild: 5
+  sourceDir: cmd/cigserver
+  sourceFile: main.go
+runCiExec:
+  programArgs:
+    - bin/cigserver
+    - log/cigserver
+  programName: runTerm
+runCiNotify:
+  jobId: <jobId>
+  action: Resume
+  resumableTaskId: InitB

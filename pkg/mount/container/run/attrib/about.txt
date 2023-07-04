@@ -1,1 +1,0 @@
-cibuild pkg/mount/container/run is a code generation module that produces content for cntrize /mount/container/run

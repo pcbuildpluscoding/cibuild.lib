@@ -1,3 +1,0 @@
-pkg/flagutil/container/run/codegen
-pkg/flagutil/container/run/jobspec
-pkg/flagutil/container/run/progen

@@ -1,9 +1,0 @@
----
-Sections:
-  - parseMountFlags
-  - generateMountOpts
-parseMountFlags:
-  - [TextEditorB, 'func parseMountFlags', 'cmd *cobra.Command', 'cspec *CntrSpec']
-generateMountOpts:
-  - [TextEditorB, 'func generateMountOpts', 'cmd *cobra.Command', 'cspec *CntrSpec']
-  - [TextEditorA, parseMountFlags, cmd, cspec]

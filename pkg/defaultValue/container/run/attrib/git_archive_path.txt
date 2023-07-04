@@ -1,3 +1,0 @@
-pkg/defaultValue/container/run/cmd
-pkg/defaultValue/container/run/genware
-pkg/defaultValue/container/run/lib

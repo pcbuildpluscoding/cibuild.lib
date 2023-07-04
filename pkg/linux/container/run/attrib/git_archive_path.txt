@@ -1,3 +1,0 @@
-pkg/linux/container/run/codegen
-pkg/linux/container/run/jobspec
-pkg/linux/container/run/progen

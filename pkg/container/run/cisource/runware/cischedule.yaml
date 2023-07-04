@@ -1,0 +1,15 @@
+---
+Action: Import
+BucketName: nerdctl/integration
+Device: Trovient
+InputPath: trovedb:system/uri|github.repo/cibuild,runware
+Importable:
+  InputFile:
+    - [jobspec-task1.yaml, cibuild/<jobId>/task1]
+  # PurgePrefix:
+JobId: <jobId>
+Protocol: JobSpec
+StartReceipt: false
+Subject: container/run
+SyncTask: true
+TaskId: InitB

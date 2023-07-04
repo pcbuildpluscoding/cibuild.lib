@@ -1,5 +1,0 @@
----
-Sections:
-  - generateRuntimeCOpts
-generateRuntimeCOpts:
-  - [TextEditorB, 'func generateRuntimeCOpts', 'cmd *cobra.Command', 'cspec *CntrSpec']

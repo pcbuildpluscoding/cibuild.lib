@@ -1,0 +1,56 @@
+---
+cgroup:
+  Streamium:
+    InputFile: containerCgroup.tpl
+    OutputFile: containerCgroup.go
+  InputFile: container_run_cgroup_linux.go
+create:
+  Streamium:
+    InputFile: containerRun.tpl
+    OutputFile: containerRun.go
+  InputFile: container_run.go
+flagutil:
+  Streamium:
+    InputFile: flagutil.tpl
+    OutputFile: flagutil.go
+  InputFile: flagutil.go
+gpus:
+  Streamium:
+    InputFile: containerGpus.tpl
+    OutputFile: containerGpus.go
+  InputFile: container_run_gpus.go
+linux:
+  Streamium:
+    InputFile: containerLinux.tpl
+    OutputFile: containerLinux.go
+  InputFile: container_run_linux.go
+mount:
+  Streamium:
+    InputFile: containerMount.tpl
+    OutputFile: containerMount.go
+  InputFile: container_run_mount.go
+restart:
+  Streamium:
+    InputFile: containerRestart.tpl
+    OutputFile: containerRestart.go
+  InputFile: container_run_restart.go
+runtime:
+  Streamium:
+    InputFile: containerRuntime.tpl
+    OutputFile: containerRuntime.go
+  InputFile: container_run_runtime.go
+security:
+  Streamium:
+    InputFile: containerSecurity.tpl
+    OutputFile: containerSecurity.go
+  InputFile: container_run_security_linux.go
+ulimit:
+  Streamium:
+    InputFile: containerUlimit.tpl
+    OutputFile: containerUlimit.go
+  InputFile: container_run_ulimit.go
+volume:
+  Streamium:
+    InputFile: volume.tpl
+    OutputFile: volume.go
+  InputFile: volume.go
