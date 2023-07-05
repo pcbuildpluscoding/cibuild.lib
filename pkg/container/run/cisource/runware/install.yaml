@@ -1,9 +1,12 @@
 ---
-modules: [utility.module]
-schedule: [editCiRunware]
+modules: [utility.module, copy.module]
+schedule: [editCiRunware, copyFileWithTmsp]
 editCiRunware:
   baseDir: $CI_BASE_DIR/runware
   inputFile: [cischedule.yaml, finalCleanup.yaml, init.yaml, jobspec-task1.yaml]
   parameter:
     - findWith: <jobId>
       replaceWith: $CI_JOB_ID
+copyFileWithTmsp:
+  inputFile: /home/devapps/enterprise/github/cibuild/runware/init.yaml
+  outputDir: /data/internal/dropzone/ciutils/dev01
