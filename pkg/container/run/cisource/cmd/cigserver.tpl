@@ -12,7 +12,6 @@ import (
   "time"
 
   gwr "github.com/pcbuildpluscoding/cibuild/genware/std"
-  "github.com/pcbuildpluscoding/cibuild/lib"
   cib "github.com/pcbuildpluscoding/cibuild/std"
 
   fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
@@ -30,7 +29,6 @@ func serve() error {
   cib.SetLogger(logger, logfd)
   fs.SetLogger(logger)
   gwr.SetLogger(logger)
-  lib.SetLogger(logger)
 
   server, err := newCigServer()
 

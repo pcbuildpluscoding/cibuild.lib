@@ -3,14 +3,16 @@ fromDir:
 fromPath: pkg/container/run
 baseDir:
 basePath:
-branches: [cisource, codegen]
+branches: [cisource, codegen1, codegen2]
 cleanToDir:
   cisource: [genware, runware]
-  codegen: []
+  codegen1: []
+  codegen2: []
 convertExt:
   convertible: 
     cisource: [cmd, genware]
-    codegen: [__all__, default]
+    codegen1: [default]
+    codegen2: [__all__]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -20,17 +22,27 @@ convertExt:
     module: copyFile
 importable:
   cisource: [cmd, genware, runware]
-  codegen: [__all__, default]
-codegen:
+  codegen1: [__all__, default]
+  codegen2: [__all__]
+codegen1:
   __all__:
-    preserveLeaf: true
+    copyFrom: codegen
     copyTo: lib
     exclude: [default]
+    mkdirOnly: true
+    preserveLeaf: true
   default:
+    copyFrom: codegen/default
     copyTo: lib/__all__
+codegen2:
+  __all__:
+    copyFrom: codegen
+    copyTo: lib
+    exclude: [default]
+    preserveLeaf: true
 cisource:
   cmd:
-    copyTo: cmd/server
+    copyTo: cmd/cigserver
   genware:
     copyTo: genware/std
   runware:
