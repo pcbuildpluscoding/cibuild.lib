@@ -1,16 +1,16 @@
 ---
-fromDir: /home/devapps/enterprise/github/cibuild.lib
+fromDir:
 fromPath: pkg/container/run
-baseDir: /home/devapps/enterprise/github/cibuild.lib
-basePath: temp
+baseDir:
+basePath:
 branches: [cisource, codegen]
 cleanToDir:
-  cisource: []
+  cisource: [genware, runware]
   codegen: []
 convertExt:
   convertible: 
     cisource: [cmd, genware]
-    codegen: [__all__]
+    codegen: [__all__, default]
   defaultRef: golang
   golang:
     module: copyFileModExt
@@ -19,8 +19,18 @@ convertExt:
   notApplicable:
     module: copyFile
 importable:
-  cisource: [__all__]
-  codegen: [__all__]
+  cisource: [cmd, genware, runware]
+  codegen: [__all__, default]
 codegen:
   __all__:
+    preserveLeaf: true
     copyTo: lib
+    exclude: [default]
+  default:
+    copyTo: lib/__all__
+cisource:
+  cmd:
+    copyTo: cmd/server
+  genware:
+    copyTo: genware/std
+  runware:

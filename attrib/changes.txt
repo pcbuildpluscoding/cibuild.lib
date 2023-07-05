@@ -1,1 +1,1 @@
-for endToEnd testing of new streamium codegen design
+ready for endToEnd codegen testing using streamium package

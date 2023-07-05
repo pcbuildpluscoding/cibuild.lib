@@ -2,10 +2,35 @@
 fromDir:
 fromPath: pkg/container/run
 baseDir:
-basePath: lib
-distro:
-  copyFrom: default
-  copyTo: [create, flagutil, linux, mount, runtime]
-  fromExt: .tpl
-  toExt: .go
-subModule: copyDistroFiles
+basePath:
+branches: [cisource, codegen]
+cleanToDir:
+  cisource: [genware, runware]
+  codegen: []
+convertExt:
+  convertible: 
+    cisource: [cmd, genware]
+    codegen: [__all__, default]
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .tpl
+    toExt: .go
+  notApplicable:
+    module: copyFile
+importable:
+  cisource: [cmd, genware, runware]
+  codegen: [__all__, default]
+codegen:
+  __all__:
+    preserveLeaf: true
+    copyTo: lib
+    exclude: [default]
+  default:
+    copyTo: lib/__all__
+cisource:
+  cmd:
+    copyTo: cmd/server
+  genware:
+    copyTo: genware/std
+  runware:

@@ -1,6 +1,6 @@
 ---
 fromDir: /home/devapps/enterprise/github/cibuild
-fromPath: lib
+fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/container/run
 branches: [codegen]

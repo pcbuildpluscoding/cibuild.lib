@@ -1,6 +1,2 @@
-pkg/container/run/create
-pkg/container/run/default
-pkg/container/run/flagutil
-pkg/container/run/linux
-pkg/container/run/mount
-pkg/container/run/runtime
+pkg/container/run/cisource
+pkg/container/run/codegen
