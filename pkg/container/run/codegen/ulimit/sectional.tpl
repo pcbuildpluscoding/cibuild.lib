@@ -34,7 +34,7 @@ func checkResponse(resp ApiRecord, action string) error {
   }
   switch action {
   case "Complete":
-    if resp.Parameter().String() != "Ok" {
+    if resp.Parameter().String() != "EOF" {
       logger.Warnf("%s response advice != Ok - got %s instead", action, resp.Parameter().String())
     }
   default:
@@ -49,9 +49,9 @@ func checkResponse(resp ApiRecord, action string) error {
 // sectionalA
 //================================================================//
 var sectionalA = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "import") {
+  if strings.HasPrefix(pr.line, "import") {
     logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "import")
     resp := client.Request(req)
     logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
@@ -59,7 +59,7 @@ var sectionalA = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    client.AddLine(pr.Line)
+    client.AddLine(pr.line)
     return sectionalB, nil
   } 
   return nil, nil
@@ -69,27 +69,22 @@ var sectionalA = func() (Sectional, error) {
 // sectionalB
 //================================================================//
 var sectionalB Sectional = func() (Sectional, error) {
-  if pr.Line == ")" {
-    client.AddLine(pr.Line)
+  if pr.line == ")" {
+    client.AddLine(pr.line)
     logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     return sectionalC, nil
   } 
-  switch xline := pr.XLine(); {
+  switch xline := pr.xline(); {
   case xline.Contains("spf13/cobra"):
     logger.Debugf("$$$$$$$$$$$ import reference spf13/cobra is found $$$$$$$$$$$$")
   default:
-    client.AddLine(pr.Line)
+    client.AddLine(pr.line)
   }
   return nil, nil
 }
@@ -98,9 +93,9 @@ var sectionalB Sectional = func() (Sectional, error) {
 // SectionalC
 //================================================================//
 var sectionalC = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func generateUlimitsOpts") {
+  if strings.HasPrefix(pr.line, "func generateUlimitsOpts") {
     logger.Debugf("$$$$$$$$$$$ generateUlimitsOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "generateUlimitsOpts")
     resp := client.Request(req)
     logger.Debugf("got SectionName=generateUlimitsOpts response : %v", resp.Parameter().Value().AsInterface())
@@ -108,8 +103,8 @@ var sectionalC = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalD, nil
   }
   return nil, nil
@@ -119,9 +114,9 @@ var sectionalC = func() (Sectional, error) {
 // SectionalD
 //================================================================//
 var sectionalD = func() (Sectional, error) {
-  if pr.Complete {
-    if pr.Line != "" {
-      client.AddLine(pr.Line)
+  if pr.complete {
+    if pr.line != "" {
+      client.AddLine(pr.line)
     }
     finalVdec := `
   if err := rc.Err(); err != nil {
@@ -129,16 +124,11 @@ var sectionalD = func() (Sectional, error) {
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err

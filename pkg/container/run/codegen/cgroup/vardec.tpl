@@ -86,39 +86,39 @@ type VarDec struct {
 }
 
 //----------------------------------------------------------------//
-// Add
+// add
 //----------------------------------------------------------------//
-func (d *VarDec) Add(items ...string) {
+func (d *VarDec) add(items ...string) {
   for _, item := range items {
     d.cache.add(item)
   }
 }
 
 //----------------------------------------------------------------//
-// DecIndent
+// decIndent
 //----------------------------------------------------------------//
-func (d *VarDec) DecIndent() {
+func (d *VarDec) decIndent() {
   d.indentFactor -= 1
 }
 
 //----------------------------------------------------------------//
-// CacheIsEmpty
+// cacheIsEmpty
 //----------------------------------------------------------------//
-func (d *VarDec) CacheIsEmpty() bool {
+func (d *VarDec) cacheIsEmpty() bool {
   return d.cache.empty()
 }
 
 //----------------------------------------------------------------//
-// Flush
+// flush
 //----------------------------------------------------------------//
-func (d *VarDec) Flush() []string {
+func (d *VarDec) flush() []string {
   return d.cache.flush()
 }
 
 //----------------------------------------------------------------//
-// FormatLine
+// formatLine
 //----------------------------------------------------------------//
-func (d VarDec) FormatLine(line string) string {
+func (d VarDec) formatLine(line string) string {
   indent := d.getIndent()
   return fmt.Sprintf("%s%s", indent, line)
 }
@@ -132,16 +132,16 @@ func (d VarDec) getIndent() string {
 }
 
 //----------------------------------------------------------------//
-// GetIndentFactor
+// getIndentFactor
 //----------------------------------------------------------------//
-func (d *VarDec) GetIndentFactor() int {
+func (d *VarDec) getIndentFactor() int {
   return d.indentFactor
 }
 
 //----------------------------------------------------------------//
-// GetParamSetter
+// getParamSetter
 //----------------------------------------------------------------//
-func (d *VarDec) GetParamSetter() string {
+func (d *VarDec) getParamSetter() string {
   indent := d.getIndent()
   equalToken := "="
   if d.firstParam {
@@ -152,9 +152,9 @@ func (d *VarDec) GetParamSetter() string {
 }
 
 //----------------------------------------------------------------//
-// GetParamValue
+// getParamValue
 //----------------------------------------------------------------//
-func (d VarDec) GetParamValue() string {
+func (d VarDec) getParamValue() string {
   indent := d.getIndent()
   if d.inlineErr {
     return fmt.Sprintf("%s%s %s p.%s(); p.Err() != nil {", indent, d.varName, d.equalToken, d.varType)
@@ -163,9 +163,9 @@ func (d VarDec) GetParamValue() string {
 }
 
 //----------------------------------------------------------------//
-// GetVarDec
+// getVarDec
 //----------------------------------------------------------------//
-func (d VarDec) GetVarDec() string {
+func (d VarDec) getVarDec() string {
   goVarType := strings.ToLower(d.varType)
   switch d.varType {
   case "StringList":
@@ -178,40 +178,40 @@ func (d VarDec) GetVarDec() string {
 }
 
 //----------------------------------------------------------------//
-// GetVarSetter
+// getVarSetter
 //----------------------------------------------------------------//
-func (d VarDec) GetVarSetter() string {
+func (d VarDec) getVarSetter() string {
   indent := d.getIndent()
   switch {
   case d.varType == "Uint16":
     return fmt.Sprintf("%s%s %s rc.UInt16(\"%s\")", indent, d.varName, d.equalToken, d.flagName)
-	case d.varType == "Uint64":
+  case d.varType == "Uint64":
     return fmt.Sprintf("%s%s %s rc.UInt64(\"%s\")", indent, d.varName, d.equalToken, d.flagName)
   }
   return fmt.Sprintf("%s%s %s rc.%s(\"%s\")", indent, d.varName, d.equalToken, d.varType, d.flagName)
 }
 
 //----------------------------------------------------------------//
-// IndentLine
+// indentLine
 //----------------------------------------------------------------//
-func (d VarDec) IndentLine(text string) string {
-  d.IncIndent()
+func (d VarDec) indentLine(text string) string {
+  d.incIndent()
   indent := d.getIndent()
-  d.DecIndent()
+  d.decIndent()
   return fmt.Sprintf("%s%s", indent, text)
 }
 
 //----------------------------------------------------------------//
-// IncIndent
+// incIndent
 //----------------------------------------------------------------//
-func (d *VarDec) IncIndent() {
+func (d *VarDec) incIndent() {
   d.indentFactor += 1
 }
 
 //----------------------------------------------------------------//
-// ParseGetter
+// parseGetter
 //----------------------------------------------------------------//
-func (d *VarDec) ParseGetter(line string) *VarDec {
+func (d *VarDec) parseGetter(line string) *VarDec {
   varText, remnant := XString(line).SplitInTwo(", ")
   _, equalToken, remnantA := remnant.SplitInThree(" ")
   varType, flagName := remnantA.SplitNKeepOne("Flags().Get",2,1).SplitInTwo(`("`)
@@ -250,23 +250,23 @@ func (d *VarDec) parseVarType(varType XString) {
 }
 
 //----------------------------------------------------------------//
-// Prepend
+// prepend
 //----------------------------------------------------------------//
-func (d *VarDec) Prepend(item string) {
+func (d *VarDec) prepend(item string) {
   d.cache.prepend(item)
 }
 
 //----------------------------------------------------------------//
-// ResetIndent
+// resetIndent
 //----------------------------------------------------------------//
-func (d *VarDec) ResetIndent() {
+func (d *VarDec) resetIndent() {
   d.indentFactor = 1
 }
 
 //----------------------------------------------------------------//
-// Start
+// start
 //----------------------------------------------------------------//
-func (d *VarDec) Start() error {
+func (d *VarDec) start() error {
   var err error
   if d.isSlice == nil {
     d.isSlice, err = regexp.Compile("Slice|Array")

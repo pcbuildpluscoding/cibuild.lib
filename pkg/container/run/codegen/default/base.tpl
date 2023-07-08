@@ -68,9 +68,9 @@ func newTrovian(netAddr, bucket string) (*Trovian, error) {
 }
 
 //================================================================//
-// NewScanner
+// newScanner
 //================================================================//
-func NewScanner(reader io.Reader) scanner.Scanner {
+func newScanner(reader io.Reader) scanner.Scanner {
   var s scanner.Scanner
   s.Init(reader)
   s.Error = func(s *scanner.Scanner, errmsg string) {
@@ -82,9 +82,9 @@ func NewScanner(reader io.Reader) scanner.Scanner {
 }
 
 //================================================================//
-// NewStreamClient
+// newStreamClient
 //================================================================//
-func NewStreamClient(rw Runware) (StreamClient, error) {
+func newStreamClient(rw Runware) (StreamClient, error) {
   if !rw.HasKeys("StreamClient","JobId") {
     return StreamClient{}, fmt.Errorf("one or more required parameters StreamClient and JobId are undefined")
   }
@@ -102,9 +102,9 @@ func NewStreamClient(rw Runware) (StreamClient, error) {
 }
 
 //================================================================//
-// NewTokenic
+// newTokenic
 //================================================================//
-func NewTokenic(rw Runware) (Tokenic, error) {
+func newTokenic(rw Runware) (Tokenic, error) {
   if !rw.HasKeys("CacheSize") {
     return Tokenic{}, fmt.Errorf("CacheSize is a required parameter")
   }
@@ -123,9 +123,9 @@ func NewTokenic(rw Runware) (Tokenic, error) {
 }
 
 //----------------------------------------------------------------//
-// NewVarDec
+// newVarDec
 //----------------------------------------------------------------//
-func NewVarDec(indentFactor, indentSize int) VarDec {
+func newVarDec(indentFactor, indentSize int) VarDec {
   isSlice, _ := regexp.Compile(`Slice|Array`)
   cache := LineCache{
     this: []string{},
@@ -139,24 +139,24 @@ func NewVarDec(indentFactor, indentSize int) VarDec {
 }
 
 //----------------------------------------------------------------//
-// NewVdParser
+// newVdParser
 //----------------------------------------------------------------//
-func NewVdParser(rw Runware) (VdParser, error) {
-  tokenic, err := NewTokenic(rw.SubNode("Tokenic"))
+func newVdParser(rw Runware) (VdParser, error) {
+  tokenic, err := newTokenic(rw.SubNode("Tokenic"))
   cache := LineCache{
     this: []string{},
   }
   return VdParser{
     Tokenic: tokenic,
     buffer: cache,
-    varDec: NewVarDec(1, 2),
+    varDec: newVarDec(1, 2),
   }, err
 }
 
 //================================================================//
-// GetSectional
+// getSectional
 //================================================================//
-func GetSectional(id rune) (Sectional, error) {
+func getSectional(id rune) (Sectional, error) {
   switch id {
   case 'A':
     return Sectional(sectionalA), nil
@@ -168,24 +168,24 @@ func GetSectional(id rune) (Sectional, error) {
 //----------------------------------------------------------------//
 // Run
 //----------------------------------------------------------------//
-type Codegen func(Runware) error
-func (c Codegen) Run(rw Runware) ApiRecord {
+type CodeGen func(Runware) error
+func (c CodeGen) Run(rw Runware) ApiRecord {
   err := c(rw)
   result := ApiResult{}
   return result.CheckErr(err, 400)
 }
 
-func (c Codegen) String() string {
+func (c CodeGen) String() string {
   return "StreamGen"
 }
 
-var StreamGen Codegen = func(req_ Runware) error {
+var StreamGen CodeGen = func(req_ Runware) error {
   logger.Infof("running a new StreamGen instance ...")
 
   req = req_
   
   var err error
-  client, err = NewStreamClient(req)
+  client, err = newStreamClient(req)
   if err != nil {
     return err
   }
@@ -206,17 +206,17 @@ var StreamGen Codegen = func(req_ Runware) error {
     return fmt.Errorf("Streamium Init action did not succeed - got advice : %s", response.Parameter().String())
   }
 
-  pr, err = NewVdParser(req)
+  pr, err = newVdParser(req)
   if err != nil {
     return err
   }
 
-  err = pr.Start()
+  err = pr.start()
   if err != nil {
     return err
   }
 
-  sx, err = GetSectional('A')
+  sx, err = getSectional('A')
   if err != nil {
     return err
   }
@@ -226,14 +226,14 @@ var StreamGen Codegen = func(req_ Runware) error {
     Line: 1,
     Column: 1}
 
-  s := NewScanner(reader)
+  s := newScanner(reader)
   sd = &ScanData{}
 
   defer reader.Close()
   
   for sd.trune = s.Scan(); ; sd.trune = s.Scan() {
     if sd.trune == scanner.EOF {
-      pr.Complete = true
+      pr.complete = true
       sx.UseLine()
       logger.Infof("!!! sectional program is now complete !!!")
       break
@@ -245,7 +245,7 @@ var StreamGen Codegen = func(req_ Runware) error {
     if err != nil {
       logger.Error(err)
       return err
-    } else if pr.Complete {
+    } else if pr.complete {
       logger.Infof("!!! sectional program is now complete !!!")
       break
     }

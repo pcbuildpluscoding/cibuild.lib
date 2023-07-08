@@ -34,7 +34,7 @@ func checkResponse(resp ApiRecord, action string) error {
   }
   switch action {
   case "Complete":
-    if resp.Parameter().String() != "Ok" {
+    if resp.Parameter().String() != "EOF" {
       logger.Warnf("%s response advice != Ok - got %s instead", action, resp.Parameter().String())
     }
   default:
@@ -49,9 +49,9 @@ func checkResponse(resp ApiRecord, action string) error {
 // sectionalA
 //================================================================//
 var sectionalA = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "import") {
+  if strings.HasPrefix(pr.line, "import") {
     logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "import")
     resp := client.Request(req)
     logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
@@ -59,7 +59,7 @@ var sectionalA = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    client.AddLine(pr.Line)
+    client.AddLine(pr.line)
     return sectionalB, nil
   } 
   return nil, nil
@@ -69,18 +69,13 @@ var sectionalA = func() (Sectional, error) {
 // sectionalB
 //================================================================//
 var sectionalB Sectional = func() (Sectional, error) {
-  if pr.Complete {
-    if pr.Line != "" {
-      client.AddLine(pr.Line)
+  if pr.complete {
+    if pr.line != "" {
+      client.AddLine(pr.line)
     }
     logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err

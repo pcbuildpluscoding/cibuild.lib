@@ -34,7 +34,7 @@ func checkResponse(resp ApiRecord, action string) error {
   }
   switch action {
   case "Complete":
-    if resp.Parameter().String() != "Ok" {
+    if resp.Parameter().String() != "EOF" {
       logger.Warnf("%s response advice != Ok - got %s instead", action, resp.Parameter().String())
     }
   default:
@@ -49,9 +49,9 @@ func checkResponse(resp ApiRecord, action string) error {
 // sectionalA
 //================================================================//
 var sectionalA = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "import") {
+  if strings.HasPrefix(pr.line, "import") {
     logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "import")
     resp := client.Request(req)
     logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
@@ -68,35 +68,30 @@ var sectionalA = func() (Sectional, error) {
 // sectionalB
 //================================================================//
 var sectionalB Sectional = func() (Sectional, error) {
-  if pr.Line == ")" {
+  if pr.line == ")" {
     logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     return sectionalC, nil
   } 
-  switch xline := pr.XLine(); {
+  switch xline := pr.xline(); {
   case xline.Contains("containerd/console"),
-			 xline.Contains("nerdctl/pkg/consoleutil"),
-			 xline.Contains("nerdctl/pkg/defaults"),
-			 xline.Contains("nerdctl/pkg/errutil"),
-			 xline.Contains("nerdctl/pkg/netutil"),
-			 xline.Contains("nerdctl/pkg/signalutil"),
-			 xline.Contains("nerdctl/pkg/taskutil"),
-			 xline.Contains("spf13/cobra"):
+       xline.Contains("nerdctl/pkg/consoleutil"),
+       xline.Contains("nerdctl/pkg/defaults"),
+       xline.Contains("nerdctl/pkg/errutil"),
+       xline.Contains("nerdctl/pkg/netutil"),
+       xline.Contains("nerdctl/pkg/signalutil"),
+       xline.Contains("nerdctl/pkg/taskutil"),
+       xline.Contains("spf13/cobra"):
   case xline.Contains("encoding/json"):
     client.AddLine(`  "encoding/base64"`)
     fallthrough
   default:
-    client.AddLine(pr.Line)
+    client.AddLine(pr.line)
   }
   return nil, nil
 }
@@ -105,9 +100,9 @@ var sectionalB Sectional = func() (Sectional, error) {
 // SectionalC
 //================================================================//
 var sectionalC = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func createContainer") {
+  if strings.HasPrefix(pr.line, "func createContainer") {
     logger.Debugf("$$$$$$$$$$$ createContainer declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "createContainer")
     resp := client.Request(req)
     logger.Debugf("got SectionName=createContainer response : %v", resp.Parameter().Value().AsInterface())
@@ -121,8 +116,8 @@ var sectionalC = func() (Sectional, error) {
         client.AddLine(line)
       }
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalD, nil
   }
   return nil, nil
@@ -132,33 +127,27 @@ var sectionalC = func() (Sectional, error) {
 // SectionalD
 //================================================================//
 var sectionalD = func() (Sectional, error) {
-  if pr.Line == "}" {
-    client.AddLine(pr.Line)
+  if pr.line == "}" {
+    client.AddLine(pr.line)
     finalVdec := `
   if err := rc.Err(); err != nil {
     return nil, nil, err
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ createContainer function end at line : %d $$$$$$$", sd.LineNum)
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    logger.Debugf("$$$$$$$$$$$$$$$$ vardec cache is empty ?? : %v $$$$$$$$$$$$$$$", pr.varDec.CacheIsEmpty())
     return sectionalE, nil
   } else {
     pr.parseLine()
-    switch xline := pr.XLine(); {
+    switch xline := pr.xline(); {
     case xline.Contains("var umask string"):
     case xline.Contains("var pidFile string"):
     default:
@@ -169,9 +158,9 @@ var sectionalD = func() (Sectional, error) {
            xline.Contains("parseKVStringsMapFromLogOpt"),
            xline.Contains("generateRuntimeCOpts"),
            xline.Contains("withContainerLabels"):
-        pr.Line = xline.Replace("cmd","rc",1).String()
+        pr.line = xline.Replace("cmd","rc",1).String()
       case xline.Contains("withNerdctlOCIHook"):
-        pr.Line = xline.Replace("withNerdctlOCIHook(cmd, id)","WithCntrizeOCIHook(id, dataStore, rc)",1).String()
+        pr.line = xline.Replace("withNerdctlOCIHook(cmd, id)","WithCntrizeOCIHook(id, dataStore, rc)",1).String()
       }
       pr.putLine()
     }
@@ -183,9 +172,9 @@ var sectionalD = func() (Sectional, error) {
 // SectionalE
 //================================================================//
 var sectionalE = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func processPullCommandFlagsInRun") {
+  if strings.HasPrefix(pr.line, "func processPullCommandFlagsInRun") {
     logger.Debugf("$$$$$$$$$$$ processPullCommandFlagsInRun declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "processPullCommandFlagsInRun")
     resp := client.Request(req)
     logger.Debugf("got SectionName=processPullCommandFlagsInRun response : %v", resp.Parameter().Value().AsInterface())
@@ -199,8 +188,8 @@ var sectionalE = func() (Sectional, error) {
         client.AddLine(line)
       }
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalF, nil
   }
   return nil, nil
@@ -210,24 +199,19 @@ var sectionalE = func() (Sectional, error) {
 // SectionalF
 //================================================================//
 var sectionalF = func() (Sectional, error) {
-  if pr.Line == "}" {
-    client.AddLine(pr.Line)
+  if pr.line == "}" {
+    client.AddLine(pr.line)
     finalVdec := `
   if err := rc.Err(); err != nil {
     return types.ImagePullOptions{}, err
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ processPullCommandFlagsInRun function end at line : %d $$$$$$$", sd.LineNum)
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
@@ -235,13 +219,13 @@ var sectionalF = func() (Sectional, error) {
     return sectionalG, nil
   } else {
     pr.parseLine()
-    switch xline := pr.XLine(); {
+    switch xline := pr.xline(); {
     case xline.Contains("processImageVerifyOptions"):
-      pr.Line = xline.Replace("cmd","rc",1).String()
+      pr.line = xline.Replace("cmd","rc",1).String()
     case xline.Contains("cmd.OutOrStdout"):
-      pr.Line = xline.Replace("cmd.OutOrStdout()","os.Stdout",1).String()
+      pr.line = xline.Replace("cmd.OutOrStdout()","os.Stdout",1).String()
     case xline.Contains("cmd.ErrOrStderr"):
-      pr.Line = xline.Replace("cmd.ErrOrStderr()","os.Stderr",1).String()
+      pr.line = xline.Replace("cmd.ErrOrStderr()","os.Stderr",1).String()
     }
     pr.putLine()
   }
@@ -252,10 +236,10 @@ var sectionalF = func() (Sectional, error) {
 // SectionalG
 //================================================================//
 var sectionalG = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func generateRootfsOpts") {
-    pr.SetMatcher(3)
+  if strings.HasPrefix(pr.line, "func generateRootfsOpts") {
+    pr.setMatcher(3)
     logger.Debugf("$$$$$$$$$$$ generateRootfsOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "generateRootfsOpts")
     resp := client.Request(req)
     logger.Debugf("got SectionName=generateRootfsOpts response : %v", resp.Parameter().Value().AsInterface())
@@ -263,8 +247,8 @@ var sectionalG = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalH, nil
   }
   return nil, nil
@@ -274,24 +258,19 @@ var sectionalG = func() (Sectional, error) {
 // SectionalH
 //================================================================//
 var sectionalH = func() (Sectional, error) {
-  if pr.Matches("}") {
-    client.AddLine(pr.Line)
+  if pr.matches("}") {
+    client.AddLine(pr.line)
     finalVdec := `
   if err = rc.Err(); err != nil {
     return nil, nil, nil, err
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ generateRootfsOpts function end at line : %d $$$$$$$", sd.LineNum)
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
@@ -299,9 +278,9 @@ var sectionalH = func() (Sectional, error) {
     return sectionalI, nil
   } else {
     pr.parseLine()
-    switch xline := pr.XLine(); {
+    switch xline := pr.xline(); {
     case xline.Contains("processPullCommandFlagsInRun"):
-      pr.Line = xline.Replace("cmd","rc",1).String()
+      pr.line = xline.Replace("cmd","rc",1).String()
     }
     pr.putLine()
   }
@@ -312,9 +291,9 @@ var sectionalH = func() (Sectional, error) {
 // SectionalI
 //================================================================//
 var sectionalI = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func withContainerLabels") {
+  if strings.HasPrefix(pr.line, "func withContainerLabels") {
     logger.Debugf("$$$$$$$$$$$ withContainerLabels declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "withContainerLabels")
     resp := client.Request(req)
     logger.Debugf("got SectionName=withContainerLabels response : %v", resp.Parameter().Value().AsInterface())
@@ -322,8 +301,8 @@ var sectionalI = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalJ, nil
   }
   return nil, nil
@@ -333,25 +312,20 @@ var sectionalI = func() (Sectional, error) {
 // SectionalJ
 //================================================================//
 var sectionalJ = func() (Sectional, error) {
-  if pr.Line == "}" {
-    client.AddLine(pr.Line)
+  if pr.line == "}" {
+    client.AddLine(pr.line)
     logger.Debugf("$$$$$$$ withContainerLabels function end at line : %d $$$$$$$", sd.LineNum)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     return sectionalK, nil
   } else {
-    switch xline := pr.XLine(); {
+    switch xline := pr.xline(); {
     case xline.Contains("readKVStringsMapfFromLabel"):
-      pr.Line = xline.Replace("cmd","rc",1).String()
+      pr.line = xline.Replace("cmd","rc",1).String()
     }
     pr.putLine()
   }
@@ -362,9 +336,9 @@ var sectionalJ = func() (Sectional, error) {
 // SectionalK
 //================================================================//
 var sectionalK = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func readKVStringsMapfFromLabel") {
+  if strings.HasPrefix(pr.line, "func readKVStringsMapfFromLabel") {
     logger.Debugf("$$$$$$$$$$$ readKVStringsMapfFromLabel declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "readKVStringsMapfFromLabel")
     resp := client.Request(req)
     logger.Debugf("got SectionName=readKVStringsMapfFromLabel response : %v", resp.Parameter().Value().AsInterface())
@@ -372,8 +346,8 @@ var sectionalK = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalL, nil
   }
   return nil, nil
@@ -383,24 +357,19 @@ var sectionalK = func() (Sectional, error) {
 // SectionalL
 //================================================================//
 var sectionalL = func() (Sectional, error) {
-  if pr.Line == "}" {
-    client.AddLine(pr.Line)
+  if pr.line == "}" {
+    client.AddLine(pr.line)
     finalVdec := `
   if err := rc.Err(); err != nil {
     return nil, err
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ readKVStringsMapfFromLabel function end at line : %d $$$$$$$", sd.LineNum)
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
@@ -417,9 +386,9 @@ var sectionalL = func() (Sectional, error) {
 // SectionalM
 //================================================================//
 var sectionalM = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func parseKVStringsMapFromLogOpt") {
+  if strings.HasPrefix(pr.line, "func parseKVStringsMapFromLogOpt") {
     logger.Debugf("$$$$$$$$$$$ parseKVStringsMapFromLogOpt declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "parseKVStringsMapFromLogOpt")
     resp := client.Request(req)
     logger.Debugf("got SectionName=parseKVStringsMapFromLogOpt response : %v", resp.Parameter().Value().AsInterface())
@@ -433,8 +402,8 @@ var sectionalM = func() (Sectional, error) {
         client.AddLine(line)
       }
     }
-    pr.Line = pr.XLine().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
-    client.AddLine(pr.Line)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Runcare",1).String()
+    client.AddLine(pr.line)
     return sectionalN, nil
   }
   return nil, nil
@@ -444,24 +413,19 @@ var sectionalM = func() (Sectional, error) {
 // SectionalN
 //================================================================//
 var sectionalN = func() (Sectional, error) {
-  if pr.Line == "}" {
-    client.AddLine(pr.Line)
+  if pr.line == "}" {
+    client.AddLine(pr.line)
     finalVdec := `
   if err := rc.Err(); err != nil {
     return nil, err
   }
   rc.ErrReset()
 `
-    pr.varDec.Add(finalVdec)
+    pr.varDec.add(finalVdec)
     logger.Debugf("$$$$$$$ parseKVStringsMapFromLogOpt function end at line : %d $$$$$$$", sd.LineNum)
-    client.InsertLines("// variable-declarations", pr.varDec.Flush()...)
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    client.InsertLines("// variable-declarations", pr.varDec.flush()...)
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
@@ -478,9 +442,9 @@ var sectionalN = func() (Sectional, error) {
 // SectionalO
 //================================================================//
 var sectionalO = func() (Sectional, error) {
-  if strings.HasPrefix(pr.Line, "func withStop") {
+  if strings.HasPrefix(pr.line, "func withStop") {
     logger.Debugf("$$$$$$$$$$$ withStop declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","Section_Start")
+    req.Set("Action","SectionStart")
     req.Set("SectionName", "withStop")
     resp := client.Request(req)
     logger.Debugf("got SectionName=withStop response : %v", resp.Parameter().Value().AsInterface())
@@ -488,7 +452,7 @@ var sectionalO = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    client.AddLine(pr.Line)
+    client.AddLine(pr.line)
     return sectionalP, nil
   }
   return nil, nil
@@ -498,18 +462,13 @@ var sectionalO = func() (Sectional, error) {
 // SectionalP
 //================================================================//
 var sectionalP = func() (Sectional, error) {
-  if pr.Complete {
-    if pr.Line != "" {
-      client.AddLine(pr.Line)
+  if pr.complete {
+    if pr.line != "" {
+      client.AddLine(pr.line)
     }
     logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
-    req.Set("Action","Suspend_For_Streaming")
-    resp := client.Request(req)
-    logger.Debugf("got Suspend_For_Streaming response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Suspend_For_Streaming"); err != nil {
-      return nil, err
-    }
-    resp = client.StreamReq()
+    req.Set("Action","WriteStream")
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err

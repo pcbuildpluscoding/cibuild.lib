@@ -1,25 +1,25 @@
 package codegen
 
 import (
-	"fmt"
-	"io"
-	"net"
-	"os"
-	"regexp"
-	"text/scanner"
+  "fmt"
+  "io"
+  "net"
+  "os"
+  "text/scanner"
 
-	ab "github.com/pcbuildpluscoding/apibase/std"
-	"github.com/pcbuildpluscoding/logroll"
-	stm "github.com/pcbuildpluscoding/scanify/std"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	rdt "github.com/pcbuildpluscoding/types/apirecord"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	xs "github.com/pcbuildpluscoding/xstring"
-	"github.com/sirupsen/logrus"
+  ab "github.com/pcbuildpluscoding/apibase/std"
+  "github.com/pcbuildpluscoding/logroll"
+  stm "github.com/pcbuildpluscoding/scanify/std"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  rdt "github.com/pcbuildpluscoding/types/apirecord"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  xs "github.com/pcbuildpluscoding/xstring"
+  "github.com/sirupsen/logrus"
 )
 
 type ApiResult = ab.ApiResult
 type ApiRecord = rdt.ApiRecord
+type FlowRule = tdb.FlowRule
 type Runware = rwt.Runware
 type StreamClient = stm.StreamClient
 type Trovian = tdb.Trovian
@@ -125,14 +125,13 @@ func newTokenic(rw Runware) (Tokenic, error) {
 //----------------------------------------------------------------//
 // newVarDec
 //----------------------------------------------------------------//
-func newVarDec(indentFactor, indentSize int) VarDec {
-  isSlice, _ := regexp.Compile(`Slice|Array`)
+func newVarDec(indentFactor, indentSize int, rw Runware) VarDec {
   cache := LineCache{
     this: []string{},
   }
   return VarDec{
     cache: cache,
-    isSlice: isSlice,
+    dbPrefix: rw.String("DbPrefix"),
     indentFactor: indentFactor,
     indentSize: indentSize,
   }
@@ -143,13 +142,9 @@ func newVarDec(indentFactor, indentSize int) VarDec {
 //----------------------------------------------------------------//
 func newVdParser(rw Runware) (VdParser, error) {
   tokenic, err := newTokenic(rw.SubNode("Tokenic"))
-  cache := LineCache{
-    this: []string{},
-  }
   return VdParser{
     Tokenic: tokenic,
-    buffer: cache,
-    varDec: newVarDec(1, 2),
+    varDec: newVarDec(1, 2, rw.SubNode("DefaultValue")),
   }, err
 }
 

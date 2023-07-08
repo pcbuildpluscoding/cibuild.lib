@@ -1,1 +1,1 @@
-ready for endToEnd codegen testing using streamium package
+milestone - cibuild container/run codegen program succeeds including publishing defaultValues correctly

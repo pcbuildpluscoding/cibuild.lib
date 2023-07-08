@@ -16,7 +16,7 @@ type MatchLog struct {
   touched int
 }
 
-func (m *MatchLog) Matches() bool {
+func (m *MatchLog) matches() bool {
   if m.times == 0 {
     return true
   }
@@ -32,9 +32,9 @@ func (m *MatchLog) Matches() bool {
 // Tokenic
 //================================================================//
 type Tokenic struct {
-  Complete bool
+  complete bool
   recent LineCache
-  Line string
+  line string
   matcher MatchLog
 }
 
@@ -45,43 +45,43 @@ func (t *Tokenic) appendToken() {
   sd.TknIndex += 1
 
   if sd.fmtWidth == 0 {
-    t.Line += sd.Token
+    t.line += sd.Token
     return
   }
   
   widthFormat := fmt.Sprintf(widthPattern, '%', sd.fmtWidth, 's')
-  t.Line += fmt.Sprintf(widthFormat, sd.Token)
+  t.line += fmt.Sprintf(widthFormat, sd.Token)
 }
 
 //----------------------------------------------------------------//
 // completed
 //----------------------------------------------------------------//
 func (t *Tokenic) completed() {
-  t.Complete = true
+  t.complete = true
 }
 
 //----------------------------------------------------------------//
 // matched
 //----------------------------------------------------------------//
-func (t *Tokenic) Matches(line string) bool {
-  if t.Line == line {
-    return t.matcher.Matches()
+func (t *Tokenic) matches(line string) bool {
+  if t.line == line {
+    return t.matcher.matches()
   }
   return false
 }
 
 //----------------------------------------------------------------//
-// SetMatcher
+// setMatcher
 //----------------------------------------------------------------//
-func (t *Tokenic) SetMatcher(times int) {
+func (t *Tokenic) setMatcher(times int) {
   t.matcher.times = times
   t.matcher.touched = 0
 }
 
 //----------------------------------------------------------------//
-// Start
+// start
 //----------------------------------------------------------------//
-func (t *Tokenic) Start(jobSpec Runware, client *StreamClient) error {
+func (t *Tokenic) start(jobSpec Runware, client *StreamClient) error {
   return nil
 }
 
@@ -89,7 +89,7 @@ func (t *Tokenic) Start(jobSpec Runware, client *StreamClient) error {
 // trimLine
 //----------------------------------------------------------------//
 func (t *Tokenic) trimLine() string {
-  return strings.TrimSpace(t.Line)
+  return strings.TrimSpace(t.line)
 }
 
 //----------------------------------------------------------------//
@@ -101,11 +101,11 @@ func (t *Tokenic) useToken() (err error) {
     sd.Token = "  "
     t.appendToken()
   case sd.trune == '\n':
-    if !t.Complete {
+    if !t.complete {
       err = sx.UseLine()
     }
-    t.recent.add(t.Line)
-    t.Line = ""
+    t.recent.add(t.line)
+    t.line = ""
     sd.TknIndex = 0
   default:
     t.appendToken()
@@ -114,10 +114,10 @@ func (t *Tokenic) useToken() (err error) {
 }
 
 //----------------------------------------------------------------//
-// XLine
+// xline
 //----------------------------------------------------------------//
-func (t *Tokenic) XLine() *XString {
-  x := XString(t.Line)
+func (t *Tokenic) xline() *XString {
+  x := XString(t.line)
   return &x
 }
 
@@ -137,10 +137,10 @@ type VdParser struct {
 // addVarDec
 //----------------------------------------------------------------//
 func (p *VdParser) addVarDec(line string) {
-  if p.varDec.CacheIsEmpty() {
+  if p.varDec.cacheIsEmpty() {
     client.AddLine("// variable-declarations")
   }
-  p.varDec.Add(line)
+  p.varDec.add(line)
 }
 
 //----------------------------------------------------------------//
@@ -152,15 +152,15 @@ func (p *VdParser) flushBuffer() {
     client.AddLine(p.buffer.flush()...)
   case "NestedVarDec":
     if p.varDec.equalToken == "=" {
-      p.varDec.Add(p.varDec.GetVarDec())
+      p.varDec.add(p.varDec.getVarDec())
     }
-    p.varDec.Add(p.buffer.flush()...)
-    p.varDec.Add(p.Line)
+    p.varDec.add(p.buffer.flush()...)
+    p.varDec.add(p.line)
   default:
     logger.Warnf("VdParser - unexpected parser state in flushBuffer : %s", p.state)
   }
   p.state = "Parse"
-  p.varDec.ResetIndent()
+  p.varDec.resetIndent()
 }
 
 //----------------------------------------------------------------//
@@ -172,7 +172,7 @@ func (p *VdParser) keep(lines ...string) {
       p.buffer.add(line)
     }
   } else {
-    p.buffer.add(p.Line)
+    p.buffer.add(p.line)
   }
 }
 
@@ -183,22 +183,22 @@ func (p *VdParser) parseLine(sectionName string) {
   switch p.state {
   case "Parse":
     switch {
-    case p.regex["IfCmdFlag"].MatchString(p.Line):
+    case p.regex["IfCmdFlag"].MatchString(p.line):
       p.state = "IfElseBlock"
-      if p.regex["IfCmdLookup"].MatchString(p.Line) {
-        p.Line = p.rewriteLine("IfCmdLookup", p.Line)
-      } else if p.regex["IfCmdChanged"].MatchString(p.Line) {
-        p.Line = p.rewriteLine("IfCmdChanged", p.Line)
-      } else if p.regex["IfCmdGetErr"].MatchString(p.Line) {
-        p.Line = p.rewriteLine("IfCmdGetErr", p.Line)
+      if p.regex["IfCmdLookup"].MatchString(p.line) {
+        p.line = p.rewriteLine("IfCmdLookup", p.line)
+      } else if p.regex["IfCmdChanged"].MatchString(p.line) {
+        p.line = p.rewriteLine("IfCmdChanged", p.line)
+      } else if p.regex["IfCmdGetErr"].MatchString(p.line) {
+        p.line = p.rewriteLine("IfCmdGetErr", p.line)
         p.state = "IfCmdGetErr"
       }
-      p.keep(p.Line)
-    case p.regex["Return"].MatchString(p.Line):
-      p.Line = p.varDec.FormatLine("return opt, nil")
+      p.keep(p.line)
+    case p.regex["Return"].MatchString(p.line):
+      p.line = p.varDec.formatLine("return opt, nil")
     default:
-      if p.regex["CmdGet"].MatchString(p.Line) {
-        p.addVarDec(p.varDec.ParseGetter(p.Line).GetVarSetter())
+      if p.regex["CmdGet"].MatchString(p.line) {
+        p.addVarDec(p.varDec.parseGetter(p.line).getVarSetter())
         client.SkipLines(4)
       }
     }
@@ -206,16 +206,15 @@ func (p *VdParser) parseLine(sectionName string) {
     switch p.state {
     case "IfCmdGetErr":
       line_, _ := p.retval[sectionName]
-      p.keep(p.varDec.IndentLine(line_))
+      p.keep(p.varDec.indentLine(line_))
       p.state="IfElseBlock"
-      logger.Debugf("$$$$$$ switching from IfCmdGetErr back to IfElseBlock - current indent factor : %d", p.varDec.GetIndentFactor())
     case "IfElseBlock":
-      if p.regex["CmdGet"].MatchString(p.Line) {
-        p.varDec.ParseGetter(p.Line)
-        p.Line = p.varDec.GetVarSetter()
+      if p.regex["CmdGet"].MatchString(p.line) {
+        p.varDec.parseGetter(p.line)
+        p.line = p.varDec.getVarSetter()
         p.state = "NestedVarDec"
       }
-      p.keep(p.Line)
+      p.keep(p.line)
     case "NestedVarDec":
     default:
       logger.Warnf("VdParser - unexpected parser state in parseLine : |%s|", p.state)
@@ -230,17 +229,17 @@ func (p *VdParser) putLine() {
   switch p.state {
   case "IfElseBlock","NestedVarDec":
     if p.trimLine() == "}" {
-      p.varDec.DecIndent()
-    } else if p.regex["IfBlock"].MatchString(p.Line) {
-      p.varDec.IncIndent()
+      p.varDec.decIndent()
+    } else if p.regex["IfBlock"].MatchString(p.line) {
+      p.varDec.incIndent()
     }
-    if p.varDec.GetIndentFactor() == 1 {
+    if p.varDec.getIndentFactor() == 1 {
       p.flushBuffer()
     }
   case "IfCmdGetErr":
     logger.Debugf("$$$$$$$ PutLine in IfCmdGetErr state $$$$$$$$$")
   case "Parse":
-    client.AddLine(p.Line)
+    client.AddLine(p.line)
   default:
     logger.Errorf("$$$$$$$$ UNKNOWN STATE : %s $$$$$$$$$$", p.state)
   }
@@ -267,9 +266,9 @@ func (p *VdParser) rewriteLine(key, line string) string {
     flagName.Replace(`.Changed`,"",1)
     return prefix.String() + "Applied" + flagName.String()
   case "IfCmdGetErr":
-    line_ := p.varDec.ParseGetter(line).GetParamSetter()
+    line_ := p.varDec.parseGetter(line).getParamSetter()
     client.AddLine(line_)
-    return p.varDec.GetParamValue()
+    return p.varDec.getParamValue()
   default:
     logger.Errorf("VdParser - unknown pattern after initial IfCmdFlag match : %s", line)
     return line
@@ -277,9 +276,9 @@ func (p *VdParser) rewriteLine(key, line string) string {
 }
 
 //----------------------------------------------------------------//
-// Start
+// start
 //----------------------------------------------------------------//
-func (p *VdParser) Start() error {
+func (p *VdParser) start() error {
   elist := erl.NewErrorlist(false)
   if p.regex == nil {
     var err error
@@ -306,7 +305,7 @@ func (p *VdParser) Start() error {
     }
   }
   p.state = "Parse"
-  elist.Add(p.varDec.Start())
+  elist.Add(p.varDec.start())
 
   return elist.Unwrap()
 }
