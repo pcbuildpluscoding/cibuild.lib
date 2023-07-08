@@ -3,7 +3,7 @@ modules: [utility.module, copy.module]
 schedule: [editCiRunware, copyFileWithTmsp]
 editCiRunware:
   baseDir: $CI_BASE_DIR/runware
-  inputFile: [cischedule.yaml, finalCleanup.yaml, init.yaml, jobspec-task1.yaml]
+  inputFile: [cischedule.yaml, final.yaml, init.yaml, jobspec-task1.yaml]
   parameter:
     - findWith: <jobId>
       replaceWith: $CI_JOB_ID
