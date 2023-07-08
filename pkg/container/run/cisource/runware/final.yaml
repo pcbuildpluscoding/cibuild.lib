@@ -1,7 +1,6 @@
 ---
-# schedule: [runCiStop, runCiNotify, removeAll, copyFiles, runGoTidy]
 modules : [utility.module, copy.module]
-schedule: [runCiBuild, runCiExec, runCiStop, runCiNotify]
+schedule: [runCiBuild, runCiExec, runCiStop, runCiNotify, removeAll, copyFiles, runGoTidy]
 runCiBuild:
   binDir: /home/devapps/enterprise/github/cibuild/bin
   binaryName: defvalue
@@ -21,23 +20,24 @@ copyFiles:
   fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
   fileSet:
-    - from: template/default/cmd/server/cigserver.tpl
-      to: cmd/server/cigserver.go
+    - from: template/default/codegen/lib/base.tpl
+      to: lib/base.go
     - from: template/default/genware/std/genware.tpl
       to: genware/std/genware.go
     - from: template/default/incron.profile/.profile
       to: incron.profile/cibuild/dev01/.profile
+    - from: template/default/cmd/cigserver/cigserver.tpl
+      to: cmd/cigserver/cigserver.go
 removeAll:
   baseDir: /home/devapps/enterprise/github/cibuild
   subDir:
-    - config
     - downloads
     - runware
     - lib
 runCiNotify:
   jobId: <jobId>
   action: Resume
-  resumableTaskId: Task1D
+  resumableTaskId: Task1C
 runCiStop:
   binaryName: cigserver
 runGoTidy:

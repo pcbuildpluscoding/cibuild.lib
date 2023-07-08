@@ -44,5 +44,5 @@ CopyFile:
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   StartReceipt: false
   Subject: container/run
-  SyncTask: true
-  TaskId: Task1D
+  SyncTask: false
+  TaskId: Task1C
