@@ -13,6 +13,7 @@ import (
 
   gwr "github.com/pcbuildpluscoding/cibuild/genware/std"
   cib "github.com/pcbuildpluscoding/cibuild/std"
+  stm "github.com/pcbuildpluscoding/scanify/std"
 
   fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
   rdt "github.com/pcbuildpluscoding/types/apirecord"
@@ -29,6 +30,7 @@ func serve() error {
   cib.SetLogger(logger, logfd)
   fs.SetLogger(logger)
   gwr.SetLogger(logger)
+  stm.SetLogger(logger, logfd)
 
   server, err := newCigServer()
 

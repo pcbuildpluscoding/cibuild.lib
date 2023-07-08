@@ -1,7 +1,22 @@
 ---
 # schedule: [runCiStop, runCiNotify, removeAll, copyFiles, runGoTidy]
 modules : [utility.module, copy.module]
-schedule: [runCiStop, runCiNotify]
+schedule: [runCiBuild, runCiExec, runCiStop, runCiNotify]
+runCiBuild:
+  binDir: /home/devapps/enterprise/github/cibuild/bin
+  binaryName: defvalue
+  packageDir: /home/devapps/enterprise/github/cibuild
+  packageRef: github.com/pcbuildpluscoding/cibuild
+  waitAfterBuild: 3
+  sourceDir: build
+  sourceFile: defvalue.go
+runCiExec:
+  programArgs:
+    - bin/defvalue
+    - log/ciutils
+    - <jobId>
+    - cntrize/environment
+  programName: runTerm
 copyFiles:
   fromDir: /home/devapps/enterprise/github/internal
   baseDir: /home/devapps/enterprise/github/cibuild
@@ -22,7 +37,7 @@ removeAll:
 runCiNotify:
   jobId: <jobId>
   action: Resume
-  resumableTaskId: Task1C
+  resumableTaskId: Task1D
 runCiStop:
   binaryName: cigserver
 runGoTidy:

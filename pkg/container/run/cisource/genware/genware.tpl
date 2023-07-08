@@ -8,8 +8,10 @@ import (
   "net"
   "strings"
 
+  gwk "github.com/pcbuildpluscoding/cibuild/genwork/profile"
   cgp "github.com/pcbuildpluscoding/cibuild/lib/cgroup"
   crt "github.com/pcbuildpluscoding/cibuild/lib/create"
+  dfv "github.com/pcbuildpluscoding/cibuild/lib/defvalue"
   fut "github.com/pcbuildpluscoding/cibuild/lib/flagutil"
   gpu "github.com/pcbuildpluscoding/cibuild/lib/gpus"
   lnx "github.com/pcbuildpluscoding/cibuild/lib/linux"
@@ -19,7 +21,6 @@ import (
   scr "github.com/pcbuildpluscoding/cibuild/lib/security"
   ult "github.com/pcbuildpluscoding/cibuild/lib/ulimit"
   vlm "github.com/pcbuildpluscoding/cibuild/lib/volume"
-  gwk "github.com/pcbuildpluscoding/cibuild/genwork/profile"
   fs "github.com/pcbuildpluscoding/cibuild/util/filesystem"
   trv "github.com/pcbuildpluscoding/cibuild/util/trovient"
   "github.com/pcbuildpluscoding/logroll"
@@ -64,6 +65,10 @@ func init() {
 //----------------------------------------------------------------//
 func NewCodeGenVendor(pkey string) GenwareVendor {
   return func(netAddr string, rw Runware) (Genware, error) {
+    jobId := rw.String("JobId")
+    if jobId == "" {
+      return nil, fmt.Errorf("jobId is required")
+    } 
     connex, err := newTrovian(netAddr, rw.String("JobId"))
     if err != nil {
       return nil, err
@@ -82,6 +87,8 @@ func NewCodeGenVendor(pkey string) GenwareVendor {
         return cgp.StreamGen, nil
       case "create":
         return crt.StreamGen, nil
+      case "defvalue":
+        return dfv.StreamGen, nil
       case "flagutil":
         return fut.StreamGen, nil
       case "gpus":
@@ -126,11 +133,14 @@ func resolveReqParams(connex *Trovian, rw Runware) error {
   if !pv.HasKeys(configKey) {
     return fmt.Errorf("streamium config key : %s does not exist in runware", configKey)
   }
+  // get the module configuration
   pv = pv.SubNode(configKey)
+  // get the inputFile passed to the parser
   inputFile, err := fs.ResolvePath(connex, rw.String("InputFile"))
   if err != nil {
     return err
   }
+  // replace the inputFile markup with the module defined input filename
   inputFile = strings.Replace(inputFile, "<inputFile>", pv.String("InputFile"), 1)
   rw.Set("InputFile", inputFile)
   pv = pv.SubNode("Streamium")
@@ -140,14 +150,26 @@ func resolveReqParams(connex *Trovian, rw Runware) error {
     return err
   }
   inputFile = strings.Replace(inputFile, "<inputFile>", pv.String("InputFile"), 1)
+  // set the resolved filepath in the runware for Streamium consumption
   sn.Set("InputFile", inputFile)
 
-  outputFile, err := fs.ResolvePath(connex, sn.String("OutputFile"))
-  if err != nil {
-    return err
+  var outputFile string
+  if strings.HasPrefix(pv.String("OutputFile"), "trovedb") {
+    // a module defined absolute output pathname overrides the default runware parameter
+    outputFile, err = fs.ResolvePath(connex, pv.String("OutputFile"))
+    if err != nil {
+      return err
+    }
+  } else {
+    outputFile, err = fs.ResolvePath(connex, sn.String("OutputFile"))
+    if err != nil {
+      return err
+    }
+    outputFile = strings.Replace(outputFile, "<outputFile>", pv.String("OutputFile"), 1)
   }
-  outputFile = strings.Replace(outputFile, "<outputFile>", pv.String("OutputFile"), 1)
+  // set the resolved filepath in the runware for Streamium consumption
   sn.Set("OutputFile", outputFile)
+  // set the Streamium parameter subNode in the runware
   rw.Set("Streamium", sn.AsMap())
   logger.Debugf("StreamGen vendor has resolved parameters : %v", sn.AsMap())
   return nil

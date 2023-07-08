@@ -9,6 +9,11 @@ create:
     InputFile: containerRun.tpl
     OutputFile: containerRun.go
   InputFile: container_run.go
+defvalue:
+  Streamium:
+    InputFile: defaultValue.tpl
+    OutputFile: trovedb:system/uri|github.repo/cibuild,build/defvalue.go
+  InputFile: container_run.go
 flagutil:
   Streamium:
     InputFile: flagutil.tpl

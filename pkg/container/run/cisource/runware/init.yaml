@@ -13,13 +13,14 @@ runCiBuild:
   binaryName: cigserver
   packageDir: /home/devapps/enterprise/github/cibuild
   packageRef: github.com/pcbuildpluscoding/cibuild
-  waitAfterBuild: 5
+  waitAfterBuild: 3
   sourceDir: cmd/cigserver
   sourceFile: main.go
 runCiExec:
   programArgs:
     - bin/cigserver
     - log/cigserver
+    - -taskTimeout 55s
   programName: runTerm
 runCiNotify:
   jobId: <jobId>

@@ -12,7 +12,7 @@ SetRepeatable:
     # Parameter value list length defines the repeatable iteration count
     # TaskRange defines the task sequence per iteration
     Parameter: FileName
-    FileName: [cgroup,create,flagutil,gpus,linux,mount,restart,runtime,security,ulimit,volume]
+    FileName: [cgroup,create,defvalue,flagutil,gpus,linux,mount,restart,runtime,security,ulimit,volume]
     TaskRange: [Generate]
   Subject: container/run
   TaskId: Task1A
@@ -32,15 +32,17 @@ Generate:
     OutputFile: trovedb:system/uri|github.repo/cntrize.lib,lib/create/container/run/<outputFile>
   Tokenic:
     CacheSize: 4
+  DefaultValue:
+    DbPrefix: defaultValue/container/run
   Subject: container/run
   SyncTask: true
   TaskId: Task1B
 CopyFile:
   Action: CopyFileWithTmsp
   Device: FileSystem
-  InputFile: trovedb:system/uri|github.repo/cibuild,runware/finalCleanup.yaml
+  InputFile: trovedb:system/uri|github.repo/cibuild,runware/final.yaml
   OutputFile: trovedb:system/uri|incron/dropzone,ciutils/dev01/manifest.yaml
   StartReceipt: false
   Subject: container/run
   SyncTask: true
-  TaskId: Task1C
+  TaskId: Task1D
