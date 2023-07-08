@@ -6,7 +6,7 @@ basePath:
 branches: [cisource, codegen1, codegen2]
 cleanToDir:
   cisource: [genware, runware]
-  codegen1: []
+  codegen1: [default]
   codegen2: []
 convertExt:
   convertible: 
