@@ -9,7 +9,7 @@ runCiUpload:
 runCiBuild:
   binDir: /home/devapps/enterprise/github/cibuild/bin
   binaryDependency:
-    - /home/devapps/enterprise/github/genware
+    - /home/devapps/enterprise/github/scanify
   binaryName: cigserver
   packageDir: /home/devapps/enterprise/github/cibuild
   packageRef: github.com/pcbuildpluscoding/cibuild
