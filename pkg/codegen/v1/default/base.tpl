@@ -1,27 +1,27 @@
 package codegen
 
 import (
-	"fmt"
-	"io"
-	"net"
-	"os"
-	"regexp"
-	"text/scanner"
+  "fmt"
+  "io"
+  "net"
+  "os"
+  "regexp"
+  "text/scanner"
 
-	ab "github.com/pcbuildpluscoding/apibase/std"
-	"github.com/pcbuildpluscoding/logroll"
-	stm "github.com/pcbuildpluscoding/scanify/std"
-	tdb "github.com/pcbuildpluscoding/trovedb/std"
-	rdt "github.com/pcbuildpluscoding/types/apirecord"
-	rwt "github.com/pcbuildpluscoding/types/runware"
-	xs "github.com/pcbuildpluscoding/xstring"
-	"github.com/sirupsen/logrus"
+  ab "github.com/pcbuildpluscoding/apibase/std"
+  "github.com/pcbuildpluscoding/logroll"
+  cib "github.com/pcbuildpluscoding/cibuild/std"
+  tdb "github.com/pcbuildpluscoding/trovedb/std"
+  rdt "github.com/pcbuildpluscoding/types/apirecord"
+  rwt "github.com/pcbuildpluscoding/types/runware"
+  xs "github.com/pcbuildpluscoding/xstring"
+  "github.com/sirupsen/logrus"
 )
 
 type ApiResult = ab.ApiResult
 type ApiRecord = rdt.ApiRecord
 type Runware = rwt.Runware
-type StreamClient = stm.StreamClient
+type StreamClient = cib.StreamClient
 type Trovian = tdb.Trovian
 type XString = xs.XString
 
@@ -94,7 +94,7 @@ func newStreamClient(rw Runware) (StreamClient, error) {
     return StreamClient{}, fmt.Errorf("StreamClient.StreamAddr is a required parameter")
   }
   streamAddr := req.String("StreamAddr")
-  client,err := stm.NewStreamClient(streamAddr, jobId)
+  client,err := cib.NewStreamClient(streamAddr, jobId)
   if err != nil {
     return StreamClient{}, err
   }
