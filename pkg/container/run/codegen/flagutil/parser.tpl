@@ -258,11 +258,11 @@ func (p *VdParser) rewriteLine(key, line string) string {
     xline := XString(line)
     if xline.Contains(`Flags().Changed`) {
       prefix, flagName := xline.SplitInTwo(`Flags().Changed`)
-      prefix.Replace(`cmd.`,`rc.`,1)
+      prefix.Replace(`cmd.`,`rw.`,1)
       return prefix.String() + "Applied" + flagName.String()  
     }
     prefix, flagName := xline.SplitInTwo(`Flag`)
-    prefix.Replace(`cmd.`,`rc.`,1)
+    prefix.Replace(`cmd.`,`rw.`,1)
     flagName.Replace(`.Changed`,"",1)
     return prefix.String() + "Applied" + flagName.String()
   case "IfCmdGetErr":

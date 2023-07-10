@@ -148,7 +148,7 @@ func (d *VarDec) getParamSetter() string {
     equalToken = ":="
     d.firstParam = false
   }
-  return fmt.Sprintf("%sp %s rc.Parameter(\"%s\")", indent, equalToken, d.flagName)
+  return fmt.Sprintf("%sp %s rw.Parameter(\"%s\")", indent, equalToken, d.flagName)
 }
 
 //----------------------------------------------------------------//
@@ -182,7 +182,7 @@ func (d VarDec) getVarDec() string {
 //----------------------------------------------------------------//
 func (d VarDec) getVarSetter() string {
   indent := d.getIndent()
-  return fmt.Sprintf("%s%s %s rc.%s(\"%s\")", indent, d.varName, d.equalToken, d.varType, d.flagName)
+  return fmt.Sprintf("%s%s %s rw.%s(\"%s\")", indent, d.varName, d.equalToken, d.varType, d.flagName)
 }
 
 //----------------------------------------------------------------//
