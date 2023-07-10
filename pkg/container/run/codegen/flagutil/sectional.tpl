@@ -1,8 +1,8 @@
 package codegen
 
 import (
-	"fmt"
-	"strings"
+  "fmt"
+  "strings"
 )
 
 var (
@@ -50,11 +50,11 @@ func checkResponse(resp ApiRecord, action string) error {
 //================================================================//
 var sectionalA = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "import") {
-    logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","SectionStart")
     req.Set("SectionName", "import")
     resp := client.Request(req)
-    logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "SectionStart=import"); err != nil {
       logger.Error(err)
       return nil, err
@@ -69,10 +69,10 @@ var sectionalA = func() (Sectional, error) {
 //================================================================//
 var sectionalB Sectional = func() (Sectional, error) {
   if pr.line == ")" {
-    logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","WriteStream")
     resp := client.StreamReq(req)
-    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
@@ -91,11 +91,11 @@ var sectionalB Sectional = func() (Sectional, error) {
 //================================================================//
 var sectionalC = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func processImageSignOptions") {
-    logger.Debugf("$$$$$$$$$$$ processImageSignOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$$$$$ processImageSignOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","SectionStart")
     req.Set("SectionName", "processImageSignOptions")
     resp := client.Request(req)
-    logger.Debugf("got SectionName=processImageSignOptions response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got SectionName=processImageSignOptions response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "SectionStart=processImageSignOptions"); err != nil {
       logger.Error(err)
       return nil, err
@@ -115,17 +115,16 @@ var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err = rc.Err(); err != nil {
+  if err = rc.Unwrap(true); err != nil {
     return
   }
-  rc.ErrReset()
 `
     pr.varDec.add(finalVdec)
-    logger.Debugf("$$$$$$$ processImageSignOptions function end at line : %d $$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$ processImageSignOptions function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteStream")
     resp := client.StreamReq(req)
-    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
@@ -142,11 +141,11 @@ var sectionalD = func() (Sectional, error) {
 //================================================================//
 var sectionalE = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func processImageVerifyOptions") {
-    logger.Debugf("$$$$$$$$$$$ processImageVerifyOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$$$$$ processImageVerifyOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","SectionStart")
     req.Set("SectionName", "processImageVerifyOptions")
     resp := client.Request(req)
-    logger.Debugf("got SectionName=processImageVerifyOptions response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got SectionName=processImageVerifyOptions response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "SectionStart=processImageVerifyOptions"); err != nil {
       logger.Error(err)
       return nil, err
@@ -167,17 +166,16 @@ var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err = rc.Err(); err != nil {
+  if err = rc.Unwrap(true); err != nil {
     return
   }
-  rc.ErrReset()
 `
     pr.varDec.add(finalVdec)
-    logger.Debugf("$$$$$$$ processImageVerifyOptions function end at line : %d $$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$ processImageVerifyOptions function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteStream")
     resp := client.StreamReq(req)
-    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
@@ -194,11 +192,11 @@ var sectionalF = func() (Sectional, error) {
 //================================================================//
 var sectionalG = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func processRootCmdFlags") {
-    logger.Debugf("$$$$$$$$$$$ processRootCmdFlags declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+//    logger.Debugf("$$$$$$$$$$$ processRootCmdFlags declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","SectionStart")
     req.Set("SectionName", "processRootCmdFlags")
     resp := client.Request(req)
-    logger.Debugf("got SectionName=processRootCmdFlags response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got SectionName=processRootCmdFlags response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "SectionStart=processRootCmdFlags"); err != nil {
       logger.Error(err)
       return nil, err
@@ -219,23 +217,22 @@ var sectionalH = func() (Sectional, error) {
       client.AddLine(pr.line)
     }
     finalVdec := `
-  if err := rc.Err(); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return types.GlobalCommandOptions{}, err
   }
-  rc.ErrReset()
 `
     pr.varDec.add(finalVdec)
-    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
+//    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteStream")
     resp := client.StreamReq(req)
-    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     req.Set("Action","Complete")
     resp = client.Request(req)
-    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
+//    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "Complete"); err != nil {
       return nil, err
     }

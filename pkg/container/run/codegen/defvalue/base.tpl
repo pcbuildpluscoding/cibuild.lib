@@ -56,7 +56,7 @@ type ScanData struct {
 //================================================================//
 func newTrovian(netAddr, bucket string) (*Trovian, error) {
 
-  logger.Debugf("dialing trovedb address %s ...", netAddr)
+//  logger.Debugf("dialing trovedb address %s ...", netAddr)
   
   conn, err := net.Dial("tcp", netAddr)
   
@@ -175,7 +175,7 @@ func (c CodeGen) String() string {
 }
 
 var StreamGen CodeGen = func(req_ Runware) error {
-  logger.Infof("running a new StreamGen instance ...")
+//  logger.Infof("running a new StreamGen instance ...")
 
   req = req_
   
@@ -194,7 +194,7 @@ var StreamGen CodeGen = func(req_ Runware) error {
   spec.Set("Action","Init")
   req.Delete("Streamium")
   response := client.Request(spec)
-  logger.Debugf("got Init request response : %v", response.Parameter().Value().AsInterface())
+//  logger.Debugf("got Init request response : %v", response.Parameter().Value().AsInterface())
   if response.AppFailed() {
     return response.Unwrap()
   } else if response.Parameter().String() != "Resume" {
@@ -230,7 +230,7 @@ var StreamGen CodeGen = func(req_ Runware) error {
     if sd.trune == scanner.EOF {
       pr.complete = true
       sx.UseLine()
-      logger.Infof("!!! sectional program is now complete !!!")
+//      logger.Infof("!!! sectional program is now complete !!!")
       break
     }
     pos[1] = s.Pos()
@@ -241,7 +241,7 @@ var StreamGen CodeGen = func(req_ Runware) error {
       logger.Error(err)
       return err
     } else if pr.complete {
-      logger.Infof("!!! sectional program is now complete !!!")
+//      logger.Infof("!!! sectional program is now complete !!!")
       break
     }
     sd.LineNum = pos[1].Line

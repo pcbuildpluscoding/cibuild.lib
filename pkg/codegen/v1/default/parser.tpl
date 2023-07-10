@@ -1,11 +1,11 @@
 package codegen
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	erl "github.com/pcbuildpluscoding/errorlist"
+  erl "github.com/pcbuildpluscoding/errorlist"
 )
 
 //================================================================//

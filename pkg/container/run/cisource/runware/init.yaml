@@ -8,8 +8,6 @@ runCiUpload:
   specPath: /home/devapps/enterprise/github/cibuild/runware/cischedule.yaml
 runCiBuild:
   binDir: /home/devapps/enterprise/github/cibuild/bin
-  binaryDependency:
-    - /home/devapps/enterprise/github/scanify
   binaryName: cigserver
   packageDir: /home/devapps/enterprise/github/cibuild
   packageRef: github.com/pcbuildpluscoding/cibuild
@@ -20,7 +18,7 @@ runCiExec:
   programArgs:
     - bin/cigserver
     - log/cigserver
-    - -taskTimeout 55s
+    - -taskTimeout 90s
   programName: runTerm
 runCiNotify:
   jobId: <jobId>
