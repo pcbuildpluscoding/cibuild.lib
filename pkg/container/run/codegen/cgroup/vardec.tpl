@@ -1,9 +1,9 @@
 package codegen
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 )
 
 //================================================================//
@@ -157,7 +157,7 @@ func (d *VarDec) getParamSetter() string {
 func (d VarDec) getParamValue() string {
   indent := d.getIndent()
   if d.inlineErr {
-    return fmt.Sprintf("%s%s %s p.%s(); p.Err() != nil {", indent, d.varName, d.equalToken, d.varType)
+    return fmt.Sprintf("%s%s %s p.%s(); p.Unwrap() != nil {", indent, d.varName, d.equalToken, d.varType)
   }
   return fmt.Sprintf("%s%s %s p.%s()", indent, d.varName, d.equalToken, d.varType)
 }
@@ -183,10 +183,12 @@ func (d VarDec) getVarDec() string {
 func (d VarDec) getVarSetter() string {
   indent := d.getIndent()
   switch {
+  case d.varType == "Int64":
+    return fmt.Sprintf("%s%s %s rc.Parameter(\"%s\").Int64()", indent, d.varName, d.equalToken, d.flagName)
   case d.varType == "Uint16":
-    return fmt.Sprintf("%s%s %s rc.UInt16(\"%s\")", indent, d.varName, d.equalToken, d.flagName)
+    return fmt.Sprintf("%s%s %s rc.Parameter(\"%s\").UInt16()", indent, d.varName, d.equalToken, d.flagName)
   case d.varType == "Uint64":
-    return fmt.Sprintf("%s%s %s rc.UInt64(\"%s\")", indent, d.varName, d.equalToken, d.flagName)
+    return fmt.Sprintf("%s%s %s rc.Parameter(\"%s\").UInt64()", indent, d.varName, d.equalToken, d.flagName)
   }
   return fmt.Sprintf("%s%s %s rc.%s(\"%s\")", indent, d.varName, d.equalToken, d.varType, d.flagName)
 }

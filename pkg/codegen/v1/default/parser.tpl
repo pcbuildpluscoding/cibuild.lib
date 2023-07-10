@@ -202,7 +202,7 @@ func (p *VdParser) parseLine() {
   default:
     switch p.state {
     case "IfCmdGetErr":
-      p.keep(p.varDec.indentLine("return nil, p.Err()"))
+      p.keep(p.varDec.indentLine("return nil, p.Unwrap()"))
       p.state="IfElseBlock"
     case "IfElseBlock":
       if p.regex["CmdGet"].MatchString(p.line) {

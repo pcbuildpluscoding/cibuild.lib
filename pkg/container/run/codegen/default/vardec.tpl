@@ -1,9 +1,9 @@
 package codegen
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 )
 
 //================================================================//
@@ -157,7 +157,7 @@ func (d *VarDec) getParamSetter() string {
 func (d VarDec) getParamValue() string {
   indent := d.getIndent()
   if d.inlineErr {
-    return fmt.Sprintf("%s%s %s p.%s(); p.Err() != nil {", indent, d.varName, d.equalToken, d.varType)
+    return fmt.Sprintf("%s%s %s p.%s(); p.Unwrap() != nil {", indent, d.varName, d.equalToken, d.varType)
   }
   return fmt.Sprintf("%s%s %s p.%s()", indent, d.varName, d.equalToken, d.varType)
 }

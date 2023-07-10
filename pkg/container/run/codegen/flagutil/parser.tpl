@@ -1,11 +1,11 @@
 package codegen
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	erl "github.com/pcbuildpluscoding/errorlist"
+  erl "github.com/pcbuildpluscoding/errorlist"
 )
 
 //================================================================//
@@ -300,8 +300,8 @@ func (p *VdParser) start() error {
   }
   if p.retval == nil {
     p.retval = map[string]string{
-      "processImageSignOptions": "return types.ImageSignOptions{}, p.Err()",
-      "processImageVerifyOptions": "return types.ImageVerifyOptions{}, p.Err()",
+      "processImageSignOptions": "return types.ImageSignOptions{}, p.Unwrap()",
+      "processImageVerifyOptions": "return types.ImageVerifyOptions{}, p.Unwrap()",
     }
   }
   p.state = "Parse"
