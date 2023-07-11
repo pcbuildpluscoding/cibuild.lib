@@ -109,7 +109,7 @@ var sectionalC = func() (Sectional, error) {
         client.AddLine(line)
       }
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalD, nil
   }
@@ -123,7 +123,7 @@ var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err := rw.Unwrap(true); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return nil, err
   }
 `

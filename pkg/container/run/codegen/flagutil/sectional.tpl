@@ -100,7 +100,7 @@ var sectionalC = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     pr.line = pr.xline().Replace("opt types.ImageSignOptions, err error", "types.ImageSignOptions, error",1).String()
     client.AddLine(pr.line, pr.varDec.formatLine("var opt types.ImageSignOptions"))
     return sectionalD, nil
@@ -115,7 +115,7 @@ var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err = rw.Unwrap(true); err != nil {
+  if err = rc.Unwrap(true); err != nil {
     return
   }
 `
@@ -150,7 +150,7 @@ var sectionalE = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     pr.line = pr.xline().Replace("opt types.ImageVerifyOptions, err error", "types.ImageVerifyOptions, error",1).String()
     client.AddLine(pr.line, pr.varDec.formatLine("var opt types.ImageVerifyOptions"))
     pr.varDec.firstParam = true
@@ -166,7 +166,7 @@ var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err = rw.Unwrap(true); err != nil {
+  if err = rc.Unwrap(true); err != nil {
     return
   }
 `
@@ -201,7 +201,7 @@ var sectionalG = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalH, nil
   }
@@ -217,7 +217,7 @@ var sectionalH = func() (Sectional, error) {
       client.AddLine(pr.line)
     }
     finalVdec := `
-  if err := rw.Unwrap(true); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return types.GlobalCommandOptions{}, err
   }
 `

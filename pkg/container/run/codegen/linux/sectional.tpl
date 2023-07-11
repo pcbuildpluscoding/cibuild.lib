@@ -104,7 +104,7 @@ var sectionalC = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalD, nil
   }
@@ -118,7 +118,7 @@ var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err := rw.Unwrap(true); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return nil, err
   }
 `
@@ -180,7 +180,7 @@ var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err := rw.Unwrap(true); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return nil, err
   }
 `
@@ -198,7 +198,7 @@ var sectionalF = func() (Sectional, error) {
     pr.parseLine()
     switch xline := pr.xline(); {
     case xline.Contains("cobra.Command"):
-      pr.line = xline.Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+      pr.line = xline.Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     }
     pr.putLine()
   }
@@ -219,7 +219,7 @@ var sectionalG = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rw *Rucware",1).String()
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalH, nil
   }
@@ -233,7 +233,7 @@ var sectionalH = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
-  if err := rw.Unwrap(true); err != nil {
+  if err := rc.Unwrap(true); err != nil {
     return opts, err
   }
 `
