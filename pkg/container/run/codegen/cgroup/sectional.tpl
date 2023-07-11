@@ -28,6 +28,9 @@ func (s Sectional) UseLine() error {
   return nil
 }
 
+//----------------------------------------------------------------//
+// checkResponse
+//----------------------------------------------------------------//
 func checkResponse(resp ApiRecord, action string) error {
   if resp.AppFailed() {
     return resp.Unwrap()
@@ -51,14 +54,6 @@ func checkResponse(resp ApiRecord, action string) error {
 var sectionalA = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "import") {
 //    logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
-    req.Set("SectionName", "import")
-    resp := client.Request(req)
-//    logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=import"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
     client.AddLine(pr.line)
     return sectionalB, nil
   } 
@@ -72,7 +67,8 @@ var sectionalB Sectional = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
 //    logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
+    req.Set("SectionName", "import")
     resp := client.StreamReq(req)
 //    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
@@ -95,14 +91,6 @@ var sectionalB Sectional = func() (Sectional, error) {
 var sectionalC = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func generateCgroupOpts") {
 //    logger.Debugf("$$$$$$$$$$$ generateCgroupOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
-    req.Set("SectionName", "generateCgroupOpts")
-    resp := client.Request(req)
-//    logger.Debugf("got SectionName=generateCgroupOpts response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=generateCgroupOpts"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
     pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalD, nil
@@ -124,21 +112,21 @@ var sectionalD = func() (Sectional, error) {
     pr.varDec.add(finalVdec)
 //    logger.Debugf("$$$$$$$ generateCgroupOpts function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
+    req.Set("SectionName", "generateCgroupOpts")
     resp := client.StreamReq(req)
 //    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     return sectionalE, nil
-  } else {
-    pr.parseLine()
-    switch xline := pr.xline(); {
-    case xline.Contains("generateCgroupPath"):
-      pr.line = xline.Replace("cmd","rc",1).String()
-    }
-    pr.putLine()
   }
+  pr.parseLine()
+  switch xline := pr.xline(); {
+  case xline.Contains("generateCgroupPath"):
+    pr.line = xline.Replace("cmd","rc",1).String()
+  }
+  pr.putLine()
   return nil, nil
 }
 
@@ -148,14 +136,6 @@ var sectionalD = func() (Sectional, error) {
 var sectionalE = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func generateCgroupPath") {
 //    logger.Debugf("$$$$$$$$$$$ generateCgroupPath declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
-    req.Set("SectionName", "generateCgroupPath")
-    resp := client.Request(req)
-//    logger.Debugf("got SectionName=generateCgroupPath response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=generateCgroupPath"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
     pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalF, nil
@@ -169,19 +149,18 @@ var sectionalE = func() (Sectional, error) {
 var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
-
 //    logger.Debugf("$$$$$$$ generateCgroupPath function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
+    req.Set("SectionName", "generateCgroupPath")
     resp := client.StreamReq(req)
 //    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     return sectionalG, nil
-  } else {
-    pr.putLine()
   }
+  pr.putLine()
   return nil, nil
 }
 
@@ -191,14 +170,6 @@ var sectionalF = func() (Sectional, error) {
 var sectionalG = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func parseDevice") {
 //    logger.Debugf("$$$$$$$$$$$ parseDevice declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
-    req.Set("SectionName", "parseDevice")
-    resp := client.Request(req)
-//    logger.Debugf("got SectionName=parseDevice response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=parseDevice"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
     client.AddLine(pr.line)
     return sectionalH, nil
   }
@@ -214,7 +185,8 @@ var sectionalH = func() (Sectional, error) {
       client.AddLine(pr.line)
     }
 //    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
+    req.Set("SectionName", "parseDevice")
     resp := client.StreamReq(req)
 //    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
@@ -223,11 +195,9 @@ var sectionalH = func() (Sectional, error) {
     req.Set("Action","Complete")
     resp = client.Request(req)
 //    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Complete"); err != nil {
-      return nil, err
-    }
-  } else {
-    pr.putLine()
+    err := checkResponse(resp, "Complete")
+    return nil, err
   }
+  pr.putLine()
   return nil, nil
 }

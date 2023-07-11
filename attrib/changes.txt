@@ -1,1 +1,1 @@
-latest template content updates
+refactored inline with new Streamium.WriteSection method which combines SectionStart and WriteStream but with one less request roundtrip

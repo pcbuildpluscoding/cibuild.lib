@@ -28,6 +28,9 @@ func (s Sectional) UseLine() error {
   return nil
 }
 
+//----------------------------------------------------------------//
+// checkResponse
+//----------------------------------------------------------------//
 func checkResponse(resp ApiRecord, action string) error {
   if resp.AppFailed() {
     return resp.Unwrap()
@@ -51,14 +54,6 @@ func checkResponse(resp ApiRecord, action string) error {
 var sectionalA = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "import") {
 //    logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
-    req.Set("SectionName", "import")
-    resp := client.Request(req)
-//    logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=import"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
     client.AddLine(pr.line)
     return sectionalB, nil
   } 
@@ -74,7 +69,8 @@ var sectionalB Sectional = func() (Sectional, error) {
       client.AddLine(pr.line)
     }
 //    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
+    req.Set("SectionName", "import")
     resp := client.StreamReq(req)
 //    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
@@ -83,11 +79,9 @@ var sectionalB Sectional = func() (Sectional, error) {
     req.Set("Action","Complete")
     resp = client.Request(req)
 //    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Complete"); err != nil {
-      return nil, err
-    }
-  } else {
-    pr.putLine()
+    err := checkResponse(resp, "Complete")
+    return nil, err
   }
+  pr.putLine()
   return nil, nil
 }

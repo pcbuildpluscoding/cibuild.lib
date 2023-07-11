@@ -53,7 +53,6 @@ func checkResponse(resp ApiRecord, action string) error {
 //================================================================//
 var sectionalA = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "import") {
-//    logger.Debugf("$$$$$$$$$$$ import declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     client.AddLine(pr.line)
     return sectionalB, nil
   } 
@@ -64,7 +63,7 @@ var sectionalA = func() (Sectional, error) {
 // sectionalB
 //================================================================//
 var sectionalB Sectional = func() (Sectional, error) {
-  if pr.line == ")" {
+  if pr.line == "}" {
     client.AddLine(pr.line)
 //    logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     req.Set("Action","WriteSection")
@@ -89,8 +88,14 @@ var sectionalB Sectional = func() (Sectional, error) {
 // SectionalC
 //================================================================//
 var sectionalC = func() (Sectional, error) {
-  if strings.HasPrefix(pr.line, "func generateUlimitsOpts") {
-//    logger.Debugf("$$$$$$$$$$$ generateUlimitsOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+  if strings.HasPrefix(pr.line, "func loadNetworkFlags") {
+//    logger.Debugf("$$$$$$$$$$$ loadNetworkFlags declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+    // add comments above the function header
+    for _, line := range pr.recent.reversed() {
+      if strings.HasPrefix(line, "//") {
+        client.AddLine(line)
+      }
+    }
     pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalD, nil
@@ -103,6 +108,7 @@ var sectionalC = func() (Sectional, error) {
 //================================================================//
 var sectionalD = func() (Sectional, error) {
   if pr.complete {
+    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
     if pr.line != "" {
       client.AddLine(pr.line)
     }
@@ -112,18 +118,17 @@ var sectionalD = func() (Sectional, error) {
   }
 `
     pr.varDec.add(finalVdec)
-//    logger.Debugf("$$$$$$$ END OF FILE $$$$$$$")
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteSection")
-    req.Set("SectionName", "generateUlimitsOpts")
+    req.Set("SectionName", "loadNetworkFlags")
     resp := client.StreamReq(req)
-//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
     req.Set("Action","Complete")
     resp = client.Request(req)
-//    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
+    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
     err := checkResponse(resp, "Complete")
     return nil, err
   }

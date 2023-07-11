@@ -1,8 +1,8 @@
 package codegen
 
 import (
-	"fmt"
-	"strings"
+  "fmt"
+  "strings"
 )
 
 var (
@@ -28,6 +28,9 @@ func (s Sectional) UseLine() error {
   return nil
 }
 
+//----------------------------------------------------------------//
+// checkResponse
+//----------------------------------------------------------------//
 func checkResponse(resp ApiRecord, action string) error {
   if resp.AppFailed() {
     return resp.Unwrap()
@@ -96,44 +99,23 @@ var sectionalC Sectional = func() (Sectional, error) {
 var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     logger.Debugf("$$$$$$$ setCreateFlags function end at line : %d $$$$$$$", sd.LineNum)
-    req.Set("Action","SectionStart")
     req.Set("SectionName", "import")
-    resp := client.Request(req)
-    logger.Debugf("got SectionName=import response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=import"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
     resp = client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    req.Set("Action","SectionStart")
     req.Set("SectionName", "content")
-    resp = client.Request(req)
-    logger.Debugf("got SectionName=content response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=content"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
     client.AddLine(pr.varDec.flush()...)
     resp = client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    req.Set("Action","SectionStart")
     req.Set("SectionName", "dbPrefix")
-    resp = client.Request(req)
-    logger.Debugf("got SectionName=dbPrefix response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "SectionStart=dbPrefix"); err != nil {
-      logger.Error(err)
-      return nil, err
-    }
-    req.Set("Action","WriteStream")
+    req.Set("Action","WriteSection")
     client.AddLine(pr.varDec.formatDbPrefix(1))
     resp = client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
@@ -157,9 +139,8 @@ var sectionalE Sectional = func() (Sectional, error) {
     req.Set("Action","Complete")
     resp := client.Request(req)
     logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
-    if err := checkResponse(resp, "Complete"); err != nil {
-      return nil, err
-    }
+    err := checkResponse(resp, "Complete")
+    return nil, err
   }
   return nil, nil
 }
