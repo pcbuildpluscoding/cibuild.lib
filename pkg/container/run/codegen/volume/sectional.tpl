@@ -103,7 +103,7 @@ var sectionalC = func() (Sectional, error) {
       logger.Error(err)
       return nil, err
     }
-    pr.line = pr.xline().Replace("*cobra.Command", "*Runcare",1).String()
+    pr.line = pr.xline().Replace("*cobra.Command", "*Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalD, nil
   }
@@ -115,7 +115,7 @@ var sectionalC = func() (Sectional, error) {
 //================================================================//
 var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
-    client.AddLine("  return &Runcare{}")
+    client.AddLine("  return &Rucware{}")
     client.AddLine(pr.line)
 
 //    logger.Debugf("$$$$$$$ newVolumeCommand function end at line : %d $$$$$$$", sd.LineNum)
