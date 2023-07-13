@@ -20,7 +20,7 @@ convertExt:
     module: copyFile
 importable:
   cisource: [genware, runware]
-  codegen: [cgroup,completion,create,default,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
+  codegen: [cgroup,completion,create,default,defvalue,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
 codegen:
   cgroup:
     copyFrom: lib/cgroup
@@ -35,6 +35,9 @@ codegen:
     fromDir: /home/devapps/enterprise/github/cibuild.lib
     copyFrom: pkg/standard/v1/codegen/default
     copyTo: codegen/default
+  defvalue:
+    copyFrom: lib/defvalue
+    include: [sectional.go]
   flagutil:
     copyFrom: lib/flagutil
     include: [parser.go, sectional.go]
@@ -49,7 +52,7 @@ codegen:
     include: [sectional.go]
   network:
     copyFrom: lib/network
-    include: [sectional.go]
+    include: [parser.go,sectional.go,vardec.go]
   restart:
     copyFrom: lib/restart
     include: [sectional.go]

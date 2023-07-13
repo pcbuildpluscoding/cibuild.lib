@@ -1,11 +1,11 @@
 package codegen
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+  "fmt"
+  "regexp"
+  "strings"
 
-	erl "github.com/pcbuildpluscoding/errorlist"
+  erl "github.com/pcbuildpluscoding/errorlist"
 )
 
 //================================================================//
@@ -42,15 +42,15 @@ type Tokenic struct {
 // appendToken
 //----------------------------------------------------------------//
 func (t *Tokenic) appendToken() {
-  sd.TknIndex += 1
+  sd.tknIndex += 1
 
   if sd.fmtWidth == 0 {
-    t.line += sd.Token
+    t.line += sd.token
     return
   }
   
   widthFormat := fmt.Sprintf(widthPattern, '%', sd.fmtWidth, 's')
-  t.line += fmt.Sprintf(widthFormat, sd.Token)
+  t.line += fmt.Sprintf(widthFormat, sd.token)
 }
 
 //----------------------------------------------------------------//
@@ -98,7 +98,7 @@ func (t *Tokenic) trimLine() string {
 func (t *Tokenic) useToken() (err error) {
   switch {
   case sd.trune == '\t':
-    sd.Token = "  "
+    sd.token = "  "
     t.appendToken()
   case sd.trune == '\n':
     if !t.complete {
@@ -106,7 +106,7 @@ func (t *Tokenic) useToken() (err error) {
     }
     t.recent.add(t.line)
     t.line = ""
-    sd.TknIndex = 0
+    sd.tknIndex = 0
   default:
     t.appendToken()
   }
