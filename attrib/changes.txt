@@ -1,1 +1,1 @@
-full set of container/run package files is complete and ready for cntrize testing
+full set of container/run package files is now complete and ready for cntrize testing

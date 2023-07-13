@@ -41,4 +41,5 @@ runCiNotify:
 runCiStop:
   binaryName: cigserver
 runGoTidy:
+  waitBeforeExec: 3
   baseDir: /home/devapps/enterprise/github/cibuild
