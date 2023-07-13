@@ -46,3 +46,4 @@ cisource:
   genware:
     copyTo: genware/std
   runware:
+    copyTo: runware
