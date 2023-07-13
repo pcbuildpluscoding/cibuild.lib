@@ -18,7 +18,7 @@ runCiExec:
   programArgs:
     - bin/cigserver
     - log/cigserver
-    - -taskTimeout 90s
+    - -taskTimeout 120s
   programName: runTerm
 runCiNotify:
   jobId: <jobId>
