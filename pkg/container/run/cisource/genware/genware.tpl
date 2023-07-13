@@ -4,31 +4,35 @@
 package std
 
 import (
-  "fmt"
-  "net"
-  "strings"
+	"fmt"
+	"net"
+	"strings"
 
-  gwk "github.com/pcbuildpluscoding/cibuild/genwork/profile"
-  cgp "github.com/pcbuildpluscoding/cibuild/lib/cgroup"
-  crt "github.com/pcbuildpluscoding/cibuild/lib/create"
-  dfv "github.com/pcbuildpluscoding/cibuild/lib/defvalue"
-  fut "github.com/pcbuildpluscoding/cibuild/lib/flagutil"
-  gpu "github.com/pcbuildpluscoding/cibuild/lib/gpus"
-  lnx "github.com/pcbuildpluscoding/cibuild/lib/linux"
-  mnt "github.com/pcbuildpluscoding/cibuild/lib/mount"
-  rst "github.com/pcbuildpluscoding/cibuild/lib/restart"
-  rtm "github.com/pcbuildpluscoding/cibuild/lib/runtime"
-  scr "github.com/pcbuildpluscoding/cibuild/lib/security"
-  ult "github.com/pcbuildpluscoding/cibuild/lib/ulimit"
-  vlm "github.com/pcbuildpluscoding/cibuild/lib/volume"
-  fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
-  trv "github.com/pcbuildpluscoding/genware/lib/trovient"
-  "github.com/pcbuildpluscoding/logroll"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  gwt "github.com/pcbuildpluscoding/types/genware"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  xs "github.com/pcbuildpluscoding/xstring"
-  "github.com/sirupsen/logrus"
+	gwk "github.com/pcbuildpluscoding/cibuild/genwork/profile"
+	cgp "github.com/pcbuildpluscoding/cibuild/lib/cgroup"
+	cmp "github.com/pcbuildpluscoding/cibuild/lib/completion"
+	crt "github.com/pcbuildpluscoding/cibuild/lib/create"
+	dfv "github.com/pcbuildpluscoding/cibuild/lib/defvalue"
+	fut "github.com/pcbuildpluscoding/cibuild/lib/flagutil"
+	gpu "github.com/pcbuildpluscoding/cibuild/lib/gpus"
+	lnx "github.com/pcbuildpluscoding/cibuild/lib/linux"
+	mnt "github.com/pcbuildpluscoding/cibuild/lib/mount"
+	nwk "github.com/pcbuildpluscoding/cibuild/lib/network"
+	rst "github.com/pcbuildpluscoding/cibuild/lib/restart"
+	rtm "github.com/pcbuildpluscoding/cibuild/lib/runtime"
+	scr "github.com/pcbuildpluscoding/cibuild/lib/security"
+	ult "github.com/pcbuildpluscoding/cibuild/lib/ulimit"
+	vlm "github.com/pcbuildpluscoding/cibuild/lib/volume"
+	vlt "github.com/pcbuildpluscoding/cibuild/lib/volumeList"
+	stm "github.com/pcbuildpluscoding/cibuild/stream"
+	fs "github.com/pcbuildpluscoding/genware/lib/filesystem"
+	trv "github.com/pcbuildpluscoding/genware/lib/trovient"
+	"github.com/pcbuildpluscoding/logroll"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	gwt "github.com/pcbuildpluscoding/types/genware"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	xs "github.com/pcbuildpluscoding/xstring"
+	"github.com/sirupsen/logrus"
 )
 
 var logger = logroll.Get()
@@ -82,31 +86,53 @@ func NewCodeGenVendor(pkey string) GenwareVendor {
       if err != nil {
         return nil, err
       }
+      stm.SetLogger(logger)
       switch paramKey := rw.String("FileName"); paramKey {
       case "cgroup":
+        cgp.SetLogger(logger)
         return cgp.StreamGen, nil
+      case "completion":
+        cmp.SetLogger(logger)
+        return cmp.StreamGen, nil
       case "create":
+        crt.SetLogger(logger)
         return crt.StreamGen, nil
       case "defvalue":
+        dfv.SetLogger(logger)
         return dfv.StreamGen, nil
       case "flagutil":
+        fut.SetLogger(logger)
         return fut.StreamGen, nil
       case "gpus":
+        gpu.SetLogger(logger)
         return gpu.StreamGen, nil
       case "linux":
+        lnx.SetLogger(logger)
         return lnx.StreamGen, nil
       case "mount":
+        mnt.SetLogger(logger)
         return mnt.StreamGen, nil
+      case "network":
+        nwk.SetLogger(logger)
+        return nwk.StreamGen, nil
       case "restart":
+        rst.SetLogger(logger)
         return rst.StreamGen, nil
       case "runtime":
+        rtm.SetLogger(logger)
         return rtm.StreamGen, nil
       case "security":
+        scr.SetLogger(logger)
         return scr.StreamGen, nil
       case "ulimit":
+        ult.SetLogger(logger)
         return ult.StreamGen, nil
       case "volume":
+        vlm.SetLogger(logger)
         return vlm.StreamGen, nil
+      case "volumeList":
+        vlt.SetLogger(logger)
+        return vlt.StreamGen, nil
       default:
         return nil, fmt.Errorf("invalid StreamGen parameter : %s", paramKey)
       }

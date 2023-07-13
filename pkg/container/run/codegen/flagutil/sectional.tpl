@@ -1,16 +1,16 @@
 package codegen
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 var (
+  client StreamClient
   pr VdParser
+  req Runware
   sd *ScanData
   sx Sectional
-  client StreamClient
-  req Runware
 )
 
 //================================================================//
@@ -74,11 +74,7 @@ var sectionalB Sectional = func() (Sectional, error) {
     }
     return sectionalC, nil
   } 
-  switch xline := pr.xline(); {
-  case xline.Contains("spf13/cobra"):
-  default:
-    client.AddLine(pr.line)
-  }
+  client.AddLine(pr.line)
   return nil, nil
 }
 
@@ -102,13 +98,6 @@ var sectionalC = func() (Sectional, error) {
 var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
-    finalVdec := `
-  if err = rc.Unwrap(true); err != nil {
-    return
-  }
-`
-    pr.varDec.add(finalVdec)
-//    logger.Debugf("$$$$$$$ processImageSignOptions function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteSection")
     req.Set("SectionName", "processImageSignOptions")
@@ -145,13 +134,6 @@ var sectionalE = func() (Sectional, error) {
 var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
-    finalVdec := `
-  if err = rc.Unwrap(true); err != nil {
-    return
-  }
-`
-    pr.varDec.add(finalVdec)
-//    logger.Debugf("$$$$$$$ processImageVerifyOptions function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteSection")
     req.Set("SectionName", "processImageVerifyOptions")
@@ -173,6 +155,8 @@ var sectionalF = func() (Sectional, error) {
 var sectionalG = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func processRootCmdFlags") {
 //    logger.Debugf("$$$$$$$$$$$ processRootCmdFlags declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+    pr.keep(pr.line)
+    pr.line = pr.xline().Replace("processRootCmdFlags", "getGlobalOptions",1).String()
     pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
     return sectionalH, nil
@@ -186,6 +170,7 @@ var sectionalG = func() (Sectional, error) {
 var sectionalH = func() (Sectional, error) {
   if pr.complete {
     if pr.line != "" {
+      pr.keep(pr.line)
       client.AddLine(pr.line)
     }
     finalVdec := `
@@ -203,12 +188,22 @@ var sectionalH = func() (Sectional, error) {
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
+    client.AddLine("")
+    client.AddLine(pr.buffer.flush()...)
+    req.Set("Action","WriteStream")
+    resp = client.StreamReq(req)
+//    logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
+    if err := checkResponse(resp, "resume after streaming"); err != nil {
+      return nil, err
+    }
+    logger.Debugf("$$$$$$ flagutil parsing is complete $$$$$$$")
     req.Set("Action","Complete")
     resp = client.Request(req)
 //    logger.Debugf("got Complete response : %v", resp.Parameter().Value().AsInterface())
     err := checkResponse(resp, "Complete")
     return nil, err
   }
+  pr.keep(pr.line)
   pr.parseLine("processRootCmdFlags")
   pr.putLine()
   return nil, nil

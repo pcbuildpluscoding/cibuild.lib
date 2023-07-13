@@ -4,6 +4,11 @@ cgroup:
     InputFile: containerCgroup.tpl
     OutputFile: containerCgroup.go
   InputFile: container_run_cgroup_linux.go
+completion:
+  Streamium:
+    InputFile: completion.tpl
+    OutputFile: completion.go
+  InputFile: completion.go
 create:
   Streamium:
     InputFile: containerRun.tpl
@@ -34,6 +39,11 @@ mount:
     InputFile: containerMount.tpl
     OutputFile: containerMount.go
   InputFile: container_run_mount.go
+network:
+  Streamium:
+    InputFile: containerNetwork.tpl
+    OutputFile: containerNetwork.go
+  InputFile: container_run_network.go
 restart:
   Streamium:
     InputFile: containerRestart.tpl
@@ -59,3 +69,8 @@ volume:
     InputFile: volume.tpl
     OutputFile: volume.go
   InputFile: volume.go
+volumeList:
+  Streamium:
+    InputFile: volumeList.tpl
+    OutputFile: volumeList.go
+  InputFile: volume_list.go

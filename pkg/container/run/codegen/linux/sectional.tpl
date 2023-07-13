@@ -1,8 +1,8 @@
 package codegen
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 var (
@@ -61,12 +61,10 @@ var sectionalA = func() (Sectional, error) {
 }
 
 //================================================================//
-// sectionalB
+// SectionalB
 //================================================================//
-var sectionalB Sectional = func() (Sectional, error) {
-  if pr.line == "}" {
-    client.AddLine(pr.line)
-//    logger.Debugf("$$$$$$$$$$$ END OF IMPORT FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+var sectionalB = func() (Sectional, error) {
+  if strings.HasPrefix(pr.line, "func setPlatformOptions") {
     req.Set("Action","WriteSection")
     req.Set("SectionName", "import")
     resp := client.StreamReq(req)
@@ -74,15 +72,12 @@ var sectionalB Sectional = func() (Sectional, error) {
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    return sectionalC, nil
-  } 
-  switch xline := pr.xline(); {
-  case xline.Contains("containerd/pkg/cap"),
-       xline.Contains("spf13/cobra"):
-//    logger.Debugf("$$$$$$$$$$$ import reference spf13/cobra is found $$$$$$$$$$$$")
-  default:
+    //    logger.Debugf("$$$$$$$$$$$ setPlatformOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
+    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
+    return sectionalC, nil
   }
+  client.AddLine(pr.line)
   return nil, nil
 }
 
@@ -90,19 +85,6 @@ var sectionalB Sectional = func() (Sectional, error) {
 // SectionalC
 //================================================================//
 var sectionalC = func() (Sectional, error) {
-  if strings.HasPrefix(pr.line, "func setPlatformOptions") {
-//    logger.Debugf("$$$$$$$$$$$ setPlatformOptions declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
-    pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
-    client.AddLine(pr.line)
-    return sectionalD, nil
-  }
-  return nil, nil
-}
-
-//================================================================//
-// SectionalD
-//================================================================//
-var sectionalD = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
@@ -120,7 +102,7 @@ var sectionalD = func() (Sectional, error) {
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    return sectionalE, nil
+    return sectionalD, nil
   }
   pr.parseLine()
   switch xline := pr.xline(); {
@@ -136,27 +118,27 @@ var sectionalD = func() (Sectional, error) {
 }
 
 //================================================================//
-// SectionalE
+// SectionalD
 //================================================================//
-var sectionalE = func() (Sectional, error) {
+var sectionalD = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func generateNamespaceOpts") {
 //    logger.Debugf("$$$$$$$$$$$ generateNamespaceOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }
     }
     client.AddLine(pr.line)
-    return sectionalF, nil
+    return sectionalE, nil
   }
   return nil, nil
 }
 
 //================================================================//
-// SectionalF
+// SectionalE
 //================================================================//
-var sectionalF = func() (Sectional, error) {
+var sectionalE = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
@@ -174,7 +156,7 @@ var sectionalF = func() (Sectional, error) {
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    return sectionalG, nil
+    return sectionalF, nil
   }
   pr.parseLine()
   switch xline := pr.xline(); {
@@ -186,22 +168,22 @@ var sectionalF = func() (Sectional, error) {
 }
 
 //================================================================//
-// SectionalG
+// SectionalF
 //================================================================//
-var sectionalG = func() (Sectional, error) {
+var sectionalF = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func setOOMScoreAdj") {
 //    logger.Debugf("$$$$$$$$$$$ setOOMScoreAdj declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     pr.line = pr.xline().Replace("cmd *cobra.Command", "rc *Rucware",1).String()
     client.AddLine(pr.line)
-    return sectionalH, nil
+    return sectionalG, nil
   }
   return nil, nil
 }
 
 //================================================================//
-// SectionalH
+// SectionalG
 //================================================================//
-var sectionalH = func() (Sectional, error) {
+var sectionalG = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
     finalVdec := `
@@ -219,7 +201,7 @@ var sectionalH = func() (Sectional, error) {
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
     }
-    return sectionalI, nil
+    return sectionalH, nil
   }
   pr.parseLine()
   switch xline := pr.xline(); {
@@ -231,21 +213,21 @@ var sectionalH = func() (Sectional, error) {
 }
 
 //================================================================//
-// SectionalI
+// SectionalH
 //================================================================//
-var sectionalI = func() (Sectional, error) {
+var sectionalH = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func withOOMScoreAdj") {
 //    logger.Debugf("$$$$$$$$$$$ withOOMScoreAdj declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     client.AddLine(pr.line)
-    return sectionalJ, nil
+    return sectionalI, nil
   }
   return nil, nil
 }
 
 //================================================================//
-// SectionalJ
+// SectionalI
 //================================================================//
-var sectionalJ = func() (Sectional, error) {
+var sectionalI = func() (Sectional, error) {
   if pr.complete {
     if pr.line != "" {
       client.AddLine(pr.line)

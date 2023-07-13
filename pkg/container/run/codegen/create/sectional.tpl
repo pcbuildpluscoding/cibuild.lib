@@ -1,8 +1,8 @@
 package codegen
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 var (
@@ -75,14 +75,6 @@ var sectionalB Sectional = func() (Sectional, error) {
     return sectionalC, nil
   } 
   switch xline := pr.xline(); {
-  case xline.Contains("containerd/console"),
-       xline.Contains("nerdctl/pkg/consoleutil"),
-       xline.Contains("nerdctl/pkg/defaults"),
-       xline.Contains("nerdctl/pkg/errutil"),
-       xline.Contains("nerdctl/pkg/netutil"),
-       xline.Contains("nerdctl/pkg/signalutil"),
-       xline.Contains("nerdctl/pkg/taskutil"),
-       xline.Contains("spf13/cobra"):
   case xline.Contains("encoding/json"):
     client.AddLine(`  "encoding/base64"`)
     fallthrough
@@ -132,7 +124,7 @@ var sectionalE = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func runAction") {
 //    logger.Debugf("$$$$$$$$$$$ runAction declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }
@@ -175,6 +167,8 @@ var sectionalF = func() (Sectional, error) {
   }
   pr.parseLine()
   switch xline := pr.xline(); {
+  case xline.Contains("processRootCmdFlags"):
+    pr.line = xline.Replace("processRootCmdFlags(cmd)","getGlobalOptions(rc)",1).String()
   case xline.Contains("loadNetworkFlags"),
        xline.Contains("createContainer"):
     pr.line = xline.Replace("cmd","rc",1).String()
@@ -190,7 +184,7 @@ var sectionalG = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func createContainer") {
 //    logger.Debugf("$$$$$$$$$$$ createContainer declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }
@@ -253,7 +247,7 @@ var sectionalI = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func processPullCommandFlagsInRun") {
 //    logger.Debugf("$$$$$$$$$$$ processPullCommandFlagsInRun declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }
@@ -432,7 +426,7 @@ var sectionalQ = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func parseKVStringsMapFromLogOpt") {
 //    logger.Debugf("$$$$$$$$$$$ parseKVStringsMapFromLogOpt declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }

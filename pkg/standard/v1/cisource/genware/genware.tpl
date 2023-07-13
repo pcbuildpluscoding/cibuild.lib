@@ -7,16 +7,15 @@ import (
   "fmt"
   "net"
 
-  "github.com/pcbuildpluscoding/apibase/loggar"
-  prg "github.com/pcbuildpluscoding/cibuild/lib/progen"
-  gwk "github.com/pcbuildpluscoding/genware/genwork/cibuild/profile"
+  "github.com/pcbuildpluscoding/logroll"
+  gwk "github.com/pcbuildpluscoding/cibuild/genwork/profile"
   tdb "github.com/pcbuildpluscoding/trovedb/std"
   gwt "github.com/pcbuildpluscoding/types/genware"
   rwt "github.com/pcbuildpluscoding/types/runware"
   "github.com/sirupsen/logrus"
 )
 
-var logger = loggar.Get()
+var logger = logroll.Get()
 
 // -------------------------------------------------------------- //
 // SetLogger
@@ -36,36 +35,11 @@ type Trovian = tdb.Trovian
 // init - register plugins
 //------------------------------------------------------------------//
 func init() {
-  pkey := "cibuild/progen/std"
-  vendorA := NewPGGenVendor(pkey)
-  gwt.RegisterGenware(pkey, vendorA)
-  pkey = "cibuild/profile/edit"
-  vendorB := NewEditProfileVendor()
-  gwt.RegisterGenwork(pkey, vendorB)
+  pkey := "cibuild/profile/edit"
+  vendor := NewEditProfileVendor()
+  gwt.RegisterGenwork(pkey, vendor)
 }
 
-//----------------------------------------------------------------//
-// NewPGGenVendor
-//----------------------------------------------------------------//
-func NewPGGenVendor(pkey string) GenwareVendor {
-  return func(netAddr string, spec Runware) (Genware, error) {
-    connex, err := newTrovian(netAddr, spec.String("BucketName"))
-    if err != nil {
-      return nil, err
-    }
-    switch action := spec.String("Action"); action {
-    case "Generate":
-      dealer := prg.NewSnipDealer(connex)
-      err := dealer.Arrange(spec)
-      if err != nil {
-        return nil, err
-      }
-      return prg.NewPGComposer(connex, dealer)
-    default:
-      return nil, fmt.Errorf("unsupported %s action : %s", pkey, action)
-    }
-  }
-}
 
 //----------------------------------------------------------------//
 // NewEditProfileVendor

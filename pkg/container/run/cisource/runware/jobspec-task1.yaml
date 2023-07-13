@@ -12,7 +12,7 @@ SetRepeatable:
     # Parameter value list length defines the repeatable iteration count
     # TaskRange defines the task sequence per iteration
     Parameter: FileName
-    FileName: [cgroup,create,defvalue,flagutil,gpus,linux,mount,restart,runtime,security,ulimit,volume]
+    FileName: [cgroup,completion,create,defvalue,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
     TaskRange: [Generate]
   Subject: container/run
   TaskId: Task1A

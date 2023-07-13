@@ -1,8 +1,8 @@
 package codegen
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 var (
@@ -139,7 +139,7 @@ var sectionalE = func() (Sectional, error) {
   if strings.HasPrefix(pr.line, "func generateMountOpts") {
 //    logger.Debugf("$$$$$$$$$$$ generateMountOpts declaration FOUND at line : %d $$$$$$$$$$$", sd.LineNum)
     // add comments above the function header
-    for _, line := range pr.recent.reversed() {
+    for _, line := range pr.recent.flush() {
       if strings.HasPrefix(line, "//") {
         client.AddLine(line)
       }
@@ -157,12 +157,6 @@ var sectionalE = func() (Sectional, error) {
 var sectionalF = func() (Sectional, error) {
   if pr.line == "}" {
     client.AddLine(pr.line)
-    finalVdec := `
-  if err := rc.Unwrap(true); err != nil {
-    return nil, err
-  }
-`
-    pr.varDec.add(finalVdec)
 //    logger.Debugf("$$$$$$$ generateMountOpts function end at line : %d $$$$$$$", sd.LineNum)
     client.InsertLines("// variable-declarations", pr.varDec.flush()...)
     req.Set("Action","WriteSection")

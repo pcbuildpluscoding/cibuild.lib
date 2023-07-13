@@ -1,21 +1,21 @@
 package codegen
 
 import (
-  "fmt"
-  "io"
-  "net"
-  "os"
-  "regexp"
-  "text/scanner"
+	"fmt"
+	"io"
+	"net"
+	"os"
+	"regexp"
+	"text/scanner"
 
-  ab "github.com/pcbuildpluscoding/apibase/std"
-  stm "github.com/pcbuildpluscoding/cibuild/stream"
-  "github.com/pcbuildpluscoding/logroll"
-  tdb "github.com/pcbuildpluscoding/trovedb/std"
-  rdt "github.com/pcbuildpluscoding/types/apirecord"
-  rwt "github.com/pcbuildpluscoding/types/runware"
-  xs "github.com/pcbuildpluscoding/xstring"
-  "github.com/sirupsen/logrus"
+	ab "github.com/pcbuildpluscoding/apibase/std"
+	stm "github.com/pcbuildpluscoding/cibuild/stream"
+	"github.com/pcbuildpluscoding/logroll"
+	tdb "github.com/pcbuildpluscoding/trovedb/std"
+	rdt "github.com/pcbuildpluscoding/types/apirecord"
+	rwt "github.com/pcbuildpluscoding/types/runware"
+	xs "github.com/pcbuildpluscoding/xstring"
+	"github.com/sirupsen/logrus"
 )
 
 type ApiResult = ab.ApiResult
@@ -44,11 +44,11 @@ func SetLogger(super *logrus.Logger) {
 // ScanData
 //================================================================//
 type ScanData struct {
-  trune rune
-  Token string
-  LineNum int
   fmtWidth int
-  TknIndex int
+  lineNum int
+  tknIndex int
+  token string
+  trune rune
 }
 
 //================================================================//
@@ -240,7 +240,7 @@ var StreamGen CodeGen = func(req_ Runware) error {
     }
     pos[1] = s.Pos()
     sd.fmtWidth = pos[1].Column - pos[0].Column
-    sd.Token = s.TokenText()
+    sd.token = s.TokenText()
     err = pr.useToken()
     if err != nil {
       logger.Error(err)
@@ -249,7 +249,7 @@ var StreamGen CodeGen = func(req_ Runware) error {
 //      logger.Infof("!!! sectional program is now complete !!!")
       break
     }
-    sd.LineNum = pos[1].Line
+    sd.lineNum = pos[1].Line
     pos[0] = pos[1]
   }
 

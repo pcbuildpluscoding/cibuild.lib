@@ -1,3 +1,0 @@
-pkg/codegen/progen/cmd
-pkg/codegen/progen/genware
-pkg/codegen/progen/lib

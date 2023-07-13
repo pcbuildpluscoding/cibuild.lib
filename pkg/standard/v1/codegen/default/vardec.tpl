@@ -1,9 +1,9 @@
 package codegen
 
 import (
-  "fmt"
-  "regexp"
-  "strings"
+	"fmt"
+	"regexp"
+	"strings"
 )
 
 //================================================================//
@@ -17,15 +17,17 @@ type LineCache struct {
 //----------------------------------------------------------------//
 // add
 //----------------------------------------------------------------//
-func (c *LineCache) add(line string) {
+func (c *LineCache) add(lines ...string) {
+  if lines == nil {
+    return
+  }
+  c.this = append(c.this, lines...)
   if c.maxsize > 0 {
-    if len(c.this) == c.maxsize {
-      last := len(c.this) - 1
-      c.this = append([]string{line}, c.this[:last]...)
-      return
+    if len(c.this) > c.maxsize {
+      diff := len(c.this) - c.maxsize
+      c.this = c.this[diff:]
     }
   }
-  c.this = append(c.this, line)
 }
 
 //----------------------------------------------------------------//
@@ -89,9 +91,10 @@ type VarDec struct {
 // add
 //----------------------------------------------------------------//
 func (d *VarDec) add(items ...string) {
-  for _, item := range items {
-    d.cache.add(item)
+  if d.cacheIsEmpty() {
+    client.AddLine("// variable-declarations")
   }
+  d.cache.add(items...)
 }
 
 //----------------------------------------------------------------//
@@ -209,12 +212,8 @@ func (d *VarDec) parseGetter(line string) *VarDec {
   varText, remnant := XString(line).SplitInTwo(", ")
   _, equalToken, remnantA := remnant.SplitInThree(" ")
   varType, flagName := remnantA.SplitNKeepOne("Flags().Get",2,1).SplitInTwo(`("`)
-  inlineErr := flagName.Contains("err != nil")
-  if inlineErr {
-    flagName, _ = flagName.SplitInTwo(`")`)
-  } else {
-    flagName.Replace(`")`, "", 1)
-  }
+  inlineErr := flagName.Contains("err")
+  flagName, _ = flagName.SplitInTwo(`")`)
   var varName string
   if varText.Contains("if") {
     varName = varText.SplitNKeepOne(" ",2,1).Trim()

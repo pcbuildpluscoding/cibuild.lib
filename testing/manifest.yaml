@@ -3,24 +3,74 @@ fromDir: /home/devapps/enterprise/github/cibuild
 fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/container/run
-branches: [codegen]
+branches: [cisource, codegen]
 cleanToDir:
+  cisource: []
   codegen: []
 convertExt:
   convertible: 
     cisource: [cmd, genware]
-    codegen: []
+    codegen: [cgroup,completion,create,default,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
   defaultRef: golang
   golang:
     module: copyFileModExt
-    fromExt: .tpl
-    toExt: .go
+    fromExt: .go
+    toExt: .tpl
   notApplicable:
     module: copyFile
 importable:
-  codegen: [default]
+  cisource: [genware, runware]
+  codegen: [cgroup,completion,create,default,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
 codegen:
+  cgroup:
+    copyFrom: lib/cgroup
+    include: [sectional.go, vardec.go]
+  completion:
+    copyFrom: lib/completion
+    include: [sectional.go]
+  create:
+    copyFrom: lib/create
+    include: [sectional.go]
   default:
     fromDir: /home/devapps/enterprise/github/cibuild.lib
-    copyFrom: pkg/codegen/v1/default
+    copyFrom: pkg/standard/v1/codegen/default
     copyTo: codegen/default
+  flagutil:
+    copyFrom: lib/flagutil
+    include: [parser.go, sectional.go]
+  gpus:
+    copyFrom: lib/gpus
+    include: [sectional.go]
+  linux:
+    copyFrom: lib/linux
+    include: [sectional.go]
+  mount:
+    copyFrom: lib/mount
+    include: [sectional.go]
+  network:
+    copyFrom: lib/network
+    include: [sectional.go]
+  restart:
+    copyFrom: lib/restart
+    include: [sectional.go]
+  runtime:
+    copyFrom: lib/runtime
+    include: [sectional.go]
+  security:
+    copyFrom: lib/security
+    include: [sectional.go]
+  ulimit:
+    copyFrom: lib/ulimit
+    include: [sectional.go]
+  volume:
+    copyFrom: lib/volume
+    include: [sectional.go]
+  volumeList:
+    copyFrom: lib/volumeList
+    include: [sectional.go]
+cisource:
+  genware:
+    copyFrom: genware/std
+  runware:
+    copyFrom: runware
+    include: [paramValue.yaml]

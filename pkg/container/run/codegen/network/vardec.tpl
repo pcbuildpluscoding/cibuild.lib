@@ -146,12 +146,7 @@ func (d *VarDec) getIndentFactor() int {
 //----------------------------------------------------------------//
 func (d *VarDec) getParamSetter() string {
   indent := d.getIndent()
-  equalToken := "="
-  if d.firstParam {
-    equalToken = ":="
-    d.firstParam = false
-  }
-  return fmt.Sprintf("%sp %s rc.Parameter(\"%s\")", indent, equalToken, d.flagName)
+  return fmt.Sprintf("%sp := rc.Parameter(\"%s\")", indent, d.flagName)
 }
 
 //----------------------------------------------------------------//
@@ -160,7 +155,7 @@ func (d *VarDec) getParamSetter() string {
 func (d VarDec) getParamValue() string {
   indent := d.getIndent()
   if d.inlineErr {
-    return fmt.Sprintf("%s%s %s p.%s(); p.Unwrap() != nil {", indent, d.varName, d.equalToken, d.varType)
+    return fmt.Sprintf("%s%s %s p.%s(); err := p.Unwrap()", indent, d.varName, d.equalToken, d.varType)
   }
   return fmt.Sprintf("%s%s %s p.%s()", indent, d.varName, d.equalToken, d.varType)
 }
@@ -212,7 +207,6 @@ func (d *VarDec) parseGetter(line string) *VarDec {
   varText, remnant := XString(line).SplitInTwo(", ")
   _, equalToken, remnantA := remnant.SplitInThree(" ")
   varType, flagName := remnantA.SplitNKeepOne("Flags().Get",2,1).SplitInTwo(`("`)
-  inlineErr := flagName.Contains("err")
   flagName, _ = flagName.SplitInTwo(`")`)
   var varName string
   if varText.Contains("if") {
@@ -224,7 +218,7 @@ func (d *VarDec) parseGetter(line string) *VarDec {
   d.varName = varName
   d.flagName = flagName.String()
   d.equalToken = equalToken.String()
-  d.inlineErr = inlineErr
+  d.inlineErr = true
   return d
 }
 
