@@ -3,7 +3,7 @@ fromDir: /home/devapps/enterprise/github/cibuild
 fromPath:
 baseDir: /home/devapps/enterprise/github/cibuild.lib
 basePath: pkg/container/run
-branches: [cisource, codegen]
+branches: []
 cleanToDir:
   cisource: []
   codegen: []

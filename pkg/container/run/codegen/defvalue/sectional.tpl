@@ -101,7 +101,7 @@ var sectionalD = func() (Sectional, error) {
     logger.Debugf("$$$$$$$ setCreateFlags function end at line : %d $$$$$$$", sd.LineNum)
     req.Set("SectionName", "import")
     req.Set("Action","WriteSection")
-    resp = client.StreamReq(req)
+    resp := client.StreamReq(req)
     logger.Debugf("got resume after streaming response : %v", resp.Parameter().Value().AsInterface())
     if err := checkResponse(resp, "resume after streaming"); err != nil {
       return nil, err
