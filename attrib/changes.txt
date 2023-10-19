@@ -1,1 +1,1 @@
-full set of container/run package files is now complete and ready for cntrize testing
+retesting workflow

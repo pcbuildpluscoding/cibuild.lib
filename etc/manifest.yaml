@@ -1,0 +1,79 @@
+---
+fromDir: /home/devapps/enterprise/github/cibuild
+fromPath:
+baseDir: /home/devapps/enterprise/github/cibuild.lib
+basePath: build/progen
+branches: []
+cleanToDir:
+  cisource: []
+  codegen: []
+convertExt:
+  convertible: 
+    cisource: [cmd, genware]
+    codegen: [cgroup,completion,create,default,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
+  defaultRef: golang
+  golang:
+    module: copyFileModExt
+    fromExt: .go
+    toExt: .tpl
+  notApplicable:
+    module: copyFile
+importable:
+  cisource: [genware, runware]
+  codegen: [cgroup,completion,create,default,defvalue,flagutil,gpus,linux,mount,network,restart,runtime,security,ulimit,volume,volumeList]
+codegen:
+  cgroup:
+    copyFrom: lib/cgroup
+    include: [sectional.go, vardec.go]
+  completion:
+    copyFrom: lib/completion
+    include: [sectional.go]
+  create:
+    copyFrom: lib/create
+    include: [sectional.go]
+  default:
+    fromDir: /home/devapps/enterprise/github/cibuild.lib
+    copyFrom: pkg/standard/v1/codegen/default
+    copyTo: codegen/default
+  defvalue:
+    copyFrom: lib/defvalue
+    include: [sectional.go]
+  flagutil:
+    copyFrom: lib/flagutil
+    include: [parser.go, sectional.go]
+  gpus:
+    copyFrom: lib/gpus
+    include: [sectional.go]
+  linux:
+    copyFrom: lib/linux
+    include: [sectional.go]
+  mount:
+    copyFrom: lib/mount
+    include: [sectional.go]
+  network:
+    copyFrom: lib/network
+    include: [parser.go,sectional.go,vardec.go]
+  restart:
+    copyFrom: lib/restart
+    include: [sectional.go]
+  runtime:
+    copyFrom: lib/runtime
+    include: [sectional.go]
+  security:
+    copyFrom: lib/security
+    include: [sectional.go]
+  ulimit:
+    copyFrom: lib/ulimit
+    include: [sectional.go]
+  volume:
+    copyFrom: lib/volume
+    include: [sectional.go]
+  volumeList:
+    copyFrom: lib/volumeList
+    include: [sectional.go]
+cisource:
+  genware:
+    copyFrom: genware/std
+  runware:
+    copyFrom: runware
+    include: [paramValue.yaml]
